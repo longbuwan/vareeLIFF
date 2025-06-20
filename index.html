@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My LIFF App</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+    img { border-radius: 50%; width: 100px; }
+    button { padding: 10px 20px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h2>Hello, <span id="name">User</span>!</h2>
+  <img id="picture" src="" alt="Profile Picture">
+  <br>
+  <button onclick="sendMessage()">Send Message</button>
+
+  <script>
+    async function main() {
+      await liff.init({ liffId: "2007611527-z7ZNLXOk" });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
+      const profile = await liff.getProfile();
+      document.getElementById("name").innerText = profile.displayName;
+      document.getElementById("picture").src = profile.pictureUrl;
+    }
+
+    async function sendMessage() {
+      if (!liff.isInClient()) {
+        alert("Open in LINE app to send messages");
+        return;
+      }
+
+      await liff.sendMessages([
+        {
+          type: "text",
+          text: "✅ Message sent from LIFF app!"
+        }
+      ]);
+      liff.closeWindow();
+    }
+
+    main();
+  </script>
+</body>
+</html>
