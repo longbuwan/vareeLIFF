@@ -79,11 +79,17 @@
 
   <form id="scoreForm">
     <h1>กรอกคะแนน</h1>
-    <label for="subject">วิชา (Subject):</label>
-    <input type="text" id="subject" name="subject" required>
-
-    <label for="score">คะแนน (Score):</label>
-    <input type="number" id="score" name="score" min="0" max="100" required>
+    <h2>GPAX </h2>
+    <label for="subject">สูงสุด 4.00</label>
+    <input type="text" id="GPAX_score" name="subject" required>
+    
+    <h2>TGAT ความถนัดทั่วไป</h2>
+    <label for="score">TGAT1 อังกฤษ</label>
+    <input type="number" id="TGAT1_score" name="score" min="0" max="100" required>
+     <label for="score">TGAT2 คิดเหตุผล</label>
+    <input type="number" id="TGAT2_score" name="score" min="0" max="100" required>
+    <label for="score">TGAT3 สมรรถนะ</label>
+    <input type="number" id="TGAT3_score" name="score" min="0" max="100" required>
 
     <button type="button" onclick="sendMessage()">ส่งคะแนน</button>
   </form>
