@@ -211,43 +211,42 @@
     }
 
     const profile = await liff.getProfile();
-    const data = {
-     userId: profile.userId,
+
+const data = {
+  userId: profile.userId,
   name: profile.displayName,
-  gpax: parseFloat(gpax),
-  tgat1: parseFloat(tgat1),
-  tgat2: parseFloat(tgat2),
-  tgat3: parseFloat(tgat3),
+  gpax: parseOrNull("GPAX_score"),
+  tgat1: parseOrNull("TGAT1_score"),
+  tgat2: parseOrNull("TGAT2_score"),
+  tgat3: parseOrNull("TGAT3_score"),
 
-  tpat1_1: parseFloat(document.getElementById("TPAT1.1_score").value.trim()),
-  tpat1_2: parseFloat(document.getElementById("TPAT1.2_score").value.trim()),
-  tpat1_3: parseFloat(document.getElementById("TPAT1.3_score").value.trim()),
-  tpat2_1: parseFloat(document.getElementById("TPAT2.1_score").value.trim()),
-  tpat2_2: parseFloat(document.getElementById("TPAT2.2_score").value.trim()),
-  tpat2_3: parseFloat(document.getElementById("TPAT2.3_score").value.trim()),
-  tpat3: parseFloat(document.getElementById("TPAT3_score").value.trim()),
-  tpat4: parseFloat(document.getElementById("TPAT4_score").value.trim()),
-  tpat5: parseFloat(document.getElementById("TPAT5_score").value.trim()),
+  tpat1_1: parseOrNull("TPAT1.1_score"),
+  tpat1_2: parseOrNull("TPAT1.2_score"),
+  tpat1_3: parseOrNull("TPAT1.3_score"),
+  tpat2_1: parseOrNull("TPAT2.1_score"),
+  tpat2_2: parseOrNull("TPAT2.2_score"),
+  tpat2_3: parseOrNull("TPAT2.3_score"),
+  tpat3: parseOrNull("TPAT3_score"),
+  tpat4: parseOrNull("TPAT4_score"),
+  tpat5: parseOrNull("TPAT5_score"),
 
-  alevel1_1: parseFloat(document.getElementById("A-Level1.1_score").value.trim()),
-  alevel1_2: parseFloat(document.getElementById("A-Level1.2_score").value.trim()),
-  alevel2_1: parseFloat(document.getElementById("A-Level2.1_score").value.trim()),
-  alevel2_2: parseFloat(document.getElementById("A-Level2.2_score").value.trim()),
-  alevel2_3: parseFloat(document.getElementById("A-Level2.3_score").value.trim()),
-  alevel2_4: parseFloat(document.getElementById("A-Level2.4_score").value.trim()),
-  alevel3: parseFloat(document.getElementById("A-Level3_score").value.trim()),
-  alevel4_1: parseFloat(document.getElementById("A-Level4.1_score").value.trim()),
-  alevel4_2: parseFloat(document.getElementById("A-Level4.2_score").value.trim()),
-  alevel4_3: parseFloat(document.getElementById("A-Level4.3_score").value.trim()),
-  alevel4_4: parseFloat(document.getElementById("A-Level4.4_score").value.trim()),
-
-  alevel4_5: parseFloat(document.getElementById("TA-Level4.5_score").value.trim()),
-  alevel4_6: parseFloat(document.getElementById("TA-Level4.6_score").value.trim()),
-  alevel4_7: parseFloat(document.getElementById("TA-Level4.7_score").value.trim()),
-  alevel4_8: parseFloat(document.getElementById("TA-Level4.8_score").value.trim()),
-  alevel4_9: parseFloat(document.getElementById("TA-Level4.9_score").value.trim())
-    };
-
+  alevel1_1: parseOrNull("A-Level1.1_score"),
+  alevel1_2: parseOrNull("A-Level1.2_score"),
+  alevel2_1: parseOrNull("A-Level2.1_score"),
+  alevel2_2: parseOrNull("A-Level2.2_score"),
+  alevel2_3: parseOrNull("A-Level2.3_score"),
+  alevel2_4: parseOrNull("A-Level2.4_score"),
+  alevel3: parseOrNull("A-Level3_score"),
+  alevel4_1: parseOrNull("A-Level4.1_score"),
+  alevel4_2: parseOrNull("A-Level4.2_score"),
+  alevel4_3: parseOrNull("A-Level4.3_score"),
+  alevel4_4: parseOrNull("A-Level4.4_score"),
+  alevel4_5: parseOrNull("TA-Level4.5_score"),
+  alevel4_6: parseOrNull("TA-Level4.6_score"),
+  alevel4_7: parseOrNull("TA-Level4.7_score"),
+  alevel4_8: parseOrNull("TA-Level4.8_score"),
+  alevel4_9: parseOrNull("TA-Level4.9_score")
+};
     // 🟡 POST to your backend
     try {
       const response = await fetch("https://varee.onrender.com/api/save-score", {
