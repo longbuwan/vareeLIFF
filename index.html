@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <title>Test Score Submission</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- jQuery (required by Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
   <style>
     body {
       background-color: #e0f7fa;
@@ -145,7 +153,15 @@
      <label for="score">A-Level สเปน</label>
     <input type="number" id="TA-Level4.9_score" name="score" min="0" max="100" required>
 
-    
+    <label for="university">เลือกวิชาเฉพาะมหาวิทยาลัย</label>
+<select id="university" style="width: 100%" required>
+  <option value="">-- เลือกวิชาเฉพาะ --</option>
+  <option value="วิชาเฉพาะแพทย์">วิชาเฉพาะแพทย์</option>
+  <option value="วิชาเฉพาะวิศวะ">วิชาเฉพาะวิศวะ</option>
+  <option value="วิชาเฉพาะครู">วิชาเฉพาะครู</option>
+  <option value="วิชาเฉพาะบริหาร">วิชาเฉพาะบริหาร</option>
+  <!-- Add more options as needed -->
+</select>
 
     
     
@@ -162,6 +178,12 @@
   } else {
     liff.login();
   }
+    $(document).ready(function () {
+  $('#university').select2({
+    placeholder: "ค้นหาวิชาเฉพาะ...",
+    allowClear: true
+  });
+});
 };
   async function sendMessage() {
     const gpax = document.getElementById("GPAX_score").value.trim();
