@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Test Score Submission</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <link
-    href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
   <!-- jQuery (required by Select2) -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -16,412 +13,169 @@
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
   <style>
-    /* Reset some basics */
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      background-color: #e3f2fd; /* lighter blue */
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #e0f7fa;
+      font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 30px 15px;
-      margin: 0;
-      color: #0d47a1; /* dark blue */
+      padding: 20px;
+    }
+
+    h1 {
+      color: #0277bd;
+      margin-bottom: 24px;
     }
 
     #profile {
       text-align: center;
-      margin-bottom: 25px;
-      color: #1565c0;
+      margin-bottom: 20px;
     }
 
     #profile img {
-      width: 110px;
-      height: 110px;
+      width: 100px;
       border-radius: 50%;
-      margin-bottom: 12px;
-      border: 3px solid #42a5f5;
-      object-fit: cover;
-    }
-
-    #profile h2 {
-      font-weight: 600;
-      font-size: 1.6rem;
+      margin-bottom: 10px;
     }
 
     form {
       background: #ffffff;
-      padding: 30px 40px;
-      border-radius: 20px;
-      box-shadow: 0 6px 15px rgba(3, 169, 244, 0.3);
-      width: 100%;
-      max-width: 720px;
-      color: #0d47a1;
-    }
-
-    form h1,
-    form h2 {
-      margin-top: 0;
-      margin-bottom: 15px;
-      font-weight: 700;
-      border-bottom: 2px solid #42a5f5;
-      padding-bottom: 5px;
-      color: #0d47a1;
+      padding: 20px 40px 40px 40px;
+      border-radius: 24px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 80%;
+      max-width: 800px;
     }
 
     label {
       display: block;
-      margin-top: 15px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: #1565c0;
-      cursor: pointer;
-      transition: color 0.3s ease;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #01579b;
     }
 
-    label:hover {
-      color: #1e88e5;
-    }
-
-    input[type='number'] {
-      width: 100%;
-      padding: 10px 14px;
-      margin-top: 6px;
-      border: 2px solid #90caf9;
-      border-radius: 10px;
+    input[type="text"],
+    input[type="number"] {
+      width: 90%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #0277bd;
+      border-radius: 8px;
       font-size: 1rem;
-      color: #0d47a1;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    input[type='number']:focus {
-      border-color: #1565c0;
-      outline: none;
-      box-shadow: 0 0 6px #64b5f6;
     }
 
     button {
-      margin-top: 28px;
+      margin-top: 30px;
       width: 100%;
-      padding: 14px 0;
-      background-color: #1e88e5;
+      padding: 14px;
+      background-color: #0288d1;
       color: white;
       border: none;
-      border-radius: 12px;
-      font-size: 1.2rem;
-      font-weight: 700;
+      border-radius: 8px;
+      font-size: 18px;
       cursor: pointer;
-      box-shadow: 0 5px 10px rgba(30, 136, 229, 0.4);
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      transition: background-color 0.3s ease;
     }
 
     button:hover {
-      background-color: #1565c0;
-      box-shadow: 0 8px 15px rgba(21, 101, 192, 0.7);
+      background-color: #01579b;
     }
 
-    /* Responsive tweaks */
-    @media (max-width: 480px) {
-      form {
-        padding: 25px 20px;
-      }
+    /* Spacing for sections */
+    .section {
+      margin-bottom: 40px;
+    }
 
-      label {
-        font-size: 0.9rem;
-      }
-
-      input[type='number'] {
-        font-size: 0.9rem;
-      }
-
-      button {
-        font-size: 1rem;
-      }
+    .section h2 {
+      color: #0277bd;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #0288d1;
+      padding-bottom: 6px;
     }
   </style>
 </head>
-
 <body>
   <div id="profile">
-    <img id="picture" src="" alt="Profile Picture" />
+    <img id="picture" src="" alt="Profile Picture">
     <h2 id="name">Loading...</h2>
   </div>
 
   <form id="scoreForm">
     <h1>กรอกคะแนน</h1>
 
-    <h2>GPAX</h2>
-    <label for="GPAX_score">สูงสุด 4.00</label>
-    <input
-      type="number"
-      id="GPAX_score"
-      name="GPAX_score"
-      min="0"
-      max="4"
-      step="0.01"
-      required
-    />
+    <div class="section" id="gpax_section">
+      <h2>GPAX</h2>
+      <label for="GPAX_score">สูงสุด 4.00</label>
+      <input type="number" id="GPAX_score" name="GPAX_score" min="0" max="4" step="0.01" required>
+    </div>
 
-    <h2>TGAT ความถนัดทั่วไป</h2>
-    <label for="TGAT1_score">TGAT1 อังกฤษ</label>
-    <input
-      type="number"
-      id="TGAT1_score"
-      name="TGAT1_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="TGAT2_score">TGAT2 คิดเหตุผล</label>
-    <input
-      type="number"
-      id="TGAT2_score"
-      name="TGAT2_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="TGAT3_score">TGAT3 สมรรถนะ</label>
-    <input
-      type="number"
-      id="TGAT3_score"
-      name="TGAT3_score"
-      min="0"
-      max="100"
-      required
-    />
+    <div class="section" id="tgat_section">
+      <h2>TGAT ความถนัดทั่วไป</h2>
+      <label for="TGAT1_score">TGAT1 อังกฤษ</label>
+      <input type="number" id="TGAT1_score" name="TGAT1_score" min="0" max="100" required>
+      <label for="TGAT2_score">TGAT2 คิดเหตุผล</label>
+      <input type="number" id="TGAT2_score" name="TGAT2_score" min="0" max="100" required>
+      <label for="TGAT3_score">TGAT3 สมรรถนะ</label>
+      <input type="number" id="TGAT3_score" name="TGAT3_score" min="0" max="100" required>
+    </div>
 
-    <h2>TPAT 1-5 ความถนัดเฉพาะทาง</h2>
-    <label for="TPAT1.1_score">TPAT1.1 เชาว์</label>
-    <input
-      type="number"
-      id="TPAT1.1_score"
-      name="TPAT1.1_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="TPAT1.2_score">TPAT1.2 จริยธรรม</label>
-    <input
-      type="number"
-      id="TPAT1.2_score"
-      name="TPAT1.2_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="TPAT1.3_score">TPAT1.3 เชื่อมโยง</label>
-    <input
-      type="number"
-      id="TPAT1.3_score"
-      name="TPAT1.3_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="TPAT2.1_score">TPAT2.1 ทัศนศิลป์</label>
-    <input
-      type="number"
-      id="TPAT2.1_score"
-      name="TPAT2.1_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="TPAT2.2_score">TPAT2.2 ดนตรี</label>
-    <input
-      type="number"
-      id="TPAT2.2_score"
-      name="TPAT2.2_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="TPAT2.3_score">TPAT2.3 นาฏศิลป์</label>
-    <input
-      type="number"
-      id="TPAT2.3_score"
-      name="TPAT2.3_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="TPAT3_score">TPAT3 วิทย์-วิศวฯ</label>
-    <input
-      type="number"
-      id="TPAT3_score"
-      name="TPAT3_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="TPAT4_score">TPAT4 สถาปัตย์</label>
-    <input
-      type="number"
-      id="TPAT4_score"
-      name="TPAT4_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="TPAT5_score">TPAT5 ครู</label>
-    <input
-      type="number"
-      id="TPAT5_score"
-      name="TPAT5_score"
-      min="0"
-      max="100"
-      required
-    />
+    <div class="section" id="tpat_section">
+      <h2>TPAT 1-5 ความถนัดเฉพาะทาง</h2>
+      <label for="TPAT1.1_score">TPAT1.1 เชาว์</label>
+      <input type="number" id="TPAT1.1_score" name="TPAT1.1_score" min="0" max="100" required>
+      <label for="TPAT1.2_score">TPAT1.2 จริยธรรม</label>
+      <input type="number" id="TPAT1.2_score" name="TPAT1.2_score" min="0" max="100" required>
+      <label for="TPAT1.3_score">TPAT1.3 เชื่อมโยง</label>
+      <input type="number" id="TPAT1.3_score" name="TPAT1.3_score" min="0" max="100" required>
+      <label for="TPAT2.1_score">TPAT2.1 ทัศนศิลป์</label>
+      <input type="number" id="TPAT2.1_score" name="TPAT2.1_score" min="0" max="100" required>
+      <label for="TPAT2.2_score">TPAT2.2 ดนตรี</label>
+      <input type="number" id="TPAT2.2_score" name="TPAT2.2_score" min="0" max="100" required>
+      <label for="TPAT2.3_score">TPAT2.3 นาฏศิลป์</label>
+      <input type="number" id="TPAT2.3_score" name="TPAT2.3_score" min="0" max="100" required>
+      <label for="TPAT3_score">TPAT3 วิทย์-วิศวฯ</label>
+      <input type="number" id="TPAT3_score" name="TPAT3_score" min="0" max="100" required>
+      <label for="TPAT4_score">TPAT4 สถาปัตย์</label>
+      <input type="number" id="TPAT4_score" name="TPAT4_score" min="0" max="100" required>
+      <label for="TPAT5_score">TPAT5 ครู</label>
+      <input type="number" id="TPAT5_score" name="TPAT5_score" min="0" max="100" required>
+    </div>
 
-    <h2>A-Level</h2>
-    <label for="A-Level1.1_score">A-Level คณิต1</label>
-    <input
-      type="number"
-      id="A-Level1.1_score"
-      name="A-Level1.1_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level1.2_score">A-Level คณิต2</label>
-    <input
-      type="number"
-      id="A-Level1.2_score"
-      name="A-Level1.2_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level2.1_score">A-Level วิทย์ทั่วไป</label>
-    <input
-      type="number"
-      id="A-Level2.1_score"
-      name="A-Level2.1_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level2.2_score">A-Level ฟิสิกส์</label>
-    <input
-      type="number"
-      id="A-Level2.2_score"
-      name="A-Level2.2_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level2.3_score">A-Level เคมี</label>
-    <input
-      type="number"
-      id="A-Level2.3_score"
-      name="A-Level2.3_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level2.4_score">A-Level ชีววิทยา</label>
-    <input
-      type="number"
-      id="A-Level2.4_score"
-      name="A-Level2.4_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level3_score">A-Level สังคมศึกษา</label>
-    <input
-      type="number"
-      id="A-Level3_score"
-      name="A-Level3_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level4.1_score">A-Level ไทย</label>
-    <input
-      type="number"
-      id="A-Level4.1_score"
-      name="A-Level4.1_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level4.2_score">A-Level อังกฤษ</label>
-    <input
-      type="number"
-      id="A-Level4.2_score"
-      name="A-Level4.2_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level4.3_score">A-Level ฝรั่งเศส</label>
-    <input
-      type="number"
-      id="A-Level4.3_score"
-      name="A-Level4.3_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level4.4_score">A-Level เยอรมัน</label>
-    <input
-      type="number"
-      id="A-Level4.4_score"
-      name="A-Level4.4_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level4.5_score">A-Level ญี่ปุ่น</label>
-    <input
-      type="number"
-      id="A-Level4.5_score"
-      name="A-Level4.5_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level4.6_score">A-Level เกาหลี</label>
-    <input
-      type="number"
-      id="A-Level4.6_score"
-      name="A-Level4.6_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level4.7_score">A-Level จีน</label>
-    <input
-      type="number"
-      id="A-Level4.7_score"
-      name="A-Level4.7_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level4.8_score">A-Level บาลี</label>
-    <input
-      type="number"
-      id="A-Level4.8_score"
-      name="A-Level4.8_score"
-      min="0"
-      max="100"
-      required
-    />
-    <label for="A-Level4.9_score">A-Level สเปน</label>
-    <input
-      type="number"
-      id="A-Level4.9_score"
-      name="A-Level4.9_score"
-      min="0"
-      max="100"
-      required
-    />
+    <div class="section" id="alevel_section">
+      <h2>A-Level</h2>
+      <label for="A-Level1.1_score">A-Level คณิต1</label>
+      <input type="number" id="A-Level1.1_score" name="A-Level1.1_score" min="0" max="100" required>
+      <label for="A-Level1.2_score">A-Level คณิต2</label>
+      <input type="number" id="A-Level1.2_score" name="A-Level1.2_score" min="0" max="100" required>
+      <label for="A-Level2.1_score">A-Level วิทย์ทั่วไป</label>
+      <input type="number" id="A-Level2.1_score" name="A-Level2.1_score" min="0" max="100" required>
+      <label for="A-Level2.2_score">A-Level ฟิสิกส์</label>
+      <input type="number" id="A-Level2.2_score" name="A-Level2.2_score" min="0" max="100" required>
+      <label for="A-Level2.3_score">A-Level เคมี</label>
+      <input type="number" id="A-Level2.3_score" name="A-Level2.3_score" min="0" max="100" required>
+      <label for="A-Level2.4_score">A-Level ชีววิทยา</label>
+      <input type="number" id="A-Level2.4_score" name="A-Level2.4_score" min="0" max="100" required>
+      <label for="A-Level3_score">A-Level สังคมศึกษา</label>
+      <input type="number" id="A-Level3_score" name="A-Level3_score" min="0" max="100" required>
+      <label for="A-Level4.1_score">A-Level ไทย</label>
+      <input type="number" id="A-Level4.1_score" name="A-Level4.1_score" min="0" max="100" required>
+      <label for="A-Level4.2_score">A-Level อังกฤษ</label>
+      <input type="number" id="A-Level4.2_score" name="A-Level4.2_score" min="0" max="100" required>
+      <label for="A-Level4.3_score">A-Level ฝรั่งเศส</label>
+      <input type="number" id="A-Level4.3_score" name="A-Level4.3_score" min="0" max="100" required>
+      <label for="A-Level4.4_score">A-Level เยอรมัน</label>
+      <input type="number" id="A-Level4.4_score" name="A-Level4.4_score" min="0" max="100" required>
+      <label for="A-Level4.5_score">A-Level ญี่ปุ่น</label>
+      <input type="number" id="A-Level4.5_score" name="A-Level4.5_score" min="0" max="100" required>
+      <label for="A-Level4.6_score">A-Level เกาหลี</label>
+      <input type="number" id="A-Level4.6_score" name="A-Level4.6_score" min="0" max="100" required>
+      <label for="A-Level4.7_score">A-Level จีน</label>
+      <input type="number" id="A-Level4.7_score" name="A-Level4.7_score" min="0" max="100" required>
+      <label for="A-Level4.8_score">A-Level บาลี</label>
+      <input type="number" id="A-Level4.8_score" name="A-Level4.8_score" min="0" max="100" required>
+      <label for="A-Level4.9_score">A-Level สเปน</label>
+      <input type="number" id="A-Level4.9_score" name="A-Level4.9_score" min="0" max="100" required>
+    </div>
 
     <button type="button" onclick="sendMessage()">ส่งคะแนน</button>
   </form>
