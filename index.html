@@ -153,15 +153,6 @@
      <label for="score">A-Level สเปน</label>
     <input type="number" id="TA-Level4.9_score" name="score" min="0" max="100" required>
 
-    <label for="university">เลือกวิชาเฉพาะมหาวิทยาลัย</label>
-<select id="university" style="width: 100%" required>
-  <option value="">-- เลือกวิชาเฉพาะ --</option>
-  <option value="วิชาเฉพาะแพทย์">วิชาเฉพาะแพทย์</option>
-  <option value="วิชาเฉพาะวิศวะ">วิชาเฉพาะวิศวะ</option>
-  <option value="วิชาเฉพาะครู">วิชาเฉพาะครู</option>
-  <option value="วิชาเฉพาะบริหาร">วิชาเฉพาะบริหาร</option>
-  <!-- Add more options as needed -->
-</select>
 
     
     
@@ -191,6 +182,8 @@
     const tgat2 = document.getElementById("TGAT2_score").value.trim();
     const tgat3 = document.getElementById("TGAT3_score").value.trim();
 
+    
+
     if (!gpax || !tgat1 || !tgat2 || !tgat3) {
       alert("โปรดกรอกข้อมูลให้ครบถ้วน");
       return;
@@ -198,12 +191,40 @@
 
     const profile = await liff.getProfile();
     const data = {
-      userId: profile.userId,
-      name: profile.displayName,
-      gpax: parseFloat(gpax),
-      tgat1: parseFloat(tgat1),
-      tgat2: parseFloat(tgat2),
-      tgat3: parseFloat(tgat3)
+     userId: profile.userId,
+  name: profile.displayName,
+  gpax: parseFloat(gpax),
+  tgat1: parseFloat(tgat1),
+  tgat2: parseFloat(tgat2),
+  tgat3: parseFloat(tgat3),
+
+  tpat1_1: parseFloat(document.getElementById("TPAT1.1_score").value.trim()),
+  tpat1_2: parseFloat(document.getElementById("TPAT1.2_score").value.trim()),
+  tpat1_3: parseFloat(document.getElementById("TPAT1.3_score").value.trim()),
+  tpat2_1: parseFloat(document.getElementById("TPAT2.1_score").value.trim()),
+  tpat2_2: parseFloat(document.getElementById("TPAT2.2_score").value.trim()),
+  tpat2_3: parseFloat(document.getElementById("TPAT2.3_score").value.trim()),
+  tpat3: parseFloat(document.getElementById("TPAT3_score").value.trim()),
+  tpat4: parseFloat(document.getElementById("TPAT4_score").value.trim()),
+  tpat5: parseFloat(document.getElementById("TPAT5_score").value.trim()),
+
+  alevel1_1: parseFloat(document.getElementById("A-Level1.1_score").value.trim()),
+  alevel1_2: parseFloat(document.getElementById("A-Level1.2_score").value.trim()),
+  alevel2_1: parseFloat(document.getElementById("A-Level2.1_score").value.trim()),
+  alevel2_2: parseFloat(document.getElementById("A-Level2.2_score").value.trim()),
+  alevel2_3: parseFloat(document.getElementById("A-Level2.3_score").value.trim()),
+  alevel2_4: parseFloat(document.getElementById("A-Level2.4_score").value.trim()),
+  alevel3: parseFloat(document.getElementById("A-Level3_score").value.trim()),
+  alevel4_1: parseFloat(document.getElementById("A-Level4.1_score").value.trim()),
+  alevel4_2: parseFloat(document.getElementById("A-Level4.2_score").value.trim()),
+  alevel4_3: parseFloat(document.getElementById("A-Level4.3_score").value.trim()),
+  alevel4_4: parseFloat(document.getElementById("A-Level4.4_score").value.trim()),
+
+  alevel4_5: parseFloat(document.getElementById("TA-Level4.5_score").value.trim()),
+  alevel4_6: parseFloat(document.getElementById("TA-Level4.6_score").value.trim()),
+  alevel4_7: parseFloat(document.getElementById("TA-Level4.7_score").value.trim()),
+  alevel4_8: parseFloat(document.getElementById("TA-Level4.8_score").value.trim()),
+  alevel4_9: parseFloat(document.getElementById("TA-Level4.9_score").value.trim())
     };
 
     // 🟡 POST to your backend
