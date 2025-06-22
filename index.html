@@ -248,17 +248,7 @@
 
     // 🟢 Send LINE Message (optional)
     if (liff.isInClient()) {
-      alert([
-        {
-          type: "text",
-          text:
-            `📚 รายงานคะแนนของ ${data.name}\n` +
-            `GPAX: ${data.gpax}\n` +
-            `TGAT1: ${data.tgat1}\n` +
-            `TGAT2: ${data.tgat2}\n` +
-            `TGAT3: ${data.tgat3}`
-        }
-      ]);
+      
       liff.closeWindow();
     } else {
       alert("ข้อมูลถูกส่งไปยังเซิร์ฟเวอร์แล้ว แต่คุณไม่ได้อยู่ในแอป LINE");
