@@ -174,13 +174,13 @@
 
 
 <script>
-   const searchInput2 = document.getElementById("searchInput2");
-  const facultyDropdown = document.getElementById("facultyDropdown");
+   const searchInput2s = document.getElementById("searchInput2");
+  const facultyDropdowns = document.getElementById("facultyDropdown");
 
   // Update search input when a faculty is selected
-  facultyDropdown.addEventListener("change", function () {
-    const selectedText2 = facultyDropdown.options[facultyDropdown.selectedIndex].text;
-    searchInput2.value = selectedText2;
+  facultyDropdowns.addEventListener("change", function () {
+    const selectedText2 = facultyDropdowns.options[facultyDropdowns.selectedIndex].text;
+    searchInput2s.value = selectedText2;
     console.log("Selected faculty:", selectedText2);
   });
 
