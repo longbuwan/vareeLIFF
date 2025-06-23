@@ -146,10 +146,10 @@
 
     <button type="button" onclick="sendMessage()">คำนวณ</button>
   </form>
+  <select id="dropdown" size="8">
+      <option class="loading">กำลังโหลดรายการมหาคณะ...</option>
+    </select>
 
-  <label for="facultyDropdown">เลือกคณะ/สาขา:</label>
-<select id="facultyDropdown" size="6">
-  <option>กรุณาเลือกมหาวิทยาลัยก่อน</option>
 </select>
 
 <script>
@@ -275,8 +275,7 @@ async function initializePage() {
         throw new Error("Failed to send data to server");
       }
 
-      alert("ข้อมูลถูกส่งไปยังเซิร์ฟเวอร์แล้ว");
-      window.location.href = "https://vareepri-longbuwans-projects.vercel.app/shoseuni";
+     
       
     } catch (error) {
       alert("เกิดข้อผิดพลาดในการส่งข้อมูลไปยังเซิร์ฟเวอร์");
