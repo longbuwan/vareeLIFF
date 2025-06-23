@@ -166,6 +166,15 @@
      <select id="facultyDropdown" size="8">
   <option class="loading">กรุณาเลือกมหาวิทยาลัยก่อน...</option>
    </select>
+
+       
+    <label for="searchInput3">ค้นหามหาวิทยาลัย:</label>
+     <input type="text" id="searchInput3" placeholder="พิมพ์เพื่อค้นหา..." onkeyup="filterFunction3()" />
+    
+     <label for="fieldDropdown">เลือกคณะ</label>
+     <select id="fieldDropdown" size="8">
+  <option class="loading">กรุณาเลือกมหาวิทยาลัยก่อน...</option>
+   </select>
     
 <button type="button" onclick="sendMessage()">คำนวณ</button>
   </form>
@@ -184,7 +193,15 @@
     console.log("Selected faculty:", selectedText2);
   });
 
+ const searchInput3 = document.getElementById("searchInput3");
+  const fieldDropdown = document.getElementById("fieldDropdown");
 
+  // Update search input when a faculty is selected
+  fieldDropdown.addEventListener("change", function () {
+    const selectedText3 = fieldDropdown.options[fieldDropdown.selectedIndex].text;
+    searchInput3.value = selectedText3;
+    console.log("Selected field:", selectedText3);
+  });
   
   const dropdown = document.getElementById("dropdown");
   const searchInput = document.getElementById("searchInput");
@@ -328,13 +345,69 @@ async function loadFaculties(university) {
   }
 }
 
+async function loadfield(university,faculty) {
+  if (!university || !faculty) {
+    facultyDropdown.innerHTML = '<option>กรุณาเลือกมหาวิทยาลัย เเละ คณะก่อน</option>';
+    return;
+  }
+
+  try {
+    facultyDropdown.innerHTML = '<option>กำลังโหลดข้อมูลคณะ...</option>';
+
+    const data = { name: university, faculty: faculty};
+    console.log("Sending data to backend:", data);
+
+    const response = await fetch("https://varee.onrender.com/api/find_field", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Backend error response:", errorText);
+      throw new Error("Failed to fetch faculties");
+    }
+
+    const result2 = await response.json();
+    console.log("Response JSON:", result);
+
+    const fields = result2.faculties || [];
+
+    if (fields.length === 0) {
+      fieldDropdown.innerHTML = '<option disabled>ไม่พบข้อมูลคณะ</option>';
+      return;
+    }
+
+    fieldDropdown.innerHTML = '';
+    fields.forEach(field => {
+      const optionElems = document.createElement('option');
+      optionElems.value = field;
+      optionElems.text = field;
+      fieldDropdown.add(optionElems);
+    });
+  } catch (error) {
+    console.error("Error loading faculties:", error);
+    fieldDropdown.innerHTML = '<option disabled>เกิดข้อผิดพลาดในการโหลดข้อมูลคณะ</option>';
+  }
+}
 // When university dropdown changes, load faculties
 dropdown.addEventListener("change", () => {
   const selectedUniversity = dropdown.value;
   searchInput.value = selectedUniversity; // Keep input in sync
   loadFaculties(selectedUniversity);
 });
-
+  
+facultyDropdown.addEventListener("change", () => {
+  const selectedUniversity = dropdown.value;
+  const selectedFaculty = facultyDropdown.value;
+  searchInput2.value = selectedFaculty; // Keep input in sync
+  loadFaculties(selectedUniversity,selectedFaculty);
+});
 // Also when search input changes and filters the dropdown, clear faculty dropdown
 searchInput.addEventListener("input", () => {
   facultyDropdown.innerHTML = '<option>กรุณาเลือกมหาวิทยาลัยก่อน</option>';
