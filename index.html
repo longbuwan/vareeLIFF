@@ -177,6 +177,25 @@
       <input type="number" id="A-Level4.9_score" name="A-Level4.9_score" min="0" max="100" required>
     </div>
 
+    <div class="section" id="alevel_section">
+      <h2>วิชาเฉพาะมหาวิทยาลัย และ GPA</h2>
+      <label for="gpa21_score">เกรดเฉลี่ยกลุ่มสาระฯภาษาไทย</label>
+      <input type="number" id="gpa21_score" name="gpa21_score" min="0" max="4" step="0.01" required>
+       <label for="gpa22_score">เกรดเฉลี่ยกลุ่มสาระฯคณิตศาสตร์</label>
+      <input type="number" id="gpa22_score" name="gpa22_score" min="0" max="4" step="0.01" required>
+      <label for="gpa23_score">เกรดเฉลี่ยกลุ่มสาระฯวิทยาศาสตร์และเทคโนโลยี</label>
+      <input type="number" id="gpa23_score" name="gpa23_score" min="0" max="4" step="0.01" required>
+           <label for="gpa24_score">เกรดเฉลี่ยกลุ่มสาระฯสังคม</label>
+      <input type="number" id="gpa24_score" name="gpa24_score" min="0" max="4" step="0.01" required>
+            <label for="gpa26_score">เกรดเฉลี่ยกลุ่มสาระฯศิลปะ</label>
+      <input type="number" id="gpa26_score" name="gpa26_score" min="0" max="4" step="0.01" required>
+            <label for="gpa27_score">เกรดเฉลี่ยกลุ่มสาระฯการงานอาชีพและเทคโนโลยี </label>
+      <input type="number" id="gpa27_score" name="gpa27_score" min="0" max="4" step="0.01" required>
+            <label for="gpa28_score">เกรดเฉลี่ยกลุ่มสาระฯภาษาต่างประเทศ</label>
+      <input type="number" id="gpa28_score" name="gpa28_score" min="0" max="4" step="0.01" required>
+           
+    </div>
+
     <button type="button" onclick="sendMessage()">ส่งคะแนน</button>
   </form>
 
@@ -251,7 +270,16 @@ document.querySelector("button").innerText = "กำลังส่ง...";
   a_lv_86: parseFloat(document.getElementById("A-Level4.6_score").value.trim()),
   a_lv_87: parseFloat(document.getElementById("A-Level4.7_score").value.trim()),
   a_lv_88: parseFloat(document.getElementById("A-Level4.8_score").value.trim()),
-  a_lv_89: parseFloat(document.getElementById("A-Level4.9_score").value.trim())
+  a_lv_89: parseFloat(document.getElementById("A-Level4.9_score").value.trim()),
+
+      
+  gpa21: parseFloat(document.getElementById("gpa21_score").value.trim()),
+  gpa22: parseFloat(document.getElementById("gpa22_score").value.trim()),
+  gpa23: parseFloat(document.getElementById("gpa23_score").value.trim()),
+      gpa24: parseFloat(document.getElementById("gpa24_score").value.trim()),
+      gpa26: parseFloat(document.getElementById("gpa26_score").value.trim()),
+      gpa27: parseFloat(document.getElementById("gpa27_score").value.trim()),
+      gpa28: parseFloat(document.getElementById("gpa28_score").value.trim())
     };
     // 🟡 POST to your backend
     try {
