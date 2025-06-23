@@ -172,6 +172,48 @@
 
 
 <script>
+    
+    <label for="searchInput">ค้นหามหาวิทยาลัย:</label>
+    <input type="text" id="searchInput" placeholder="พิมพ์เพื่อค้นหา..." onkeyup="filterFunction()" />
+    
+    <label for="dropdown">เลือกมหาวิทยาลัย:</label>
+    <select id="dropdown" size="8">
+      <option class="loading">กำลังโหลดรายการมหาวิทยาลัย...</option>
+    </select>
+
+    
+    <label for="searchInput2">ค้นหามหาวิทยาลัย:</label>
+     <input type="text" id="searchInput2" placeholder="พิมพ์เพื่อค้นหา..." onkeyup="filterFunction2()" />
+    
+     <label for="facultyDropdown">เลือกคณะ</label>
+     <select id="facultyDropdown" size="8">
+  <option class="loading">กรุณาเลือกมหาวิทยาลัยก่อน...</option>
+   </select>
+    
+<button type="button" onclick="sendMessage()">คำนวณ</button>
+  </form>
+
+
+<script>
+   const searchInput2 = document.getElementById("searchInput2");
+  const facultyDropdown = document.getElementById("facultyDropdown");
+
+  // Update search input when a faculty is selected
+  facultyDropdown.addEventListener("change", function () {
+    const selectedText2 = facultyDropdown.options[facultyDropdown.selectedIndex].text;
+    searchInput2.value = selectedText2;
+    console.log("Selected faculty:", selectedText2);
+  });
+  const dropdown = document.getElementById("dropdown");
+  const searchInput = document.getElementById("searchInput");
+
+  dropdown.addEventListener("change", function () {
+    const selectedText = dropdown.options[dropdown.selectedIndex].text;
+    searchInput.value = selectedText; // Set input text to the selected university
+    console.log("Selected text:", selectedText);
+  });
+  
+
   
   const dropdown = document.getElementById("dropdown");
   const searchInput = document.getElementById("searchInput");
