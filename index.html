@@ -193,10 +193,15 @@
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ userId }),
-      });
+          });
 
+    if (response.ok) {
       const userData = await response.json();
       console.log("User data:", userData);
+      fillForm(userData);  // Fill form inputs with user data
+    } else {
+      console.error("Failed to load user data");
+    }
   } else {
     liff.login();
   }
@@ -207,6 +212,42 @@
   });
 });
 };
+  function fillForm(data) {
+  if (!data) return;
+
+  // Fill each input by id with the matching value
+  document.getElementById("GPAX_score").value = data.gpax ?? "";
+  document.getElementById("TGAT1_score").value = data.tgat1 ?? "";
+  document.getElementById("TGAT2_score").value = data.tgat2 ?? "";
+  document.getElementById("TGAT3_score").value = data.tgat3 ?? "";
+
+  document.getElementById("TPAT1.1_score").value = data.tpat1_1 ?? "";
+  document.getElementById("TPAT1.2_score").value = data.tpat1_2 ?? "";
+  document.getElementById("TPAT1.3_score").value = data.tpat1_3 ?? "";
+  document.getElementById("TPAT2.1_score").value = data.tpat2_1 ?? "";
+  document.getElementById("TPAT2.2_score").value = data.tpat2_2 ?? "";
+  document.getElementById("TPAT2.3_score").value = data.tpat2_3 ?? "";
+  document.getElementById("TPAT3_score").value = data.tpat3 ?? "";
+  document.getElementById("TPAT4_score").value = data.tpat4 ?? "";
+  document.getElementById("TPAT5_score").value = data.tpat5 ?? "";
+
+  document.getElementById("A-Level1.1_score").value = data.alevel1_1 ?? "";
+  document.getElementById("A-Level1.2_score").value = data.alevel1_2 ?? "";
+  document.getElementById("A-Level2.1_score").value = data.alevel2_1 ?? "";
+  document.getElementById("A-Level2.2_score").value = data.alevel2_2 ?? "";
+  document.getElementById("A-Level2.3_score").value = data.alevel2_3 ?? "";
+  document.getElementById("A-Level2.4_score").value = data.alevel2_4 ?? "";
+  document.getElementById("A-Level3_score").value = data.alevel3 ?? "";
+  document.getElementById("A-Level4.1_score").value = data.alevel4_1 ?? "";
+  document.getElementById("A-Level4.2_score").value = data.alevel4_2 ?? "";
+  document.getElementById("A-Level4.3_score").value = data.alevel4_3 ?? "";
+  document.getElementById("A-Level4.4_score").value = data.alevel4_4 ?? "";
+  document.getElementById("A-Level4.5_score").value = data.alevel4_5 ?? "";
+  document.getElementById("A-Level4.6_score").value = data.alevel4_6 ?? "";
+  document.getElementById("A-Level4.7_score").value = data.alevel4_7 ?? "";
+  document.getElementById("A-Level4.8_score").value = data.alevel4_8 ?? "";
+  document.getElementById("A-Level4.9_score").value = data.alevel4_9 ?? "";
+}
   async function sendMessage() {
     document.querySelector("button").disabled = true;
 document.querySelector("button").innerText = "กำลังส่ง...";
