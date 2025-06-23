@@ -172,7 +172,11 @@
 
 
 <script>
-
+  facultyDropdown.addEventListener("change", function () {
+    const selectedText2 = facultyDropdown.options[facultyDropdown.selectedIndex].text;
+    searchInput2.value = selectedText2; // Set input text to the selected university
+    console.log("Selected text:", selectedText2);
+  });
   const dropdown = document.getElementById("dropdown");
   const searchInput = document.getElementById("searchInput");
 
