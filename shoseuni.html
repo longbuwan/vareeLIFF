@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Shose your university</title>
+  <title>Choose your university</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
@@ -64,6 +64,21 @@
       font-size: 1rem;
     }
 
+    /* Style for the dropdown */
+    #dropdown {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #0277bd;
+      border-radius: 8px;
+      font-size: 1rem;
+      background-color: white;
+    }
+
+    #dropdown option {
+      padding: 8px;
+    }
+
     button {
       margin-top: 30px;
       width: 100%;
@@ -81,6 +96,11 @@
       background-color: #01579b;
     }
 
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
     /* Spacing for sections */
     .section {
       margin-bottom: 40px;
@@ -92,6 +112,19 @@
       border-bottom: 2px solid #0288d1;
       padding-bottom: 6px;
     }
+
+    /* Search input styling */
+    #searchInput {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    /* Loading message */
+    .loading {
+      text-align: center;
+      color: #0277bd;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -102,98 +135,166 @@
 
   <form id="scoreForm">
     <h1>ลองจัดเซตอันดับมหาลัย</h1>
-<input type="text" id="searchInput" placeholder="Type to search..." onkeyup="filterFunction()" />
-
-<select id="dropdown" size="5"></select>
+    
+    <label for="searchInput">ค้นหามหาวิทยาลัย:</label>
+    <input type="text" id="searchInput" placeholder="พิมพ์เพื่อค้นหา..." onkeyup="filterFunction()" />
+    
+    <label for="dropdown">เลือกมหาวิทยาลัย:</label>
+    <select id="dropdown" size="8">
+      <option class="loading">กำลังโหลดรายการมหาวิทยาลัย...</option>
+    </select>
 
     <button type="button" onclick="sendMessage()">คำนวณ</button>
   </form>
 
 <script>
-  window.onload = async function () {
-  await liff.init({ liffId: "2007611527-z7ZNLXOk" }); // Replace with your real LIFF ID
-  if (liff.isLoggedIn()) {
-    const profile = await liff.getProfile();
-     const userId = profile.userId;
-    document.getElementById("name").innerText = profile.displayName;
-    document.getElementById("picture").src = profile.pictureUrl;
-
-
-
- async function loadOptions() {
-  try {
-    const response = await fetch("https://varee.onrender.com/api/show-uni", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId }), // assumes 'userId' is defined
-    });
-
-    if (response.ok) {
-      const jsonResponse = await response.json();
-      const options = jsonResponse.data;
-      console.log("Options from API:", options);
-      populateDropdown(options);
-    } else {
-      console.error("Failed to load options: HTTP status", response.status);
-    }
-  } catch (error) {
-    console.error("Network or other error:", error);
-  }
-}
-    
-function populateDropdown(options) {
-  const select = document.getElementById('dropdown');
-  select.innerHTML = '';
-  options.forEach(opt => {
-    const optionElem = document.createElement('option');
-    optionElem.text = opt;
-    select.add(optionElem);
-  });
-}
-
-function filterFunction() {
-  const input = document.getElementById('searchInput');
-  const filter = input.value.toLowerCase();
-  const select = document.getElementById('dropdown');
-  const options = select.options;
-
-  for (let i = 0; i < options.length; i++) {
-    const txtValue = options[i].text.toLowerCase();
-    options[i].style.display = txtValue.includes(filter) ? "" : "none";
-  }
-}
-
-
-
-      
-// Load the dropdown options on page load
-window.onload = loadOptions;
-  } else {
-    liff.login();
-  }
-    $(document).ready(function () {
-  $('#university').select2({
-    placeholder: "ค้นหาวิชาเฉพาะ...",
-    allowClear: true
-  });
-});
-};
-  async function sendMessage() {
-    document.querySelector("button").disabled = true;
-document.querySelector("button").innerText = "กำลังส่ง...";
+  let allOptions = []; // Store all options for filtering
   
-
-    const profile = await liff.getProfile();
-
-    const data = {
-     userId: profile.userId,
-  name: profile.displayName,
- 
-    };
-    // 🟡 POST to your backend
+  async function initializePage() {
     try {
+      await liff.init({ liffId: "2007611527-z7ZNLXOk" }); // Replace with your real LIFF ID
+      
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        const userId = profile.userId;
+        document.getElementById("name").innerText = profile.displayName;
+        document.getElementById("picture").src = profile.pictureUrl;
+
+        // Load university options
+        await loadOptions(userId);
+      } else {
+        liff.login();
+      }
+    } catch (error) {
+      console.error("LIFF initialization failed:", error);
+      // For testing without LIFF, load sample data
+      loadSampleData();
+    }
+  }
+
+  async function loadOptions(userId) {
+    try {
+      console.log("Loading options for userId:", userId);
+      
+      const response = await fetch("https://varee.onrender.com/api/show-uni", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      console.log("Response status:", response.status);
+
+      if (response.ok) {
+        const jsonResponse = await response.json();
+        console.log("Full API response:", jsonResponse);
+        
+        const options = jsonResponse.data;
+        
+        if (Array.isArray(options) && options.length > 0) {
+          console.log("Options from API:", options);
+          allOptions = options;
+          populateDropdown(options);
+        } else {
+          console.warn("No options received or options is not an array:", options);
+          showNoDataMessage();
+        }
+      } else {
+        console.error("Failed to load options: HTTP status", response.status);
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        showErrorMessage();
+      }
+    } catch (error) {
+      console.error("Network or other error:", error);
+      showErrorMessage();
+    }
+  }
+
+  function loadSampleData() {
+    // Sample data for testing
+    const sampleOptions = [
+      "จุฬาลงกรณ์มหาวิทยาลัย",
+      "มหาวิทยาลัยธรรมศาสตร์",
+      "มหาวิทยาลัยเกษตรศาสตร์",
+      "มหาวิทยาลัยมหิดล",
+      "มหาวิทยาลัยศิลปกรรมศาสตร์"
+    ];
+    allOptions = sampleOptions;
+    populateDropdown(sampleOptions);
+  }
+    
+  function populateDropdown(options) {
+    const select = document.getElementById('dropdown');
+    select.innerHTML = '';
+    
+    if (options.length === 0) {
+      const optionElem = document.createElement('option');
+      optionElem.text = 'ไม่พบข้อมูลมหาวิทยาลัย';
+      optionElem.disabled = true;
+      select.add(optionElem);
+      return;
+    }
+    
+    options.forEach(opt => {
+      const optionElem = document.createElement('option');
+      optionElem.value = opt;
+      optionElem.text = opt;
+      select.add(optionElem);
+    });
+    
+    console.log("Dropdown populated with", options.length, "options");
+  }
+
+  function showNoDataMessage() {
+    const select = document.getElementById('dropdown');
+    select.innerHTML = '<option disabled>ไม่พบข้อมูลมหาวิทยาลัย</option>';
+  }
+
+  function showErrorMessage() {
+    const select = document.getElementById('dropdown');
+    select.innerHTML = '<option disabled>เกิดข้อผิดพลาดในการโหลดข้อมูล</option>';
+  }
+
+  function filterFunction() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    
+    if (filter === '') {
+      // Show all options when search is empty
+      populateDropdown(allOptions);
+    } else {
+      // Filter options based on search input
+      const filteredOptions = allOptions.filter(option => 
+        option.toLowerCase().includes(filter)
+      );
+      populateDropdown(filteredOptions);
+    }
+  }
+
+  async function sendMessage() {
+    const dropdown = document.getElementById('dropdown');
+    const selectedUniversity = dropdown.value;
+    
+    if (!selectedUniversity || selectedUniversity === '') {
+      alert('กรุณาเลือกมหาวิทยาลัย');
+      return;
+    }
+    
+    document.querySelector("button").disabled = true;
+    document.querySelector("button").innerText = "กำลังส่ง...";
+
+    try {
+      const profile = await liff.getProfile();
+
+      const data = {
+        userId: profile.userId,
+        name: profile.displayName,
+        selectedUniversity: selectedUniversity
+      };
+
+      // POST to your backend
       const response = await fetch("https://varee.onrender.com/api/save-score", {
         method: "POST",
         headers: {
@@ -205,18 +306,21 @@ document.querySelector("button").innerText = "กำลังส่ง...";
       if (!response.ok) {
         throw new Error("Failed to send data to server");
       }
-    } catch (error) {
-      alert("เกิดข้อผิดพลาดในการส่งข้อมูลไปยังเซิร์ฟเวอร์");
-      console.error(error);
-      return;
-    }
-
-    // 🟢 Send LINE Message (optional)
 
       alert("ข้อมูลถูกส่งไปยังเซิร์ฟเวอร์แล้ว");
       window.location.href = "https://vareepri-longbuwans-projects.vercel.app/shoseuni";
-    
+      
+    } catch (error) {
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูลไปยังเซิร์ฟเวอร์");
+      console.error(error);
+    } finally {
+      document.querySelector("button").disabled = false;
+      document.querySelector("button").innerText = "คำนวณ";
+    }
   }
+
+  // Initialize when page loads
+  window.onload = initializePage;
 </script>
 </body>
 </html>
