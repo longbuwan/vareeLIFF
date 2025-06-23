@@ -172,43 +172,8 @@
 
 
 <script>
-  const dropdown2 = document.getElementById("dropdown2");
-const searchInput2 = document.getElementById("searchInput2");
 
-// เหมือน populateDropdown แต่ใช้กับ dropdown2
-function populateDropdown2(options) {
-  dropdown2.innerHTML = '';
-  if (options.length === 0) {
-    dropdown2.innerHTML = '<option disabled>ไม่พบข้อมูลมหาวิทยาลัย</option>';
-    return;
-  }
-  options.forEach(opt => {
-    const optionElem = document.createElement('option');
-    optionElem.value = opt;
-    optionElem.text = opt;
-    dropdown2.add(optionElem);
-  });
-}
-
-function filterFunction2() {
-  const filter = searchInput2.value.toLowerCase();
-  const filteredOptions = allOptions.filter(option =>
-    option.toLowerCase().includes(filter)
-  );
-  populateDropdown2(filter === '' ? allOptions : filteredOptions);
-}
-
-// เมื่อเลือกจาก dropdown2 ให้ใส่ชื่อมหาวิทยาลัยใน input และโหลดคณะ
-dropdown2.addEventListener("change", () => {
-  const selectedUniversity = dropdown2.value;
-  searchInput2.value = selectedUniversity;
-  loadFaculties(selectedUniversity); // โหลดคณะสำหรับมหาวิทยาลัยนั้น
-});
-
-searchInput2.addEventListener("input", () => {
-  facultyDropdown.innerHTML = '<option>กรุณาเลือกมหาวิทยาลัยก่อน</option>';
-});
-    const dropdown = document.getElementById("dropdown");
+  const dropdown = document.getElementById("dropdown");
   const searchInput = document.getElementById("searchInput");
 
   dropdown.addEventListener("change", function () {
