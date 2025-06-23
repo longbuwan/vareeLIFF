@@ -272,7 +272,7 @@ document.querySelector("button").innerText = "กำลังส่ง...";
     // 🟢 Send LINE Message (optional)
     if (liff.isInClient()) {
       alert("ข้อมูลถูกส่งไปยังเซิร์ฟเวอร์แล้ว");
-      liff.closeWindow();
+      window.location.href = "https://vareepri-longbuwans-projects.vercel.app/shoseuni";
     } else {
       alert("ข้อมูลถูกส่งไปยังเซิร์ฟเวอร์แล้ว แต่คุณไม่ได้อยู่ในแอป LINE");
     }
