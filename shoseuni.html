@@ -326,7 +326,38 @@ dropdown.addEventListener("change", () => {
 searchInput.addEventListener("input", () => {
   facultyDropdown.innerHTML = '<option>กรุณาเลือกมหาวิทยาลัยก่อน</option>';
 });
+function filterFunction2() {
+  const input = document.getElementById('searchInput2');
+  const filter = input.value.toLowerCase();
+  const select = document.getElementById('facultyDropdown');
+  const options = Array.from(select.options);
 
+  // Store original faculty list if not already saved
+  if (!select.dataset.originalOptions) {
+    select.dataset.originalOptions = JSON.stringify(options.map(opt => opt.text));
+  }
+
+  const originalOptions = JSON.parse(select.dataset.originalOptions);
+
+  // Filter faculty options based on search input
+  const filtered = originalOptions.filter(text => text.toLowerCase().includes(filter));
+
+  // Update the dropdown
+  select.innerHTML = '';
+  if (filtered.length === 0) {
+    const noMatchOption = document.createElement('option');
+    noMatchOption.text = 'ไม่พบคณะที่ตรงกับการค้นหา';
+    noMatchOption.disabled = true;
+    select.add(noMatchOption);
+  } else {
+    filtered.forEach(faculty => {
+      const option = document.createElement('option');
+      option.text = faculty;
+      option.value = faculty;
+      select.add(option);
+    });
+  }
+}
 // Update sendMessage to also send faculty
 async function sendMessage() {
   const selectedUniversity = dropdown.value;
