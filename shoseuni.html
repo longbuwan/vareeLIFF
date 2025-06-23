@@ -118,27 +118,26 @@
     document.getElementById("name").innerText = profile.displayName;
     document.getElementById("picture").src = profile.pictureUrl;
     async function loadOptions() {
-  try {
-    const response = await fetch("https://varee.onrender.com/api/show-uni", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId }),
-    });
+ try {
+  const response = await fetch("https://varee.onrender.com/api/show-uni", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ userId }),  // your userId variable
+  });
 
-    if (response.ok) {
-      const options = await response.json(); // expecting an array of strings
-      console.log("Options from API:", options);
-      populateDropdown(options);
-    } else {
-      console.error("Failed to load options: HTTP status", response.status);
-    }
-  } catch (error) {
-    console.error("Network or other error:", error);
+  if (response.ok) {
+    const jsonResponse = await response.json();
+    const options = jsonResponse.data;  // <-- extract the 'data' array here
+    console.log("Options from API:", options);
+    populateDropdown(options);
+  } else {
+    console.error("Failed to load options: HTTP status", response.status);
   }
+} catch (error) {
+  console.error("Network or other error:", error);
 }
-
 function populateDropdown(options) {
   const select = document.getElementById('dropdown');
   select.innerHTML = ''; // clear existing options
