@@ -1,55 +1,165 @@
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Search University & Faculty</title>
+  <title>Test Score Submission</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+  <!-- jQuery (required by Select2) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
   <style>
-    body { font-family: Arial; padding: 20px; }
-    input, select { width: 100%; padding: 10px; margin: 10px 0; }
+    body {
+      background-color:#0288d1;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #0277bd;
+      margin-bottom: 24px;
+    }
+
+    #profile {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #profile img {
+      width: 100px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    form {
+      background: #ffffff;
+      padding: 20px 40px 40px 40px;
+      border-radius: 24px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 80%;
+      max-width: 800px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #01579b;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 90%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #0277bd;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 14px;
+      background-color: #0288d1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #01579b;
+    }
+
+    /* Spacing for sections */
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section h2 {
+      color: #0277bd;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #0288d1;
+      padding-bottom: 6px;
+    }
   </style>
 </head>
 <body>
-  <h2>Search University</h2>
-  <input list="universityList" id="universityInput" placeholder="Type to search universities..." onchange="fetchFaculties()">
-  <datalist id="universityList">
-    <!-- Example static list. Ideally fetched from backend too -->
-    <option value="ABC University">
-    <option value="XYZ University">
-    <option value="123 Tech Institute">
-  </datalist>
+  <div id="profile">
+    <img id="picture" src="" alt="Profile Picture">
+    <h2 id="name">Loading...</h2>
+  </div>
 
-  <h2>Search Faculty</h2>
-  <input list="facultyList" id="facultyInput" placeholder="Select university first">
-  <datalist id="facultyList"></datalist>
+  <form id="scoreForm">
+    <h1>กรอกคะแนน</h1>
 
-  <script>
-    async function fetchFaculties() {
-      const university = document.getElementById("universityInput").value;
-      const facultyList = document.getElementById("facultyList");
-      const facultyInput = document.getElementById("facultyInput");
+    <button type="button" onclick="sendMessage()">ส่งคะแนน</button>
+  </form>
 
-      facultyList.innerHTML = "";
-      facultyInput.placeholder = "Loading...";
+<script>
+  window.onload = async function () {
+  await liff.init({ liffId: "2007611527-z7ZNLXOk" }); // Replace with your real LIFF ID
+  if (liff.isLoggedIn()) {
+    const profile = await liff.getProfile();
+    document.getElementById("name").innerText = profile.displayName;
+    document.getElementById("picture").src = profile.pictureUrl;
+  } else {
+    liff.login();
+  }
+    $(document).ready(function () {
+  $('#university').select2({
+    placeholder: "ค้นหาวิชาเฉพาะ...",
+    allowClear: true
+  });
+});
+};
+  async function sendMessage() {
+    document.querySelector("button").disabled = true;
+document.querySelector("button").innerText = "กำลังส่ง...";
+  
 
-      if (!university) return;
+    const profile = await liff.getProfile();
 
-      try {
-        const res = await fetch(`https://your-api-domain.com/faculties?university=${encodeURIComponent(university)}`);
-        const data = await res.json();
+    const data = {
+     userId: profile.userId,
+  name: profile.displayName,
+ 
+    };
+    // 🟡 POST to your backend
+    try {
+      const response = await fetch("https://varee.onrender.com/api/save-score", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
 
-        facultyList.innerHTML = "";
-        data.faculties.forEach(faculty => {
-          const option = document.createElement("option");
-          option.value = faculty;
-          facultyList.appendChild(option);
-        });
-
-        facultyInput.placeholder = "Type to search faculty...";
-      } catch (error) {
-        facultyInput.placeholder = "Failed to load faculties";
-        console.error("Error fetching faculties:", error);
+      if (!response.ok) {
+        throw new Error("Failed to send data to server");
       }
+    } catch (error) {
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูลไปยังเซิร์ฟเวอร์");
+      console.error(error);
+      return;
     }
-  </script>
+
+    // 🟢 Send LINE Message (optional)
+
+      alert("ข้อมูลถูกส่งไปยังเซิร์ฟเวอร์แล้ว");
+      window.location.href = "https://vareepri-longbuwans-projects.vercel.app/shoseuni";
+    
+  }
+</script>
 </body>
 </html>
