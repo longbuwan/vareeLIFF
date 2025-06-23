@@ -174,13 +174,13 @@
 
 
 <script>
-   const searchInput2s = document.getElementById("searchInput2");
-  const facultyDropdowns = document.getElementById("facultyDropdown");
+   const searchInput2 = document.getElementById("searchInput2");
+  const facultyDropdown = document.getElementById("facultyDropdown");
 
   // Update search input when a faculty is selected
   facultyDropdowns.addEventListener("change", function () {
-    const selectedText2 = facultyDropdowns.options[facultyDropdowns.selectedIndex].text;
-    searchInput2s.value = selectedText2;
+    const selectedText2 = facultyDropdown.options[facultyDropdown.selectedIndex].text;
+    searchInput2.value = selectedText2;
     console.log("Selected faculty:", selectedText2);
   });
 
@@ -274,7 +274,7 @@ async function initializePage() {
     }
   }
 
- const facultyDropdown = document.getElementById("facultyDropdown");
+ 
 
 // Call backend to get faculties based on selected university
 async function loadFaculties(university) {
