@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Choose your university</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -13,168 +12,98 @@
   <!-- Select2 JS -->
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-<style>
-    * {
-      box-sizing: border-box;
-    }
-
+  <style>
     body {
-      background: linear-gradient(135deg, #0288d1 0%, #01579b 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color:#0288d1;
+      font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 20px;
-      margin: 0;
-      min-height: 100vh;
     }
 
     h1 {
-      color: white;
+      color: #0277bd;
       margin-bottom: 24px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      font-size: 1.8rem;
     }
 
     #profile {
       text-align: center;
       margin-bottom: 20px;
-      background: rgba(255,255,255,0.1);
-      padding: 20px;
-      border-radius: 16px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.2);
     }
 
     #profile img {
-      width: 80px;
-      height: 80px;
+      width: 100px;
       border-radius: 50%;
       margin-bottom: 10px;
-      border: 3px solid white;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      object-fit: cover;
-    }
-
-    #profile h2 {
-      color: white;
-      margin: 0;
-      font-size: 1.2rem;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
     form {
       background: #ffffff;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      width: 100%;
+      padding: 20px 40px 40px 40px;
+      border-radius: 24px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 80%;
       max-width: 800px;
-      backdrop-filter: blur(10px);
-    }
-
-    .form-title {
-      text-align: center;
-      color: #0277bd;
-      margin-bottom: 30px;
-      font-size: 1.5rem;
-      font-weight: bold;
     }
 
     label {
       display: block;
-      margin-top: 20px;
-      font-weight: 600;
+      margin-top: 10px;
+      font-weight: bold;
       color: #01579b;
-      margin-bottom: 8px;
-      font-size: 1rem;
     }
 
     input[type="text"],
     input[type="number"] {
-      width: 100%;
-      padding: 12px 16px;
-      margin-bottom: 10px;
-      border: 2px solid #e3f2fd;
-      border-radius: 12px;
+      width: 90%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #0277bd;
+      border-radius: 8px;
       font-size: 1rem;
-      transition: all 0.3s ease;
-      background: #fafafa;
-    }
-
-    input[type="text"]:focus,
-    input[type="number"]:focus {
-      outline: none;
-      border-color: #0288d1;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.1);
     }
 
     /* Style for the dropdown */
-    #dropdown, #dropdown_fu {
+    #dropdown {
       width: 100%;
-      padding: 12px 16px;
-      margin-top: 5px;
-      margin-bottom: 20px;
-      border: 2px solid #e3f2fd;
-      border-radius: 12px;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #0277bd;
+      border-radius: 8px;
       font-size: 1rem;
-      background-color: #fafafa;
-      transition: all 0.3s ease;
-      max-height: 200px;
-      overflow-y: auto;
+      background-color: white;
     }
 
-    #dropdown:focus, #dropdown_fu:focus {
-      outline: none;
-      border-color: #0288d1;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.1);
-    }
-
-    #dropdown option, #dropdown_fu option {
-      padding: 12px;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    #dropdown option:hover, #dropdown_fu option:hover {
-      background-color: #e3f2fd;
+    #dropdown option {
+      padding: 8px;
     }
 
     button {
       margin-top: 30px;
       width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #0288d1 0%, #01579b 100%);
+      padding: 14px;
+      background-color: #0288d1;
       color: white;
       border: none;
-      border-radius: 12px;
+      border-radius: 8px;
       font-size: 18px;
-      font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(2, 136, 209, 0.3);
+      transition: background-color 0.3s ease;
     }
 
     button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(2, 136, 209, 0.4);
-    }
-
-    button:active {
-      transform: translateY(0);
+      background-color: #01579b;
     }
 
     button:disabled {
-      background: linear-gradient(135deg, #ccc 0%, #999 100%);
+      background-color: #ccc;
       cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
     }
 
     /* Spacing for sections */
     .section {
-      margin-bottom: 30px;
+      margin-bottom: 40px;
     }
 
     .section h2 {
@@ -182,7 +111,12 @@
       margin-bottom: 12px;
       border-bottom: 2px solid #0288d1;
       padding-bottom: 6px;
-      font-size: 1.3rem;
+    }
+
+    /* Search input styling */
+    #searchInput {
+      width: 100%;
+      margin-bottom: 10px;
     }
 
     /* Loading message */
@@ -190,240 +124,71 @@
       text-align: center;
       color: #0277bd;
       font-style: italic;
-      padding: 20px;
-    }
-
-    /* Error and success messages */
-    .message {
-      padding: 12px 16px;
-      border-radius: 8px;
-      margin: 10px 0;
-      font-weight: 500;
-    }
-
-    .error {
-      background-color: #ffebee;
-      color: #c62828;
-      border: 1px solid #ef9a9a;
-    }
-
-    .success {
-      background-color: #e8f5e8;
-      color: #2e7d32;
-      border: 1px solid #a5d6a7;
-    }
-
-    /* Responsive design */
-    @media (max-width: 768px) {
-      body {
-        padding: 10px;
-      }
-
-      form {
-        padding: 20px;
-      }
-
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      .form-title {
-        font-size: 1.3rem;
-      }
-    }
-
-    /* Hidden elements */
-    .hidden {
-      display: none;
-    }
-
-    /* Faculty section styling */
-    .faculty-section {
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 2px solid #e3f2fd;
     }
   </style>
 </head>
 <body>
-  <h1>ลองจัดเซตอันดับมหาลัย</h1>
-  
   <div id="profile">
-    <img id="picture" src="" alt="Profile Picture" style="display: none;">
+    <img id="picture" src="" alt="Profile Picture">
     <h2 id="name">Loading...</h2>
   </div>
 
   <form id="scoreForm">
-    <div class="form-title">เลือกมหาวิทยาลัยและคณะ</div>
-    
-    <div id="messageContainer"></div>
+    <h1>ลองจัดเซตอันดับมหาลัย</h1>
     
     <label for="searchInput">ค้นหามหาวิทยาลัย:</label>
-    <input type="text" id="searchInput" placeholder="พิมพ์เพื่อค้นหา..." />
+    <input type="text" id="searchInput" placeholder="พิมพ์เพื่อค้นหา..." onkeyup="filterFunction()" />
     
     <label for="dropdown">เลือกมหาวิทยาลัย:</label>
-    <select id="dropdown" size="6">
+    <select id="dropdown" size="8">
       <option class="loading">กำลังโหลดรายการมหาวิทยาลัย...</option>
     </select>
 
-    <div id="facultySection" class="faculty-section hidden">
-      <label for="dropdown_fu">เลือกคณะ:</label>
-      <select id="dropdown_fu" size="6">
-        <option class="loading">กำลังโหลดรายการคณะ...</option>
-      </select>
-    </div>
-
-    <button type="button" id="submitBtn">คำนวณ</button>
+    <button type="button" onclick="sendMessage()">คำนวณ</button>
   </form>
 
 <script>
-  const dropdown = document.getElementById("dropdown");
-  const dropdownFu = document.getElementById("dropdown_fu");
-  const searchInput = document.getElementById("searchInput");
-  const facultySection = document.getElementById("facultySection");
-  const submitBtn = document.getElementById("submitBtn");
-  const messageContainer = document.getElementById("messageContainer");
-
-  let allOptions = [];
-  let selectedUniversity = '';
-  let selectedFaculty = '';
-
-  // Event listeners
-  searchInput.addEventListener('input', filterFunction);
-  dropdown.addEventListener("change", handleUniversityChange);
-  dropdownFu.addEventListener("change", handleFacultyChange);
-  submitBtn.addEventListener("click", sendMessage);
-
-  async function handleUniversityChange() {
-    const selectedText = dropdown.options[dropdown.selectedIndex]?.text;
-    if (!selectedText || selectedText.includes('กำลังโหลด') || selectedText.includes('ไม่พบข้อมูล')) {
-      return;
-    }
-
-    selectedUniversity = selectedText;
-    searchInput.value = selectedText;
-    showMessage('กำลังโหลดข้อมูลคณะ...', 'loading');
-
-    try {
+  let allOptions = []; // Store all options for filtering
+  
+async function initializePage() {
+  try {
+    await liff.init({ liffId: "2007611527-z7ZNLXOk" }); // Replace with your real LIFF ID
+    
+    if (liff.isLoggedIn()) {
       const profile = await liff.getProfile();
-      const data = {
-        userId: profile.userId,
-        name: profile.displayName,
-        selectedUniversity: selectedText
-      };
-
-      const response = await fetch("https://varee.onrender.com/api/find_faculty", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (!response.ok) throw new Error("Server error");
-
-      const result = await response.json();
-      console.log("Server response:", result);
-
-      populateSecondDropdown(result.faculties || []);
-      facultySection.classList.remove('hidden');
-      clearMessage();
-    } catch (error) {
-      console.error("Error sending university data:", error);
-      showMessage("เกิดข้อผิดพลาดในการโหลดข้อมูลคณะ", 'error');
-    }
-  }
-
-  function handleFacultyChange() {
-    const selectedText = dropdownFu.options[dropdownFu.selectedIndex]?.text;
-    if (selectedText && !selectedText.includes('กำลังโหลด') && !selectedText.includes('ไม่พบข้อมูล')) {
-      selectedFaculty = selectedText;
-    }
-  }
-
-  async function initializePage() {
-    try {
-      await liff.init({ liffId: "2007611527-z7ZNLXOk" });
-      
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile();
-        document.getElementById("name").innerText = profile.displayName;
-        
-        if (profile.pictureUrl) {
-          const pictureElement = document.getElementById("picture");
-          pictureElement.src = profile.pictureUrl;
-          pictureElement.style.display = 'block';
-        }
-        
-        loadUNIData();
-      } else {
-        liff.login();
-      }
-    } catch (error) {
-      console.error("LIFF initialization failed:", error);
-      document.getElementById("name").innerText = "ผู้ใช้งาน";
+      const userId = profile.userId;
+      document.getElementById("name").innerText = profile.displayName;
+      document.getElementById("picture").src = profile.pictureUrl;
       loadUNIData();
+    } else {
+      liff.login();
     }
+  } catch (error) {
+    console.error("LIFF initialization failed:", error);
+    loadUNIData(); // Fallback to sample data if LIFF fails
   }
+}
 
-  function populateSecondDropdown(faculties) {
-    dropdownFu.innerHTML = '';
 
-    if (!faculties || faculties.length === 0) {
-      const optionElem = document.createElement('option');
-      optionElem.text = 'ไม่พบข้อมูลคณะ';
-      optionElem.disabled = true;
-      dropdownFu.add(optionElem);
-      return;
-    }
-
-    faculties.forEach(faculty => {
-      const optionElem = document.createElement('option');
-      optionElem.value = faculty;
-      optionElem.text = faculty;
-      dropdownFu.add(optionElem);
-    });
-
-    console.log("Faculty dropdown populated with", faculties.length, "items");
-  }
+  
 
   function loadUNIData() {
-    const sampleOptions = [
-      'มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย', 'มหาวิทยาลัยเกษมบัณฑิต', 'กลุ่มสถาบันแพทยศาสตร์แห่งประเทศไทย', 
-      'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง', 'มหาวิทยาลัยราชภัฏพิบูลสงคราม', 'มหาวิทยาลัยปทุมธานี', 
-      'มหาวิทยาลัยนครพนม', 'มหาวิทยาลัยเวสเทิร์น', 'มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ', 'ราชวิทยาลัยจุฬาภรณ์', 
-      'มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชชูปถัมภ์', 'สถาบันเทคโนโลยีแห่งสุวรรณภูมิ', 'สถาบันการพยาบาลศรีสวรินทิรา', 
-      'มหาวิทยาลัยกาฬสินธุ์', 'มหาวิทยาลัยธุรกิจบัณฑิตย์', 'มหาวิทยาลัยรามคำแหง', 'มหาวิทยาลัยราชภัฏบ้านสมเด็จเจ้าพระยา', 
-      'มหาวิทยาลัยมหาสารคาม', 'มหาวิทยาลัยเกษตรศาสตร์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลศรีวิชัย', 'มหาวิทยาลัยเนชั่น', 
-      'มหาวิทยาลัยราชภัฏอุบลราชธานี', 'มหาวิทยาลัยราชภัฏชัยภูมิ', 'มหาวิทยาลัยราชภัฏธนบุรี', 'วิทยาลัยดุสิตธานี', 
-      'มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน', 'มหาวิทยาลัยนวมินทราธิราช', 'มหาวิทยาลัยราชภัฏสวนสุนันทา', 
-      'มหาวิทยาลัยเซาธ์อีสท์บางกอก', 'จุฬาลงกรณ์มหาวิทยาลัย', 'มหาวิทยาลัยราชภัฏพระนคร', 'มหาวิทยาลัยหาดใหญ่', 
-      'มหาวิทยาลัยอีสเทิร์นเอเชีย', 'มหาวิทยาลัยเทคโนโลยีสุรนารี', 'มหาวิทยาลัยสงขลานครินทร์', 'มหาวิทยาลัยอุบลราชธานี', 
-      'มหาวิทยาลัยมหิดล', 'มหาวิทยาลัยเทคโนโลยีราชมงคลตะวันออก', 'มหาวิทยาลัยนานาชาติเอเชีย-แปซิฟิก', 
-      'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี', 'มหาวิทยาลัยบูรพา', 'มหาวิทยาลัยทักษิณ', 'มหาวิทยาลัยขอนแก่น', 
-      'มหาวิทยาลัยแม่โจ้', 'มหาวิทยาลัยราชภัฏเชียงใหม่', 'มหาวิทยาลัยศรีนครินทรวิโรฒ', 'สถาบันพระบรมราชชนก', 
-      'มหาวิทยาลัยราชธานี', 'มหาวิทยาลัยศิลปากร', 'มหาวิทยาลัยศรีปทุม', 'มหาวิทยาลัยธรรมศาสตร์', 'วิทยาลัยเซนต์หลุยส์', 
-      'มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี', 'มหาวิทยาลัยรังสิต', 'มหาวิทยาลัยวลัยลักษณ์', 'มหาวิทยาลัยแม่ฟ้าหลวง', 
-      'มหาวิทยาลัยสวนดุสิต', 'มหาวิทยาลัยพะเยา', 'มหาวิทยาลัยราชภัฏเพชรบุรี', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ', 
-      'มหาวิทยาลัยเทคโนโลยีราชมงคลรัตนโกสินทร์', 'มหาวิทยาลัยนราธิวาสราชนครินทร์', 'มหาวิทยาลัยราชภัฏจันทรเกษม', 
-      'มหาวิทยาลัยเชียงใหม่', 'วิทยาลัยนครราชสีมา', 'มหาวิทยาลัยเทคโนโลยีมหานคร', 'มหาวิทยาลัยหอการค้าไทย', 
-      'มหาวิทยาลัยนเรศวร', 'สถาบันเทคโนโลยีจิตรลดา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลกรุงเทพ', 'สถาบันการจัดการปัญญาภิวัฒน์', 
-      'มหาวิทยาลัยสยาม', 'มหาวิทยาลัยราชภัฏสงขลา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร', 'วิทยาลัยนอร์ทเทิร์น', 
-      'มหาวิทยาลัยมหามกุฏราชวิทยาลัย', 'มหาวิทยาลัยราชภัฏนครราชสีมา'
+    // Sample data for testing
+    const sampleOptions = ['มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย', 'มหาวิทยาลัยเกษมบัณฑิต', 'กลุ่มสถาบันแพทยศาสตร์แห่งประเทศไทย', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง', 'มหาวิทยาลัยราชภัฏพิบูลสงคราม', 'มหาวิทยาลัยปทุมธานี', 'มหาวิทยาลัยนครพนม', 'มหาวิทยาลัยเวสเทิร์น', 'มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ', 'ราชวิทยาลัยจุฬาภรณ์', 'มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชชูปถัมภ์', 'สถาบันเทคโนโลยีแห่งสุวรรณภูมิ', 'สถาบันการพยาบาลศรีสวรินทิรา', 'มหาวิทยาลัยกาฬสินธุ์', 'มหาวิทยาลัยธุรกิจบัณฑิตย์', 'มหาวิทยาลัยรามคำแหง', 'มหาวิทยาลัยราชภัฏบ้านสมเด็จเจ้าพระยา', 'มหาาวิทยาลัยมหาสารคาม', 'มหาวิทยาลัยเกษตรศาสตร์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลศรีวิชัย', 'มหาวิทยาลัยเนชั่น', 'มหาวิทยาลัยราชภัฏอุบลราชธานี', 'มหาวิทยาลัยราชภัฏชัยภูมิ', 'มหาวิทยาลัยราชภัฏธนบุรี', 'วิทยาลัยดุสิตธานี', 'มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน', 'มหาวิทยาลัยนวมินทราธิราช', 'มหาวิทยาลัยราชภัฏสวนสุนันทา', 'มหาวิทยาลัยเซาธ์อีสท์บางกอก', 'จุฬาลงกรณ์มหาวิทยาลัย', 'มหาวิทยาลัยราชภัฏพระนคร', 'มหาวิทยาลัยหาดใหญ่', 'มหาวิทยาลัยอีสเทิร์นเอเชีย', 'มหาวิทยาลัยเทคโนโลยีสุรนารี', 'มหาวิทยาลัยสงขลานครินทร์', 'มหาวิทยาลัยอุบลราชธานี', 'มหาวิทยาลัยมหิดล', 'มหาวิทยาลัยเทคโนโลยีราชมงคลตะวันออก', 'มหาวิทยาลัยนานาชาติเอเชีย-แปซิฟิก', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี', 'มหาวิทยาลัยบูรพา', 'มหาวิทยาลัยทักษิณ', 'มหาวิทยาลัยขอนแก่น', 'มหาวิทยาลัยแม่โจ้', 'มหาวิทยาลัยราชภัฏเชียงใหม่', 'มหาวิทยาลัยศรีนครินทรวิโรฒ', 'สถาบันพระบรมราชชนก', 'มหาวิทยาลัยราชธานี', 'มหาวิทยาลัยศิลปากร', 'มหาวิทยาลัยศรีปทุม', 'มหาวิทยาลัยธรรมศาสตร์', 'วิทยาลัยเซนต์หลุยส์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี', 'มหาวิทยาลัยรังสิต', 'มหาวิทยาลัยวลัยลักษณ์', 'มหาวิทยาลัยแม่ฟ้าหลวง', 'มหาวิทยาลัยสวนดุสิต', 'มหาวิทยาลัยพะเยา', 'มหาวิทยาลัยราชภัฏเพชรบุรี', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ', 'มหาวิทยาลัยเทคโนโลยีราชมงคลรัตนโกสินทร์', 'มหาวิทยาลัยนราธิวาสราชนครินทร์', 'มหาวิทยาลัยราชภัฏจันทรเกษม', 'มหาวิทยาลัยเชียงใหม่', 'วิทยาลัยนครราชสีมา', 'มหาวิทยาลัยเทคโนโลยีมหานคร', 'มหาวิทยาลัยหอการค้าไทย', 'มหาวิทยาลัยนเรศวร', 'สถาบันเทคโนโลยีจิตรลดา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลกรุงเทพ', 'สถาบันการจัดการปัญญาภิวัฒน์', 'มหาวิทยาลัยสยาม', 'มหาวิทยาลัยราชภัฏสงขลา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร', 'วิทยาลัยนอร์ทเทิร์น', 'มหาวิทยาลัยมหามกุฏราชวิทยาลัย', 'มหาวิทยาลัยราชภัฏนครราชสีมา'
     ];
-    
-    allOptions = sampleOptions.sort();
-    populateDropdown(allOptions);
+    allOptions = sampleOptions;
+    populateDropdown(sampleOptions);
   }
     
   function populateDropdown(options) {
-    dropdown.innerHTML = '';
+    const select = document.getElementById('dropdown');
+    select.innerHTML = '';
     
     if (options.length === 0) {
       const optionElem = document.createElement('option');
       optionElem.text = 'ไม่พบข้อมูลมหาวิทยาลัย';
       optionElem.disabled = true;
-      dropdown.add(optionElem);
+      select.add(optionElem);
       return;
     }
     
@@ -431,18 +196,31 @@
       const optionElem = document.createElement('option');
       optionElem.value = opt;
       optionElem.text = opt;
-      dropdown.add(optionElem);
+      select.add(optionElem);
     });
     
     console.log("Dropdown populated with", options.length, "options");
   }
 
+  function showNoDataMessage() {
+    const select = document.getElementById('dropdown');
+    select.innerHTML = '<option disabled>ไม่พบข้อมูลมหาวิทยาลัย</option>';
+  }
+
+  function showErrorMessage() {
+    const select = document.getElementById('dropdown');
+    select.innerHTML = '<option disabled>เกิดข้อผิดพลาดในการโหลดข้อมูล</option>';
+  }
+
   function filterFunction() {
-    const filter = searchInput.value.toLowerCase().trim();
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
     
     if (filter === '') {
+      // Show all options when search is empty
       populateDropdown(allOptions);
     } else {
+      // Filter options based on search input
       const filteredOptions = allOptions.filter(option => 
         option.toLowerCase().includes(filter)
       );
@@ -450,28 +228,17 @@
     }
   }
 
-  function showMessage(message, type = 'info') {
-    messageContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
-  }
-
-  function clearMessage() {
-    messageContainer.innerHTML = '';
-  }
-
   async function sendMessage() {
-    if (!selectedUniversity) {
-      showMessage('กรุณาเลือกมหาวิทยาลัย', 'error');
-      return;
-    }
-
-    if (!selectedFaculty) {
-      showMessage('กรุณาเลือกคณะ', 'error');
+    const dropdown = document.getElementById('dropdown');
+    const selectedUniversity = dropdown.value;
+    
+    if (!selectedUniversity || selectedUniversity === '') {
+      alert('กรุณาเลือกมหาวิทยาลัย');
       return;
     }
     
-    submitBtn.disabled = true;
-    submitBtn.innerText = "กำลังส่ง...";
-    showMessage('กำลังประมวลผลข้อมูล...', 'loading');
+    document.querySelector("button").disabled = true;
+    document.querySelector("button").innerText = "กำลังส่ง...";
 
     try {
       const profile = await liff.getProfile();
@@ -479,11 +246,11 @@
       const data = {
         userId: profile.userId,
         name: profile.displayName,
-        selectedUniversity: selectedUniversity,
-        selectedFaculty: selectedFaculty
+        selectedUniversity: selectedUniversity
       };
 
-      const response = await fetch("https://varee.onrender.com/api/calculate", {
+      // POST to your backend
+      const response = await fetch("https://varee.onrender.com/api/save-score", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -495,25 +262,20 @@
         throw new Error("Failed to send data to server");
       }
 
-      const result = await response.json();
-      showMessage('ส่งข้อมูลสำเร็จ!', 'success');
-      
-      // Close LIFF window after successful submission
-      setTimeout(() => {
-        liff.closeWindow();
-      }, 2000);
+      alert("ข้อมูลถูกส่งไปยังเซิร์ฟเวอร์แล้ว");
+      window.location.href = "https://vareepri-longbuwans-projects.vercel.app/shoseuni";
       
     } catch (error) {
-      showMessage("เกิดข้อผิดพลาดในการส่งข้อมูลไปยังเซิร์ฟเวอร์", 'error');
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูลไปยังเซิร์ฟเวอร์");
       console.error(error);
     } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerText = "คำนวณ";
+      document.querySelector("button").disabled = false;
+      document.querySelector("button").innerText = "คำนวณ";
     }
   }
 
   // Initialize when page loads
-  window.addEventListener('load', initializePage);
+  window.onload = initializePage;
 </script>
 </body>
 </html>
