@@ -199,7 +199,7 @@
   const facultyDropdown = document.getElementById("facultyDropdown");
 
   // Update search input when a faculty is selected
-  facultyDropdowns.addEventListener("change", function () {
+  facultyDropdown.addEventListener("change", function () {
     const selectedText2 = facultyDropdown.options[facultyDropdown.selectedIndex].text;
     searchInput2.value = selectedText2;
     console.log("Selected faculty:", selectedText2);
