@@ -199,7 +199,7 @@
     if (response.ok) {
       const userData = await response.json();
       console.log("User data:", userData);
-      fillForm(userData);  // Fill form inputs with user data
+      fillForm(userData.data);  // Fill form inputs with user data
     } else {
       alert("Failed to load user data");
     }
