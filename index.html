@@ -187,6 +187,16 @@
     const profile = await liff.getProfile();
     document.getElementById("name").innerText = profile.displayName;
     document.getElementById("picture").src = profile.pictureUrl;
+    const response = await fetch("https://varee.onrender.com/api/load-score", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const userData = await response.json();
+      console.log("User data:", userData);
   } else {
     liff.login();
   }
@@ -276,5 +286,6 @@ document.querySelector("button").innerText = "กำลังส่ง...";
     
   }
 </script>
+  
 </body>
 </html>
