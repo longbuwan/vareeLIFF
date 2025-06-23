@@ -158,11 +158,10 @@
   const searchInput = document.getElementById("searchInput");
 
 
-  
+
  dropdown.addEventListener("change", async function () {
   const selectedText = dropdown.options[dropdown.selectedIndex].text;
-  searchInput.value = selectedText; // Update input to show selected university
-  console.log("Selected text:", selectedText);
+  searchInput.value = selectedText;
 
   try {
     const profile = await liff.getProfile();
@@ -180,16 +179,12 @@
       body: JSON.stringify(data)
     });
 
-    if (!response.ok) {
-      throw new Error("Server error");
-    }
+    if (!response.ok) throw new Error("Server error");
 
     const result = await response.json();
     console.log("Server response:", result);
 
-    // Optional: Populate second dropdown here (if that's what you're planning)
-    // populateSecondDropdown(result.faculties || []);
-
+    populateSecondDropdown(result.faculties || []);
   } catch (error) {
     console.error("Error sending university data:", error);
     alert("เกิดข้อผิดพลาดในการส่งข้อมูลไปยังเซิร์ฟเวอร์");
@@ -219,7 +214,27 @@ async function initializePage() {
 }
 
 
-  
+  function populateSecondDropdown(faculties) {
+  const select = document.getElementById("dropdown_fu");
+  select.innerHTML = '';
+
+  if (!faculties || faculties.length === 0) {
+    const optionElem = document.createElement('option');
+    optionElem.text = 'ไม่พบข้อมูลคณะ';
+    optionElem.disabled = true;
+    select.add(optionElem);
+    return;
+  }
+
+  faculties.forEach(faculty => {
+    const optionElem = document.createElement('option');
+    optionElem.value = faculty;
+    optionElem.text = faculty;
+    select.add(optionElem);
+  });
+
+  console.log("Faculty dropdown populated with", faculties.length, "items");
+}
 
   function loadUNIData() {
     // Sample data for testing
