@@ -1,1 +1,55 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Search University & Faculty</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, select { width: 100%; padding: 10px; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <h2>Search University</h2>
+  <input list="universityList" id="universityInput" placeholder="Type to search universities..." onchange="fetchFaculties()">
+  <datalist id="universityList">
+    <!-- Example static list. Ideally fetched from backend too -->
+    <option value="ABC University">
+    <option value="XYZ University">
+    <option value="123 Tech Institute">
+  </datalist>
 
+  <h2>Search Faculty</h2>
+  <input list="facultyList" id="facultyInput" placeholder="Select university first">
+  <datalist id="facultyList"></datalist>
+
+  <script>
+    async function fetchFaculties() {
+      const university = document.getElementById("universityInput").value;
+      const facultyList = document.getElementById("facultyList");
+      const facultyInput = document.getElementById("facultyInput");
+
+      facultyList.innerHTML = "";
+      facultyInput.placeholder = "Loading...";
+
+      if (!university) return;
+
+      try {
+        const res = await fetch(`https://your-api-domain.com/faculties?university=${encodeURIComponent(university)}`);
+        const data = await res.json();
+
+        facultyList.innerHTML = "";
+        data.faculties.forEach(faculty => {
+          const option = document.createElement("option");
+          option.value = faculty;
+          facultyList.appendChild(option);
+        });
+
+        facultyInput.placeholder = "Type to search faculty...";
+      } catch (error) {
+        facultyInput.placeholder = "Failed to load faculties";
+        console.error("Error fetching faculties:", error);
+      }
+    }
+  </script>
+</body>
+</html>
