@@ -150,7 +150,7 @@
 <script>
   let allOptions = []; // Store all options for filtering
   
-async function initializePage() {
+window.onload = async function initializePage() {
   try {
     await liff.init({ liffId: "2007611527-z7ZNLXOk" }); // Replace with your real LIFF ID
     
