@@ -241,114 +241,50 @@ async function initializePage() {
     }
   }
 
- const facultyDropdown = document.getElementById("facultyDropdown");
-
-// Call backend to get faculties based on selected university
-async function loadFaculties(university) {
-  if (!university) {
-    facultyDropdown.innerHTML = '<option>กรุณาเลือกมหาวิทยาลัยก่อน</option>';
-    return;
-  }
-
-  try {
-    facultyDropdown.innerHTML = '<option>กำลังโหลดข้อมูลคณะ...</option>';
-
-    // Prepare data to send
-    const data = { name: university };
-
-    const response = await fetch("https://varee.onrender.com/api/find_faculty", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
-
-    if (!response.ok) throw new Error("Failed to fetch faculties");
-
-    const result = await response.json();
-    const faculties = result.faculties || [];
-
-    if (faculties.length === 0) {
-      facultyDropdown.innerHTML = '<option disabled>ไม่พบข้อมูลคณะ</option>';
+  async function sendMessage() {
+    const dropdown = document.getElementById('dropdown');
+    const selectedUniversity = dropdown.value;
+    
+    if (!selectedUniversity || selectedUniversity === '') {
+      alert('กรุณาเลือกมหาวิทยาลัย');
       return;
     }
+    
+    document.querySelector("button").disabled = true;
+    document.querySelector("button").innerText = "กำลังส่ง...";
 
-    // Populate faculty dropdown
-    facultyDropdown.innerHTML = '';
-    faculties.forEach(faculty => {
-      const optionElem = document.createElement('option');
-      optionElem.value = faculty;
-      optionElem.text = faculty;
-      facultyDropdown.add(optionElem);
-    });
-  } catch (error) {
-    console.error("Error loading faculties:", error);
-    facultyDropdown.innerHTML = '<option disabled>เกิดข้อผิดพลาดในการโหลดข้อมูลคณะ</option>';
-  }
-}
+    try {
+      const profile = await liff.getProfile();
 
-// When university dropdown changes, load faculties
-dropdown.addEventListener("change", () => {
-  const selectedUniversity = dropdown.value;
-  searchInput.value = selectedUniversity; // Keep input in sync
-  loadFaculties(selectedUniversity);
-});
+      const data = {
+        userId: profile.userId,
+        name: profile.displayName,
+        selectedUniversity: selectedUniversity
+      };
 
-// Also when search input changes and filters the dropdown, clear faculty dropdown
-searchInput.addEventListener("input", () => {
-  facultyDropdown.innerHTML = '<option>กรุณาเลือกมหาวิทยาลัยก่อน</option>';
-});
+      // POST to your backend
+      const response = await fetch("https://varee.onrender.com/api/find_faculty", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
 
-// Update sendMessage to also send faculty
-async function sendMessage() {
-  const selectedUniversity = dropdown.value;
-  const selectedFaculty = facultyDropdown.value;
+      if (!response.ok) {
+        throw new Error("Failed to send data to server");
+      }
 
-  if (!selectedUniversity || selectedUniversity === '') {
-    alert('กรุณาเลือกมหาวิทยาลัย');
-    return;
-  }
-  if (!selectedFaculty || selectedFaculty === '') {
-    alert('กรุณาเลือกคณะ');
-    return;
-  }
-
-  document.querySelector("button").disabled = true;
-  document.querySelector("button").innerText = "กำลังส่ง...";
-
-  try {
-    const profile = await liff.getProfile();
-
-    const data = {
-      userId: profile.userId,
-      name: profile.displayName,
-      selectedUniversity: selectedUniversity,
-      selectedFaculty: selectedFaculty
-    };
-
-    const response = await fetch("https://varee.onrender.com/api/find_faculty", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to send data to server");
+      alert("ข้อมูลถูกส่งไปยังเซิร์ฟเวอร์แล้ว");
+      window.location.href = "https://vareepri-longbuwans-projects.vercel.app/shoseuni";
+      
+    } catch (error) {
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูลไปยังเซิร์ฟเวอร์");
+      console.error(error);
+    } finally {
+      document.querySelector("button").disabled = false;
+      document.querySelector("button").innerText = "คำนวณ";
     }
-
-    alert("ข้อมูลถูกส่งไปยังเซิร์ฟเวอร์แล้ว");
-    window.location.href = "https://vareepri-longbuwans-projects.vercel.app/shoseuni";
-
-  } catch (error) {
-    alert("เกิดข้อผิดพลาดในการส่งข้อมูลไปยังเซิร์ฟเวอร์");
-    console.error(error);
-  } finally {
-    document.querySelector("button").disabled = false;
-    document.querySelector("button").innerText = "คำนวณ";
-  }
   }
 //test
   // Initialize when page loads
