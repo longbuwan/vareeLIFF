@@ -117,30 +117,35 @@
      const userId = profile.userId;
     document.getElementById("name").innerText = profile.displayName;
     document.getElementById("picture").src = profile.pictureUrl;
-    async function loadOptions() {
- try {
-  const response = await fetch("https://varee.onrender.com/api/show-uni", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ userId }),  // your userId variable
-  });
 
-  if (response.ok) {
-    const jsonResponse = await response.json();
-    const options = jsonResponse.data;  // <-- extract the 'data' array here
-    console.log("Options from API:", options);
-    populateDropdown(options);
-  } else {
-    console.error("Failed to load options: HTTP status", response.status);
+
+
+ async function loadOptions() {
+  try {
+    const response = await fetch("https://varee.onrender.com/api/show-uni", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId }), // assumes 'userId' is defined
+    });
+
+    if (response.ok) {
+      const jsonResponse = await response.json();
+      const options = jsonResponse.data;
+      console.log("Options from API:", options);
+      populateDropdown(options);
+    } else {
+      console.error("Failed to load options: HTTP status", response.status);
+    }
+  } catch (error) {
+    console.error("Network or other error:", error);
   }
-} catch (error) {
-  console.error("Network or other error:", error);
 }
+    
 function populateDropdown(options) {
   const select = document.getElementById('dropdown');
-  select.innerHTML = ''; // clear existing options
+  select.innerHTML = '';
   options.forEach(opt => {
     const optionElem = document.createElement('option');
     optionElem.text = opt;
@@ -156,10 +161,13 @@ function filterFunction() {
 
   for (let i = 0; i < options.length; i++) {
     const txtValue = options[i].text.toLowerCase();
-    options[i].style.display = (txtValue.indexOf(filter) > -1) ? "" : "none";
+    options[i].style.display = txtValue.includes(filter) ? "" : "none";
   }
 }
 
+
+
+      
 // Load the dropdown options on page load
 window.onload = loadOptions;
   } else {
