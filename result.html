@@ -1,1 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Results Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
+        body {
+            background: linear-gradient(135deg, #0288d1 0%, #01579b 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header p {
+            margin: 8px 0 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .university-card {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #0288d1, #0277bd);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .university-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .card-number {
+            background: rgba(255,255,255,0.2);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .results-table thead {
+            background: #f8faff;
+        }
+
+        .results-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #01579b;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #e3f2fd;
+        }
+
+        .results-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+
+        .results-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .results-table tbody tr:hover {
+            background-color: #f8faff;
+        }
+
+        .student-id {
+            font-weight: 600;
+            color: #01579b;
+        }
+
+        .grade {
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .grade-a { 
+            background: #e8f5e8; 
+            color: #388e3c; 
+            border: 1px solid #c8e6c9;
+        }
+        .grade-b { 
+            background: #e3f2fd; 
+            color: #0288d1; 
+            border: 1px solid #bbdefb;
+        }
+        .grade-c { 
+            background: #fff8e1; 
+            color: #f57c00; 
+            border: 1px solid #ffecb3;
+        }
+        .grade-d { 
+            background: #fce4ec; 
+            color: #c2185b; 
+            border: 1px solid #f8bbd9;
+        }
+        .grade-f { 
+            background: #ffebee; 
+            color: #d32f2f; 
+            border: 1px solid #ffcdd2;
+        }
+
+        .stats-row {
+            background: rgba(2, 136, 209, 0.05);
+            font-weight: 600;
+            border-top: 2px solid #0288d1;
+        }
+
+        .stats-row td {
+            padding: 16px;
+            color: #01579b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            font-style: italic;
+            background: #f8faff;
+            border-radius: 12px;
+            border: 2px dashed #e3f2fd;
+        }
+
+        .overview-header {
+            color: #01579b;
+            margin-bottom: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .summary-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            color: white;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .summary-label {
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .summary-value {
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 30px;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 5px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .card-body {
+                padding: 16px;
+            }
+            
+            .results-table {
+                font-size: 0.85rem;
+            }
+            
+            .results-table th,
+            .results-table td {
+                padding: 10px 8px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .table-container {
+                border-radius: 12px;
+                overflow: hidden;
+                border: 2px solid #e3f2fd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>University Results Dashboard</h1>
+            <p>Academic Performance Overview</p>
+        </div>
+
+        <!-- UNIVERSITY 1 - EASY TO CUSTOMIZE -->
+        <div class="university-card">
+            <div class="card-header">
+                <div>
+                    <h3>Harvard University</h3>
+                    <div class="university-info">Computer Science Department - Fall 2024</div>
+                </div>
+                <div class="card-number">1</div>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Course</th>
+                                <th>Grade</th>
+                                <th>Credits</th>
+                                <th>GPA</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sample data - replace with your data -->
+                            <tr>
+                                <td class="student-id">HU001</td>
+                                <td>John Smith</td>
+                                <td>Data Structures</td>
+                                <td><span class="grade grade-a">A</span></td>
+                                <td>3</td>
+                                <td>3.8</td>
+                                <td>Passed</td>
+                            </tr>
+                            <tr>
+                                <td class="student-id">HU002</td>
+                                <td>Jane Doe</td>
+                                <td>Algorithms</td>
+                                <td><span class="grade grade-b">B+</span></td>
+                                <td>4</td>
+                                <td>3.6</td>
+                                <td>Passed</td>
+                            </tr>
+                            <tr>
+                                <td class="student-id">HU003</td>
+                                <td>Mike Johnson</td>
+                                <td>Database Systems</td>
+                                <td><span class="grade grade-a">A-</span></td>
+                                <td>3</td>
+                                <td>3.9</td>
+                                <td>Passed</td>
+                            </tr>
+                            <tr>
+                                <td class="student-id">HU004</td>
+                                <td>Emily Davis</td>
+                                <td>Web Development</td>
+                                <td><span class="grade grade-b">B</span></td>
+                                <td>3</td>
+                                <td>3.2</td>
+                                <td>Passed</td>
+                            </tr>
+                            <!-- Statistics row -->
+                            <tr class="stats-row">
+                                <td colspan="3"><strong>Department Statistics</strong></td>
+                                <td><strong>Avg: B+</strong></td>
+                                <td><strong>Total: 13</strong></td>
+                                <td><strong>3.62</strong></td>
+                                <td><strong>100% Pass</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="summary-section">
+                    <div class="summary-item">
+                        <span class="summary-label">Total Students:</span>
+                        <span class="summary-value">4</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Average GPA:</span>
+                        <span class="summary-value">3.62</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Pass Rate:</span>
+                        <span class="summary-value">100%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- UNIVERSITY 2 - EASY TO CUSTOMIZE -->
+        <div class="university-card">
+            <div class="card-header">
+                <div>
+                    <h3>Stanford University</h3>
+                    <div class="university-info">Engineering Department - Fall 2024</div>
+                </div>
+                <div class="card-number">2</div>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Course</th>
+                                <th>Grade</th>
+                                <th>Credits</th>
+                                <th>GPA</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sample data - replace with your data -->
+                            <tr>
+                                <td class="student-id">SU001</td>
+                                <td>Sarah Wilson</td>
+                                <td>Machine Learning</td>
+                                <td><span class="grade grade-a">A</span></td>
+                                <td>4</td>
+                                <td>4.0</td>
+                                <td>Passed</td>
+                            </tr>
+                            <tr>
+                                <td class="student-id">SU002</td>
+                                <td>David Lee</td>
+                                <td>Software Engineering</td>
+                                <td><span class="grade grade-b">B</span></td>
+                                <td>3</td>
+                                <td>3.4</td>
+                                <td>Passed</td>
+                            </tr>
+                            <tr>
+                                <td class="student-id">SU003</td>
+                                <td>Alex Chen</td>
+                                <td>Computer Vision</td>
+                                <td><span class="grade grade-a">A-</span></td>
+                                <td>4</td>
+                                <td>3.7</td>
+                                <td>Passed</td>
+                            </tr>
+                            <!-- Statistics row -->
+                            <tr class="stats-row">
+                                <td colspan="3"><strong>Department Statistics</strong></td>
+                                <td><strong>Avg: B+</strong></td>
+                                <td><strong>Total: 11</strong></td>
+                                <td><strong>3.70</strong></td>
+                                <td><strong>100% Pass</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="summary-section">
+                    <div class="summary-item">
+                        <span class="summary-label">Total Students:</span>
+                        <span class="summary-value">3</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Average GPA:</span>
+                        <span class="summary-value">3.70</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Pass Rate:</span>
+                        <span class="summary-value">100%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- UNIVERSITY 3 - EMPTY TEMPLATE FOR EASY ADDITION -->
+        <div class="university-card">
+            <div class="card-header">
+                <div>
+                    <h3>MIT</h3>
+                    <div class="university-info">Mathematics Department - Fall 2024</div>
+                </div>
+                <div class="card-number">3</div>
+            </div>
+            <div class="card-body">
+                <div class="empty-state">
+                    <p>No results available yet. Data will be populated here.</p>
+                </div>
+                <!-- 
+                TEMPLATE FOR NEW TABLE - Uncomment and customize:
+                <div class="table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Course</th>
+                                <th>Grade</th>
+                                <th>Credits</th>
+                                <th>GPA</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Add your rows here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="summary-section">
+                    <div class="summary-item">
+                        <span class="summary-label">Total Students:</span>
+                        <span class="summary-value">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Average GPA:</span>
+                        <span class="summary-value">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Pass Rate:</span>
+                        <span class="summary-value">-</span>
+                    </div>
+                </div>
+                -->
+            </div>
+        </div>
+
+        <!-- ADD MORE UNIVERSITIES HERE - COPY THE SECTION ABOVE -->
+        <!-- 
+        TEMPLATE FOR NEW UNIVERSITY:
+        <div class="university-card">
+            <div class="card-header">
+                <div>
+                    <h3>University Name</h3>
+                    <div class="university-info">Department - Semester Year</div>
+                </div>
+                <div class="card-number">4</div>
+            </div>
+            <div class="card-body">
+                [Add table and summary section here]
+            </div>
+        </div>
+        -->
+
+        <div class="footer">
+            <p>&copy; 2024 University Results Dashboard. Last updated: June 25, 2025</p>
+        </div>
+    </div>
+
+    <script>
+        // Optional: Add any interactive functionality here
+        console.log('University Results Dashboard loaded successfully');
+        
+        // Example function to highlight a specific student
+        function highlightStudent(studentId) {
+            const rows = document.querySelectorAll('.results-table tbody tr');
+            rows.forEach(row => {
+                const id = row.querySelector('.student-id');
+                if (id && id.textContent === studentId) {
+                    row.style.backgroundColor = '#e3f2fd';
+                    row.style.border = '2px solid #0288d1';
+                }
+            });
+        }
+        
+        // Example function to add new student row
+        function addStudentRow(tableIndex, studentData) {
+            const tables = document.querySelectorAll('.results-table tbody');
+            if (tables[tableIndex]) {
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td class="student-id">${studentData.id}</td>
+                    <td>${studentData.name}</td>
+                    <td>${studentData.course}</td>
+                    <td><span class="grade grade-${studentData.gradeClass}">${studentData.grade}</span></td>
+                    <td>${studentData.credits}</td>
+                    <td>${studentData.gpa}</td>
+                    <td>${studentData.status}</td>
+                `;
+                tables[tableIndex].appendChild(newRow);
+            }
+        }
+
+        // Example function to update university statistics
+        function updateUniversityStats(cardIndex, stats) {
+            const cards = document.querySelectorAll('.university-card');
+            if (cards[cardIndex]) {
+                const summaryItems = cards[cardIndex].querySelectorAll('.summary-value');
+                if (summaryItems.length >= 3) {
+                    summaryItems[0].textContent = stats.totalStudents;
+                    summaryItems[1].textContent = stats.averageGPA;
+                    summaryItems[2].textContent = stats.passRate;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
