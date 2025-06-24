@@ -364,12 +364,12 @@ async function loadfield(university,faculty) {
   }
 
   try {
-    facultyDropdown.innerHTML = '<option>กำลังโหลดข้อมูลคณะ...</option>';
+    facultyDropdown.innerHTML = '<option>กำลังโหลดข้อมูลหลักสูตร...</option>';
 
     const data = { name: university, faculty: faculty};
     console.log("Sending data to backend:", data);
 
-    const response = await fetch("https://varee.onrender.com/api/find_field", {
+    const response2 = await fetch("https://varee.onrender.com/api/find_field", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -377,16 +377,16 @@ async function loadfield(university,faculty) {
       body: JSON.stringify(data)
     });
 
-    console.log("Response status:", response.status);
+    console.log("Response2 status:", response2.status);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Backend error response:", errorText);
+    if (!response2.ok) {
+      const errorText = await response2.text();
+      console.error("Backend error response2:", errorText);
       throw new Error("Failed to fetch faculties");
     }
 
-    const result2 = await response.json();
-    console.log("Response JSON:", result);
+    const result2 = await response2.json();
+    console.log("Response2 JSON:", result2);
 
     const fields = result2.faculties || [];
 
@@ -397,10 +397,10 @@ async function loadfield(university,faculty) {
 
     fieldDropdown.innerHTML = '';
     fields.forEach(field => {
-      const optionElems = document.createElement('option');
-      optionElems.value = field;
-      optionElems.text = field;
-      fieldDropdown.add(optionElems);
+      const optionElems2 = document.createElement('option');
+      optionElems2.value = field;
+      optionElems2.text = field;
+      fieldDropdown.add(optionElems2);
     });
   } catch (error) {
     console.error("Error loading faculties:", error);
