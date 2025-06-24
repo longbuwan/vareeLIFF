@@ -2,243 +2,474 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Choose your university</title>
+  <title>Choose your universities</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-  <!-- jQuery (required by Select2) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-  <!-- Select2 JS -->
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+  
   <style>
-    body {
-      background-color:#0288d1;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
+    * {
+      box-sizing: border-box;
     }
 
-    h1 {
-      color: #0277bd;
-      margin-bottom: 24px;
+    body {
+      background: linear-gradient(135deg, #0288d1 0%, #01579b 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 10px;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+      padding: 20px 0;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .header p {
+      margin: 8px 0 0 0;
+      opacity: 0.9;
+      font-size: 1rem;
     }
 
     #profile {
       text-align: center;
       margin-bottom: 20px;
+      color: white;
     }
 
     #profile img {
-      width: 100px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
-    form {
-      background: #ffffff;
-      padding: 20px 40px 40px 40px;
-      border-radius: 24px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      width: 80%;
-      max-width: 800px;
+    .progress-bar {
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      background: white;
+      height: 8px;
+      border-radius: 6px;
+      transition: width 0.3s ease;
+      width: 10%;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: white;
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    .selection-card {
+      background: white;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #0288d1, #0277bd);
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .card-number {
+      background: rgba(255,255,255,0.2);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
     }
 
     label {
       display: block;
-      margin-top: 10px;
-      font-weight: bold;
+      margin-bottom: 8px;
+      font-weight: 600;
       color: #01579b;
+      font-size: 0.95rem;
     }
 
-    input[type="text"],
-    input[type="number"] {
-      width: 90%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #0277bd;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-
-    #fieldDropdown {
+    .search-input {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border: 1px solid #0277bd;
-      border-radius: 8px;
+      padding: 12px 16px;
+      border: 2px solid #e3f2fd;
+      border-radius: 12px;
       font-size: 1rem;
-      background-color: white;
+      margin-bottom: 8px;
+      background: #f8faff;
+      transition: border-color 0.3s ease;
     }
 
-    #fieldDropdown option {
-      padding: 8px;
+    .search-input:focus {
+      outline: none;
+      border-color: #0288d1;
+      background: white;
     }
 
-    #facultyDropdown {
+    .dropdown-container {
+      position: relative;
+    }
+
+    .custom-dropdown {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border: 1px solid #0277bd;
-      border-radius: 8px;
-      font-size: 1rem;
-      background-color: white;
+      max-height: 200px;
+      border: 2px solid #e3f2fd;
+      border-radius: 12px;
+      background: white;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
-    #facultyDropdown option {
-      padding: 8px;
+    .dropdown-option {
+      padding: 12px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background-color 0.2s ease;
+      font-size: 0.95rem;
     }
 
-    #dropdown {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border: 1px solid #0277bd;
-      border-radius: 8px;
-      font-size: 1rem;
-      background-color: white;
+    .dropdown-option:hover {
+      background-color: #f8faff;
     }
 
-    #dropdown option {
-      padding: 8px;
+    .dropdown-option.selected {
+      background-color: #e3f2fd;
+      color: #01579b;
+      font-weight: 600;
     }
 
-    button {
-      margin-top: 30px;
-      width: 100%;
+    .dropdown-option:last-child {
+      border-bottom: none;
+    }
+
+    .loading-option {
+      color: #666;
+      font-style: italic;
+      text-align: center;
+    }
+
+    .selection-summary {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .summary-item {
+      margin: 4px 0;
+    }
+
+    .summary-label {
+      opacity: 0.8;
+      font-weight: 500;
+    }
+
+    .navigation-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      flex: 1;
       padding: 14px;
-      background-color: #0288d1;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-height: 48px;
+    }
+
+    .btn-primary {
+      background: #0288d1;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #01579b;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .btn:disabled {
+      background: #ccc;
+      color: #666;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .submit-section {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      max-width: 300px;
+      padding: 16px;
+      background: linear-gradient(135deg, #4caf50, #388e3c);
       color: white;
       border: none;
-      border-radius: 8px;
-      font-size: 18px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
     }
 
-    button:hover {
-      background-color: #01579b;
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
     }
 
-    button:disabled {
-      background-color: #ccc;
+    .submit-btn:disabled {
+      background: #ccc;
+      color: #666;
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
-    .section {
-      margin-bottom: 40px;
+    .selections-overview {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
 
-    .section h2 {
-      color: #0277bd;
-      margin-bottom: 12px;
-      border-bottom: 2px solid #0288d1;
-      padding-bottom: 6px;
+    .overview-header {
+      color: #01579b;
+      margin-bottom: 16px;
+      font-size: 1.2rem;
+      font-weight: 600;
     }
 
-    #searchInput {
-      width: 100%;
-      margin-bottom: 10px;
+    .overview-item {
+      padding: 12px;
+      margin: 8px 0;
+      background: #f8faff;
+      border-radius: 8px;
+      border-left: 4px solid #0288d1;
     }
 
-    .loading {
-      text-align: center;
-      color: #0277bd;
-      font-style: italic;
+    .overview-item.completed {
+      background: #e8f5e8;
+      border-left-color: #4caf50;
+    }
+
+    .overview-number {
+      font-weight: 600;
+      color: #01579b;
+      margin-bottom: 4px;
+    }
+
+    .overview-details {
+      font-size: 0.9rem;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 5px;
+      }
+      
+      .header h1 {
+        font-size: 1.5rem;
+      }
+      
+      .card-body {
+        padding: 16px;
+      }
+      
+      .custom-dropdown {
+        max-height: 150px;
+      }
+      
+      .btn {
+        font-size: 0.95rem;
+        padding: 12px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .navigation-buttons {
+        max-width: 400px;
+        margin: 20px auto 0;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="profile">
-    <img id="picture" src="" alt="Profile Picture">
-    <h2 id="name">Loading...</h2>
+  <div class="container">
+    <div class="header">
+      <div id="profile">
+        <img id="picture" src="" alt="Profile Picture">
+        <h2 id="name">Loading...</h2>
+      </div>
+      <h1>เลือกมหาวิทยาลัย 10 อันดับ</h1>
+      <p>เลือกมหาวิทยาลัย คณะ และหลักสูตรที่สนใจ</p>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-text" id="progressText">ขั้นตอนที่ 1 จาก 10</div>
+
+    <div class="selections-overview" id="selectionsOverview">
+      <div class="overview-header">รายการที่เลือกแล้ว</div>
+      <div id="overviewList">
+        <div class="overview-item">
+          <div class="overview-number">ยังไม่มีรายการที่เลือก</div>
+          <div class="overview-details">กรุณาเริ่มเลือกมหาวิทยาลัยแรก</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="selection-card" id="currentSelectionCard">
+      <div class="card-header">
+        <h3>เลือกมหาวิทยาลัยที่ <span id="currentNumber">1</span></h3>
+        <div class="card-number" id="cardNumber">1</div>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label for="searchInput">ค้นหามหาวิทยาลัย:</label>
+          <input type="text" class="search-input" id="searchInput" placeholder="พิมพ์เพื่อค้นหา..." />
+          <div class="dropdown-container">
+            <div class="custom-dropdown" id="universityDropdown">
+              <div class="dropdown-option loading-option">กำลังโหลดรายการมหาวิทยาลัย...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="searchInput2">ค้นหาคณะ:</label>
+          <input type="text" class="search-input" id="searchInput2" placeholder="พิมพ์เพื่อค้นหา..." />
+          <div class="dropdown-container">
+            <div class="custom-dropdown" id="facultyDropdown">
+              <div class="dropdown-option loading-option">กรุณาเลือกมหาวิทยาลัยก่อน</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="searchInput3">ค้นหาหลักสูตร:</label>
+          <input type="text" class="search-input" id="searchInput3" placeholder="พิมพ์เพื่อค้นหา..." />
+          <div class="dropdown-container">
+            <div class="custom-dropdown" id="fieldDropdown">
+              <div class="dropdown-option loading-option">กรุณาเลือกคณะก่อน</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="selection-summary" id="currentSummary" style="display: none;">
+          <div class="summary-item">
+            <span class="summary-label">มหาวิทยาลัย:</span> <span id="summaryUniversity">-</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">คณะ:</span> <span id="summaryFaculty">-</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">หลักสูตร:</span> <span id="summaryField">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navigation-buttons">
+      <button class="btn btn-secondary" id="prevBtn" onclick="previousSelection()" disabled>
+        ก่อนหน้า
+      </button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextSelection()" disabled>
+        ต่อไป
+      </button>
+    </div>
+
+    <div class="submit-section">
+      <button class="submit-btn" id="submitBtn" onclick="submitAllSelections()" disabled>
+        ส่งข้อมูลทั้งหมด
+      </button>
+    </div>
   </div>
-
-  <form id="scoreForm">
-    <h1>ลองจัดเซตอันดับมหาลัย</h1>
-
-    <label for="searchInput">ค้นหามหาวิทยาลัย:</label>
-    <input type="text" id="searchInput" placeholder="พิมพ์เพื่อค้นหา..." onkeyup="filterFunction()" />
-    
-    <label for="dropdown">เลือกมหาวิทยาลัย:</label>
-    <select id="dropdown" size="8">
-      <option class="loading">กำลังโหลดรายการมหาวิทยาลัย...</option>
-    </select>
-
-    <label for="searchInput2">ค้นหาคณะ:</label>
-    <input type="text" id="searchInput2" placeholder="พิมพ์เพื่อค้นหา..." onkeyup="filterFunction2()" />
-    
-    <label for="facultyDropdown">เลือกคณะ:</label>
-    <select id="facultyDropdown" size="8">
-      <option class="loading">กรุณาเลือกมหาวิทยาลัยก่อน...</option>
-    </select>
-
-    <label for="searchInput3">ค้นหาหลักสูตร:</label>
-    <input type="text" id="searchInput3" placeholder="พิมพ์เพื่อค้นหา..." onkeyup="filterFunction3()" />
-    
-    <label for="fieldDropdown">เลือกหลักสูตร:</label>
-    <select id="fieldDropdown" size="8">
-      <option class="loading">กรุณาเลือกคณะก่อน...</option>
-    </select>
-    
-    <button type="button" onclick="sendMessage()">คำนวณ</button>
-  </form>
 
 <script>
   // Global variables
-  let allOptions = [];
+  let allUniversities = [];
   let allFaculties = [];
   let allFields = [];
-  
-  const dropdown = document.getElementById("dropdown");
-  const searchInput = document.getElementById("searchInput");
-  const facultyDropdown = document.getElementById("facultyDropdown");
-  const searchInput2 = document.getElementById("searchInput2");
-  const fieldDropdown = document.getElementById("fieldDropdown");
-  const searchInput3 = document.getElementById("searchInput3");
+  let currentSelectionIndex = 0;
+  let selections = Array(10).fill(null).map(() => ({
+    university: null,
+    faculty: null,
+    field: null,
+    faculties: [],
+    fields: []
+  }));
 
-  // Event listeners
-  dropdown.addEventListener("change", function () {
-    const selectedText = dropdown.options[dropdown.selectedIndex].text;
-    searchInput.value = selectedText;
-    console.log("Selected university:", selectedText);
-    loadFaculties(selectedText);
-    // Clear field dropdown when university changes
-    fieldDropdown.innerHTML = '<option>กรุณาเลือกคณะก่อน...</option>';
-    searchInput3.value = '';
-    allFields = [];
-  });
-
-  facultyDropdown.addEventListener("change", function () {
-    const selectedText2 = facultyDropdown.options[facultyDropdown.selectedIndex].text;
-    searchInput2.value = selectedText2;
-    console.log("Selected faculty:", selectedText2);
-    const selectedUniversity = dropdown.value;
-    loadFields(selectedUniversity, selectedText2);
-  });
-
-  fieldDropdown.addEventListener("change", function () {
-    const selectedText3 = fieldDropdown.options[fieldDropdown.selectedIndex].text;
-    searchInput3.value = selectedText3;
-    console.log("Selected field:", selectedText3);
-  });
-
-  // Clear faculty dropdown when search input changes
-  searchInput.addEventListener("input", () => {
-    facultyDropdown.innerHTML = '<option>กรุณาเลือกมหาวิทยาลัยก่อน</option>';
-    fieldDropdown.innerHTML = '<option>กรุณาเลือกคณะก่อน</option>';
-    allFaculties = [];
-    allFields = [];
-  });
-
-  // Clear field dropdown when faculty search input changes
-  searchInput2.addEventListener("input", () => {
-    fieldDropdown.innerHTML = '<option>กรุณาเลือกคณะก่อน</option>';
-    allFields = [];
-  });
+  // Initialize when page loads
+  window.onload = initializePage;
 
   async function initializePage() {
     try {
@@ -259,211 +490,398 @@
   }
 
   function loadUNIData() {
-    const sampleOptions = ['มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย', 'มหาวิทยาลัยเกษมบัณฑิต', 'กลุ่มสถาบันแพทยศาสตร์แห่งประเทศไทย', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง', 'มหาวิทยาลัยราชภัฏพิบูลสงคราม', 'มหาวิทยาลัยปทุมธานี', 'มหาวิทยาลัยนครพนม', 'มหาวิทยาลัยเวสเทิร์น', 'มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ', 'ราชวิทยาลัยจุฬาภรณ์', 'มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชชูปถัมภ์', 'สถาบันเทคโนโลยีแห่งสุวรรณภูมิ', 'สถาบันการพยาบาลศรีสวรินทิรา', 'มหาวิทยาลัยกาฬสินธุ์', 'มหาวิทยาลัยธุรกิจบัณฑิตย์', 'มหาวิทยาลัยรามคำแหง', 'มหาวิทยาลัยราชภัฏบ้านสมเด็จเจ้าพระยา', 'มหาาวิทยาลัยมหาสารคาม', 'มหาวิทยาลัยเกษตรศาสตร์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลศรีวิชัย', 'มหาวิทยาลัยเนชั่น', 'มหาวิทยาลัยราชภัฏอุบลราชธานี', 'มหาวิทยาลัยราชภัฏชัยภูมิ', 'มหาวิทยาลัยราชภัฏธนบุรี', 'วิทยาลัยดุสิตธานี', 'มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน', 'มหาวิทยาลัยนวมินทราธิราช', 'มหาวิทยาลัยราชภัฏสวนสุนันทา', 'มหาวิทยาลัยเซาธ์อีสท์บางกอก', 'จุฬาลงกรณ์มหาวิทยาลัย', 'มหาวิทยาลัยราชภัฏพระนคร', 'มหาวิทยาลัยหาดใหญ่', 'มหาวิทยาลัยอีสเทิร์นเอเชีย', 'มหาวิทยาลัยเทคโนโลยีสุรนารี', 'มหาวิทยาลัยสงขลานครินทร์', 'มหาวิทยาลัยอุบลราชธานี', 'มหาวิทยาลัยมหิดล', 'มหาวิทยาลัยเทคโนโลยีราชมงคลตะวันออก', 'มหาวิทยาลัยนานาชาติเอเชีย-แปซิฟิก', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี', 'มหาวิทยาลัยบูรพา', 'มหาวิทยาลัยทักษิณ', 'มหาวิทยาลัยขอนแก่น', 'มหาวิทยาลัยแม่โจ้', 'มหาวิทยาลัยราชภัฏเชียงใหม่', 'มหาวิทยาลัยศรีนครินทรวิโรฒ', 'สถาบันพระบรมราชชนก', 'มหาวิทยาลัยราชธานี', 'มหาวิทยาลัยศิลปากร', 'มหาวิทยาลัยศรีปทุม', 'มหาวิทยาลัยธรรมศาสตร์', 'วิทยาลัยเซนต์หลุยส์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี', 'มหาวิทยาลัยรังสิต', 'มหาวิทยาลัยวลัยลักษณ์', 'มหาวิทยาลัยแม่ฟ้าหลวง', 'มหาวิทยาลัยสวนดุสิต', 'มหาวิทยาลัยพะเยา', 'มหาวิทยาลัยราชภัฏเพชรบุรี', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ', 'มหาวิทยาลัยเทคโนโลยีราชมงคลรัตนโกสินทร์', 'มหาวิทยาลัยนราธิวาสราชนครินทร์', 'มหาวิทยาลัยราชภัฏจันทรเกษม', 'มหาวิทยาลัยเชียงใหม่', 'วิทยาลัยนครราชสีมา', 'มหาวิทยาลัยเทคโนโลยีมหานคร', 'มหาวิทยาลัยหอการค้าไทย', 'มหาวิทยาลัยนเรศวร', 'สถาบันเทคโนโลยีจิตรลดา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลกรุงเทพ', 'สถาบันการจัดการปัญญาภิวัฒน์', 'มหาวิทยาลัยสยาม', 'มหาวิทยาลัยราชภัฏสงขลา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร', 'วิทยาลัยนอร์ทเทิร์น', 'มหาวิทยาลัยมหามกุฏราชวิทยาลัย', 'มหาวิทยาลัยราชภัฏนครราชสีมา'];
-    allOptions = sampleOptions;
-    populateDropdown(sampleOptions);
+    allUniversities = ['มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย', 'มหาวิทยาลัยเกษมบัณฑิต', 'กลุ่มสถาบันแพทยศาสตร์แห่งประเทศไทย', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง', 'มหาวิทยาลัยราชภัฏพิบูลสงคราม', 'มหาวิทยาลัยปทุมธานี', 'มหาวิทยาลัยนครพนม', 'มหาวิทยาลัยเวสเทิร์น', 'มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ', 'ราชวิทยาลัยจุฬาภรณ์', 'มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชชูปถัมภ์', 'สถาบันเทคโนโลยีแห่งสุวรรณภูมิ', 'สถาบันการพยาบาลศรีสวรินทิรา', 'มหาวิทยาลัยกาฬสินธุ์', 'มหาวิทยาลัยธุรกิจบัณฑิตย์', 'มหาวิทยาลัยรามคำแหง', 'มหาวิทยาลัยราชภัฏบ้านสมเด็จเจ้าพระยา', 'มหาาวิทยาลัยมหาสารคาม', 'มหาวิทยาลัยเกษตรศาสตร์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลศรีวิชัย', 'มหาวิทยาลัยเนชั่น', 'มหาวิทยาลัยราชภัฏอุบลราชธานี', 'มหาวิทยาลัยราชภัฏชัยภูมิ', 'มหาวิทยาลัยราชภัฏธนบุรี', 'วิทยาลัยดุสิตธานี', 'มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน', 'มหาวิทยาลัยนวมินทราธิราช', 'มหาวิทยาลัยราชภัฏสวนสุนันทา', 'มหาวิทยาลัยเซาธ์อีสท์บางกอก', 'จุฬาลงกรณ์มหาวิทยาลัย', 'มหาวิทยาลัยราชภัฏพระนคร', 'มหาวิทยาลัยหาดใหญ่', 'มหาวิทยาลัยอีสเทิร์นเอเชีย', 'มหาวิทยาลัยเทคโนโลยีสุรนารี', 'มหาวิทยาลัยสงขลานครินทร์', 'มหาวิทยาลัยอุบลราชธานี', 'มหาวิทยาลัยมหิดล', 'มหาวิทยาลัยเทคโนโลยีราชมงคลตะวันออก', 'มหาวิทยาลัยนานาชาติเอเชีย-แปซิฟิก', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี', 'มหาวิทยาลัยบูรพา', 'มหาวิทยาลัยทักษิณ', 'มหาวิทยาลัยขอนแก่น', 'มหาวิทยาลัยแม่โจ้', 'มหาวิทยาลัยราชภัฏเชียงใหม่', 'มหาวิทยาลัยศรีนครินทรวิโรฒ', 'สถาบันพระบรมราชชนก', 'มหาวิทยาลัยราชธานี', 'มหาวิทยาลัยศิลปากร', 'มหาวิทยาลัยศรีปทุม', 'มหาวิทยาลัยธรรมศาสตร์', 'วิทยาลัยเซนต์หลุยส์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี', 'มหาวิทยาลัยรังสิต', 'มหาวิทยาลัยวลัยลักษณ์', 'มหาวิทยาลัยแม่ฟ้าหลวง', 'มหาวิทยาลัยสวนดุสิต', 'มหาวิทยาลัยพะเยา', 'มหาวิทยาลัยราชภัฏเพชรบุรี', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ', 'มหาวิทยาลัยเทคโนโลยีราชมงคลรัตนโกสินทร์', 'มหาวิทยาลัยนราธิวาสราชนครินทร์', 'มหาวิทยาลัยราชภัฏจันทรเกษม', 'มหาวิทยาลัยเชียงใหม่', 'วิทยาลัยนครราชสีมา', 'มหาวิทยาลัยเทคโนโลยีมหานคร', 'มหาวิทยาลัยหอการค้าไทย', 'มหาวิทยาลัยนเรศวร', 'สถาบันเทคโนโลยีจิตรลดา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลกรุงเทพ', 'สถาบันการจัดการปัญญาภิวัฒน์', 'มหาวิทยาลัยสยาม', 'มหาวิทยาลัยราชภัฏสงขลา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร', 'วิทยาลัยนอร์ทเทิร์น', 'มหาวิทยาลัยมหามกุฏราชวิทยาลัย', 'มหาวิทยาลัยราชภัฏนครราชสีมา'];
+    populateUniversityDropdown(allUniversities);
+    updateUI();
+    setupEventListeners();
   }
+
+  function setupEventListeners() {
+    const searchInput = document.getElementById('searchInput');
+    const searchInput2 = document.getElementById('searchInput2');
+    const searchInput3 = document.getElementById('searchInput3');
+
+    searchInput.addEventListener('input', filterUniversities);
+    searchInput2.addEventListener('input', filterFaculties);
+    searchInput3.addEventListener('input', filterFields);
+
+    // Clear dependent dropdowns when university search changes
+    searchInput.addEventListener('input', () => {
+      if (!searchInput.value.trim()) {
+        clearFacultySelection();
+        clearFieldSelection();
+      }
+    });
+
+    searchInput2.addEventListener('input', () => {
+      if (!searchInput2.value.trim()) {
+        clearFieldSelection();
+      }
+    });
+  }
+
+  function populateUniversityDropdown(universities) {
+    const dropdown = document.getElementById('universityDropdown');
+    dropdown.innerHTML = '';
     
-  function populateDropdown(options) {
-    const select = document.getElementById('dropdown');
-    select.innerHTML = '';
-    
-    if (options.length === 0) {
-      const optionElem = document.createElement('option');
-      optionElem.text = 'ไม่พบข้อมูลมหาวิทยาลัย';
-      optionElem.disabled = true;
-      select.add(optionElem);
+    if (universities.length === 0) {
+      dropdown.innerHTML = '<div class="dropdown-option loading-option">ไม่พบมหาวิทยาลัย</div>';
       return;
     }
     
-    options.forEach(opt => {
-      const optionElem = document.createElement('option');
-      optionElem.value = opt;
-      optionElem.text = opt;
-      select.add(optionElem);
+    universities.forEach(uni => {
+      const option = document.createElement('div');
+      option.className = 'dropdown-option';
+      option.textContent = uni;
+      option.onclick = () => selectUniversity(uni);
+      dropdown.appendChild(option);
     });
-    
-    console.log("Dropdown populated with", options.length, "options");
   }
 
-  function filterFunction() {
+  function populateFacultyDropdown(faculties) {
+    const dropdown = document.getElementById('facultyDropdown');
+    dropdown.innerHTML = '';
+    
+    if (faculties.length === 0) {
+      dropdown.innerHTML = '<div class="dropdown-option loading-option">ไม่พบคณะ</div>';
+      return;
+    }
+    
+    faculties.forEach(faculty => {
+      const option = document.createElement('div');
+      option.className = 'dropdown-option';
+      option.textContent = faculty;
+      option.onclick = () => selectFaculty(faculty);
+      dropdown.appendChild(option);
+    });
+  }
+
+  function populateFieldDropdown(fields) {
+    const dropdown = document.getElementById('fieldDropdown');
+    dropdown.innerHTML = '';
+    
+    if (fields.length === 0) {
+      dropdown.innerHTML = '<div class="dropdown-option loading-option">ไม่พบหลักสูตร</div>';
+      return;
+    }
+    
+    fields.forEach(field => {
+      const option = document.createElement('div');
+      option.className = 'dropdown-option';
+      option.textContent = field;
+      option.onclick = () => selectField(field);
+      dropdown.appendChild(option);
+    });
+  }
+
+  function selectUniversity(university) {
+    const current = selections[currentSelectionIndex];
+    current.university = university;
+    document.getElementById('searchInput').value = university;
+    
+    // Clear dependent selections
+    current.faculty = null;
+    current.field = null;
+    clearFacultySelection();
+    clearFieldSelection();
+    
+    // Highlight selected option
+    highlightSelectedOption('universityDropdown', university);
+    
+    // Load faculties
+    loadFaculties(university);
+    updateCurrentSummary();
+    updateNavigationButtons();
+  }
+
+  function selectFaculty(faculty) {
+    const current = selections[currentSelectionIndex];
+    current.faculty = faculty;
+    document.getElementById('searchInput2').value = faculty;
+    
+    // Clear field selection
+    current.field = null;
+    clearFieldSelection();
+    
+    // Highlight selected option
+    highlightSelectedOption('facultyDropdown', faculty);
+    
+    // Load fields
+    loadFields(current.university, faculty);
+    updateCurrentSummary();
+    updateNavigationButtons();
+  }
+
+  function selectField(field) {
+    const current = selections[currentSelectionIndex];
+    current.field = field;
+    document.getElementById('searchInput3').value = field;
+    
+    // Highlight selected option
+    highlightSelectedOption('fieldDropdown', field);
+    
+    updateCurrentSummary();
+    updateNavigationButtons();
+    updateOverview();
+  }
+
+  function highlightSelectedOption(dropdownId, selectedText) {
+    const dropdown = document.getElementById(dropdownId);
+    const options = dropdown.querySelectorAll('.dropdown-option');
+    
+    options.forEach(option => {
+      option.classList.remove('selected');
+      if (option.textContent === selectedText) {
+        option.classList.add('selected');
+      }
+    });
+  }
+
+  function clearFacultySelection() {
+    document.getElementById('searchInput2').value = '';
+    document.getElementById('facultyDropdown').innerHTML = 
+      '<div class="dropdown-option loading-option">กรุณาเลือกมหาวิทยาลัยก่อน</div>';
+  }
+
+  function clearFieldSelection() {
+    document.getElementById('searchInput3').value = '';
+    document.getElementById('fieldDropdown').innerHTML = 
+      '<div class="dropdown-option loading-option">กรุณาเลือกคณะก่อน</div>';
+  }
+
+  async function loadFaculties(university) {
+    if (!university) return;
+
+    try {
+      const dropdown = document.getElementById('facultyDropdown');
+      dropdown.innerHTML = '<div class="dropdown-option loading-option">กำลังโหลดข้อมูลคณะ...</div>';
+
+      const data = { name: university, userId: "some-id" };
+      const response = await fetch("https://varee.onrender.com/api/find_faculty", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch faculties");
+
+      const result = await response.json();
+      const faculties = result.faculties || [];
+      
+      selections[currentSelectionIndex].faculties = faculties;
+      allFaculties = faculties;
+      populateFacultyDropdown(faculties);
+    } catch (error) {
+      console.error("Error loading faculties:", error);
+      document.getElementById('facultyDropdown').innerHTML = 
+        '<div class="dropdown-option loading-option">เกิดข้อผิดพลาดในการโหลดข้อมูลคณะ</div>';
+    }
+  }
+
+  async function loadFields(university, faculty) {
+    if (!university || !faculty) return;
+
+    try {
+      const dropdown = document.getElementById('fieldDropdown');
+      dropdown.innerHTML = '<div class="dropdown-option loading-option">กำลังโหลดข้อมูลหลักสูตร...</div>';
+
+      const data = { name: university, faculty: faculty };
+      const response = await fetch("https://varee.onrender.com/api/find_field", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch fields");
+
+      const result = await response.json();
+      const fields = result.faculties || [];
+      
+      selections[currentSelectionIndex].fields = fields;
+      allFields = fields;
+      populateFieldDropdown(fields);
+    } catch (error) {
+      console.error("Error loading fields:", error);
+      document.getElementById('fieldDropdown').innerHTML = 
+        '<div class="dropdown-option loading-option">เกิดข้อผิดพลาดในการโหลดข้อมูลหลักสูตร</div>';
+    }
+  }
+
+  function filterUniversities() {
     const input = document.getElementById('searchInput');
     const filter = input.value.toLowerCase();
     
     if (filter === '') {
-      populateDropdown(allOptions);
+      populateUniversityDropdown(allUniversities);
     } else {
-      const filteredOptions = allOptions.filter(option => 
-        option.toLowerCase().includes(filter)
+      const filtered = allUniversities.filter(uni => 
+        uni.toLowerCase().includes(filter)
       );
-      populateDropdown(filteredOptions);
+      populateUniversityDropdown(filtered);
     }
   }
 
-  async function loadFaculties(university) {
-    if (!university) {
-      facultyDropdown.innerHTML = '<option>กรุณาเลือกมหาวิทยาลัยก่อน</option>';
-      return;
-    }
-
-    try {
-      facultyDropdown.innerHTML = '<option>กำลังโหลดข้อมูลคณะ...</option>';
-
-      const data = { name: university, userId: "some-id" };
-      console.log("Sending data to backend:", data);
-
-      const response = await fetch("https://varee.onrender.com/api/find_faculty", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      });
-
-      console.log("Response status:", response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Backend error response:", errorText);
-        throw new Error("Failed to fetch faculties");
-      }
-
-      const result = await response.json();
-      console.log("Response JSON:", result);
-
-      const faculties = result.faculties || [];
-      allFaculties = faculties;
-
-      if (faculties.length === 0) {
-        facultyDropdown.innerHTML = '<option disabled>ไม่พบข้อมูลคณะ</option>';
-        return;
-      }
-
-      populateFacultyDropdown(faculties);
-    } catch (error) {
-      console.error("Error loading faculties:", error);
-      facultyDropdown.innerHTML = '<option disabled>เกิดข้อผิดพลาดในการโหลดข้อมูลคณะ</option>';
-    }
-  }
-
-  function populateFacultyDropdown(faculties) {
-    facultyDropdown.innerHTML = '';
-    faculties.forEach(faculty => {
-      const optionElem = document.createElement('option');
-      optionElem.value = faculty;
-      optionElem.text = faculty;
-      facultyDropdown.add(optionElem);
-    });
-  }
-
-  async function loadFields(university, faculty) {
-    if (!university || !faculty) {
-      fieldDropdown.innerHTML = '<option>กรุณาเลือกมหาวิทยาลัยและคณะก่อน</option>';
-      return;
-    }
-
-    try {
-      fieldDropdown.innerHTML = '<option>กำลังโหลดข้อมูลหลักสูตร...</option>';
-
-      const data = { name: university, faculty: faculty };
-      console.log("Sending data to backend for fields:", data);
-
-      const response = await fetch("https://varee.onrender.com/api/find_field", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      });
-
-      console.log("Response status:", response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Backend error response:", errorText);
-        throw new Error("Failed to fetch fields");
-      }
-
-      const result = await response.json();
-      console.log("Response JSON:", result);
-
-      const fields = result.faculties || [];
-      allFields = fields;
-
-      if (fields.length === 0) {
-        fieldDropdown.innerHTML = '<option disabled>ไม่พบข้อมูลหลักสูตร</option>';
-        return;
-      }
-
-      populateFieldDropdown(fields);
-    } catch (error) {
-      console.error("Error loading fields:", error);
-      fieldDropdown.innerHTML = '<option disabled>เกิดข้อผิดพลาดในการโหลดข้อมูลหลักสูตร</option>';
-    }
-  }
-
-  function populateFieldDropdown(fields) {
-    fieldDropdown.innerHTML = '';
-    fields.forEach(field => {
-      const optionElem = document.createElement('option');
-      optionElem.value = field;
-      optionElem.text = field;
-      fieldDropdown.add(optionElem);
-    });
-  }
-
-  function filterFunction2() {
+  function filterFaculties() {
     const input = document.getElementById('searchInput2');
     const filter = input.value.toLowerCase();
+    const current = selections[currentSelectionIndex];
     
-    if (allFaculties.length === 0) return;
+    if (!current.faculties || current.faculties.length === 0) return;
     
     if (filter === '') {
-      populateFacultyDropdown(allFaculties);
+      populateFacultyDropdown(current.faculties);
     } else {
-      const filtered = allFaculties.filter(faculty => 
+      const filtered = current.faculties.filter(faculty => 
         faculty.toLowerCase().includes(filter)
       );
       populateFacultyDropdown(filtered);
     }
   }
 
-  function filterFunction3() {
+  function filterFields() {
     const input = document.getElementById('searchInput3');
     const filter = input.value.toLowerCase();
+    const current = selections[currentSelectionIndex];
     
-    if (allFields.length === 0) return;
+    if (!current.fields || current.fields.length === 0) return;
     
     if (filter === '') {
-      populateFieldDropdown(allFields);
+      populateFieldDropdown(current.fields);
     } else {
-      const filtered = allFields.filter(field => 
+      const filtered = current.fields.filter(field => 
         field.toLowerCase().includes(filter)
       );
       populateFieldDropdown(filtered);
     }
   }
 
-  async function sendMessage() {
-    const selectedUniversity = dropdown.value;
-    const selectedFaculty = facultyDropdown.value;
-    const selectedField = fieldDropdown.value;
+  function updateCurrentSummary() {
+    const current = selections[currentSelectionIndex];
+    const summary = document.getElementById('currentSummary');
+    
+    if (current.university || current.faculty || current.field) {
+      summary.style.display = 'block';
+      document.getElementById('summaryUniversity').textContent = current.university || '-';
+      document.getElementById('summaryFaculty').textContent = current.faculty || '-';
+      document.getElementById('summaryField').textContent = current.field || '-';
+    } else {
+      summary.style.display = 'none';
+    }
+  }
 
-    if (!selectedUniversity || selectedUniversity === '') {
-      alert('กรุณาเลือกมหาวิทยาลัย');
-      return;
+  function updateUI() {
+    // Update progress
+    const progress = ((currentSelectionIndex + 1) / 10) * 100;
+    document.getElementById('progressFill').style.width = progress + '%';
+    document.getElementById('progressText').textContent = `ขั้นตอนที่ ${currentSelectionIndex + 1} จาก 10`;
+    
+    // Update card header
+    document.getElementById('currentNumber').textContent = currentSelectionIndex + 1;
+    document.getElementById('cardNumber').textContent = currentSelectionIndex + 1;
+    
+    // Load current selection data
+    const current = selections[currentSelectionIndex];
+    document.getElementById('searchInput').value = current.university || '';
+    document.getElementById('searchInput2').value = current.faculty || '';
+    document.getElementById('searchInput3').value = current.field || '';
+    
+    // Populate dropdowns with cached data
+    if (current.university) {
+      populateFacultyDropdown(current.faculties || []);
+      if (current.faculty) {
+        populateFieldDropdown(current.fields || []);
+      }
     }
-    if (!selectedFaculty || selectedFaculty === '') {
-      alert('กรุณาเลือกคณะ');
-      return;
+    
+    updateCurrentSummary();
+    updateNavigationButtons();
+  }
+
+  function updateNavigationButtons() {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const current = selections[currentSelectionIndex];
+    
+    prevBtn.disabled = currentSelectionIndex === 0;
+    
+    // Enable next if current selection is complete or if not on last step
+    const isCurrentComplete = current.university && current.faculty && current.field;
+    nextBtn.disabled = currentSelectionIndex === 9 || !isCurrentComplete;
+    
+    if (currentSelectionIndex === 9) {
+      nextBtn.textContent = 'เสร็จสิ้น';
+    } else {
+      nextBtn.textContent = 'ต่อไป';
     }
-    if (!selectedField || selectedField === '') {
-      alert('กรุณาเลือกหลักสูตร');
+  }
+
+  function updateOverview() {
+    const overviewList = document.getElementById('overviewList');
+    overviewList.innerHTML = '';
+    
+    let hasSelections = false;
+    
+    selections.forEach((selection, index) => {
+      if (selection.university && selection.faculty && selection.field) {
+        hasSelections = true;
+        const item = document.createElement('div');
+        item.className = 'overview-item completed';
+        item.innerHTML = `
+          <div class="overview-number">อันดับที่ ${index + 1}</div>
+          <div class="overview-details">
+            ${selection.university}<br>
+            ${selection.faculty} - ${selection.field}
+          </div>
+        `;
+        overviewList.appendChild(item);
+      }
+    });
+    
+    if (!hasSelections) {
+      const item = document.createElement('div');
+      item.className = 'overview-item';
+      item.innerHTML = `
+        <div class="overview-number">ยังไม่มีรายการที่เลือก</div>
+        <div class="overview-details">กรุณาเริ่มเลือกมหาวิทยาลัยแรก</div>
+      `;
+      overviewList.appendChild(item);
+    }
+    
+    // Update submit button
+    const completedSelections = selections.filter(s => s.university && s.faculty && s.field).length;
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = completedSelections === 0;
+    submitBtn.textContent = `ส่งข้อมูลทั้งหมด (${completedSelections}/10)`;
+  }
+
+  function previousSelection() {
+    if (currentSelectionIndex > 0) {
+      currentSelectionIndex--;
+      updateUI();
+    }
+  }
+
+  function nextSelection() {
+    if (currentSelectionIndex < 9) {
+      currentSelectionIndex++;
+      updateUI();
+    }
+  }
+
+  async function submitAllSelections() {
+    const completedSelections = selections.filter(s => s.university && s.faculty && s.field);
+    
+    if (completedSelections.length === 0) {
+      alert('กรุณาเลือกมหาวิทยาลัยอย่างน้อย 1 แห่ง');
       return;
     }
 
-    document.querySelector("button").disabled = true;
-    document.querySelector("button").innerText = "กำลังส่ง...";
+    const confirmMessage = `คุณต้องการส่งข้อมูล ${completedSelections.length} รายการหรือไม่?`;
+    if (!confirm(confirmMessage)) return;
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'กำลังส่งข้อมูล...';
 
     try {
       const profile = await liff.getProfile();
@@ -471,16 +889,12 @@
       const data = {
         userId: profile.userId,
         name: profile.displayName,
-        selectedUniversity: selectedUniversity,
-        selectedFaculty: selectedFaculty,
-        selectedField: selectedField
+        selections: completedSelections
       };
 
-      const response = await fetch("https://varee.onrender.com/api/submit_selection", {
+      const response = await fetch("https://varee.onrender.com/api/submit_multiple_selections", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
 
@@ -488,20 +902,18 @@
         throw new Error("Failed to send data to server");
       }
 
-      alert("ข้อมูลถูกส่งไปยังเซิร์ฟเวอร์แล้ว");
+      alert(`ส่งข้อมูล ${completedSelections.length} รายการเรียบร้อยแล้ว`);
       window.location.href = "https://vareepri-longbuwans-projects.vercel.app/shoseuni";
 
     } catch (error) {
-      alert("เกิดข้อผิดพลาดในการส่งข้อมูลไปยังเซิร์ฟเวอร์");
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูล");
       console.error(error);
     } finally {
-      document.querySelector("button").disabled = false;
-      document.querySelector("button").innerText = "คำนวณ";
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'ส่งข้อมูลทั้งหมด';
     }
   }
-
-  // Initialize when page loads
-  window.onload = initializePage;
 </script>
 </body>
 </html>
