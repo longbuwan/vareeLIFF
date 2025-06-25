@@ -461,13 +461,13 @@ document.querySelector("button").innerText = "กำลังส่ง...";
   a_lv_89: parseFloat(document.getElementById("A-Level4.9_score").value.trim()),
 
       
-  gpa21: parseFloat(document.getElementById("gpa21_score").value.trim()),
-  gpa22: parseFloat(document.getElementById("gpa22_score").value.trim()),
-  gpa23: parseFloat(document.getElementById("gpa23_score").value.trim()),
-      gpa24: parseFloat(document.getElementById("gpa24_score").value.trim()),
-      gpa26: parseFloat(document.getElementById("gpa26_score").value.trim()),
-      gpa27: parseFloat(document.getElementById("gpa27_score").value.trim()),
-      gpa28: parseFloat(document.getElementById("gpa28_score").value.trim())
+  gpa21: parseFloat(document.getElementById("gpa21_score").value.trim()) * 25,
+  gpa22: parseFloat(document.getElementById("gpa22_score").value.trim()) * 25,
+  gpa23: parseFloat(document.getElementById("gpa23_score").value.trim()) * 25 ,
+      gpa24: parseFloat(document.getElementById("gpa24_score").value.trim()) * 25,
+      gpa26: parseFloat(document.getElementById("gpa26_score").value.trim()) * 25,
+      gpa27: parseFloat(document.getElementById("gpa27_score").value.trim()) * 25,
+      gpa28: parseFloat(document.getElementById("gpa28_score").value.trim()) * 25
     };
     // 🟡 POST to your backend
     try {
