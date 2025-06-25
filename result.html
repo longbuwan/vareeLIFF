@@ -93,6 +93,23 @@
             to { transform: rotate(360deg); }
         }
 
+        .debug-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        .debug-info pre {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+
         .user-summary {
             background: rgba(255,255,255,0.1);
             border-radius: 16px;
@@ -210,33 +227,6 @@
             color: #666;
         }
 
-        .program-details {
-            background: #f8faff;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-
-        .detail-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            color: #01579b;
-        }
-
-        .detail-value {
-            color: #333;
-        }
-
         .status-message {
             padding: 12px 16px;
             border-radius: 8px;
@@ -268,36 +258,6 @@
             border: 1px solid #bbdefb;
         }
 
-        .calculation-details {
-            margin-top: 16px;
-        }
-
-        .calculation-header {
-            font-weight: 600;
-            color: #01579b;
-            margin-bottom: 12px;
-            font-size: 0.95rem;
-        }
-
-        .calculation-item {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-        }
-
-        .calc-subject {
-            font-weight: 600;
-            color: #01579b;
-        }
-
-        .calc-details {
-            color: #666;
-            margin-top: 4px;
-        }
-
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -317,7 +277,7 @@
             border: 2px dashed rgba(244, 67, 54, 0.3);
         }
 
-        .retry-btn {
+        .retry-btn, .debug-btn {
             background: #0288d1;
             color: white;
             border: none;
@@ -325,10 +285,10 @@
             border-radius: 8px;
             font-size: 0.9rem;
             cursor: pointer;
-            margin-top: 16px;
+            margin: 8px;
         }
 
-        .retry-btn:hover {
+        .retry-btn:hover, .debug-btn:hover {
             background: #0277bd;
         }
 
@@ -385,6 +345,13 @@
             <h3>เกิดข้อผิดพลาด</h3>
             <p id="errorMessage">ไม่สามารถโหลดข้อมูลได้</p>
             <button class="retry-btn" onclick="loadScoreData()">ลองอีกครั้ง</button>
+            <button class="debug-btn" onclick="loadDebugData()">ดูข้อมูลดีบัก</button>
+        </div>
+
+        <div id="debugSection" class="debug-info" style="display: none;">
+            <h3>ข้อมูลสำหรับดีบัก</h3>
+            <div id="debugContent"></div>
+            <button class="retry-btn" onclick="hideDebug()">ซ่อน</button>
         </div>
 
         <div id="resultsSection" style="display: none;">
@@ -402,6 +369,7 @@
 
     <script>
         let currentUserId = null;
+        let debugMode = false;
 
         window.onload = async function () {
             try {
@@ -416,6 +384,8 @@
                     document.getElementById("picture").src = profile.pictureUrl;
                     document.getElementById("picture").style.display = "block";
                     
+                    console.log("User ID:", currentUserId);
+                    
                     // Load score data
                     await loadScoreData();
                 } else {
@@ -423,7 +393,7 @@
                 }
             } catch (error) {
                 console.error('LIFF initialization failed:', error);
-                showError("ไม่สามารถเชื่อมต่อกับ LINE ได้");
+                showError("ไม่สามารถเชื่อมต่อกับ LINE ได้: " + error.message);
             }
         };
 
@@ -435,6 +405,7 @@
 
             try {
                 showLoading();
+                console.log("Loading score data for user:", currentUserId);
                 
                 const response = await fetch("https://varee.onrender.com/api/calculate_scores", {
                     method: "POST",
@@ -444,11 +415,17 @@
                     body: JSON.stringify({ userId: currentUserId })
                 });
 
+                console.log("Response status:", response.status);
+                console.log("Response headers:", response.headers);
+
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error("Response error:", errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
 
                 const data = await response.json();
+                console.log("Received data:", data);
                 
                 if (data.error) {
                     throw new Error(data.error);
@@ -462,10 +439,60 @@
             }
         }
 
+        async function loadDebugData() {
+            if (!currentUserId) {
+                showError("ไม่พบข้อมูลผู้ใช้");
+                return;
+            }
+
+            try {
+                console.log("Loading debug data for user:", currentUserId);
+                
+                const response = await fetch(`https://varee.onrender.com/api/debug/user/${currentUserId}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                console.log("Debug response status:", response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Debug response error:", errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log("Debug data:", data);
+                
+                displayDebugInfo(data);
+                
+            } catch (error) {
+                console.error('Error loading debug data:', error);
+                showError("ไม่สามารถโหลดข้อมูลดีบัก: " + error.message);
+            }
+        }
+
+        function displayDebugInfo(data) {
+            const debugContent = document.getElementById("debugContent");
+            debugContent.innerHTML = `
+                <h4>ข้อมูลผู้ใช้:</h4>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+            
+            document.getElementById("debugSection").style.display = "block";
+        }
+
+        function hideDebug() {
+            document.getElementById("debugSection").style.display = "none";
+        }
+
         function showLoading() {
             document.getElementById("loadingSection").style.display = "block";
             document.getElementById("errorSection").style.display = "none";
             document.getElementById("resultsSection").style.display = "none";
+            document.getElementById("debugSection").style.display = "none";
         }
 
         function showError(message) {
@@ -473,6 +500,7 @@
             document.getElementById("errorSection").style.display = "block";
             document.getElementById("resultsSection").style.display = "none";
             document.getElementById("errorMessage").innerText = message;
+            console.error("Error:", message);
         }
 
         function displayResults(data) {
@@ -480,6 +508,8 @@
             document.getElementById("errorSection").style.display = "none";
             document.getElementById("resultsSection").style.display = "block";
             document.getElementById("lastUpdated").innerText = new Date().toLocaleDateString('th-TH');
+
+            console.log("Displaying results:", data);
 
             // Display user summary
             displayUserSummary(data);
@@ -489,16 +519,20 @@
         }
 
         function displayUserSummary(data) {
-            const userInfo = data.user_info || {};
             const summary = data.summary || {};
+            const debug = data.debug || {};
             
             const summaryHtml = `
                 <div class="user-summary">
                     <h3>สรุปผลการประเมิน</h3>
                     <div class="summary-grid">
                         <div class="summary-item">
+                            <div class="summary-label">ชื่อผู้ใช้</div>
+                            <div class="summary-value">${debug.user_name || 'ไม่ระบุ'}</div>
+                        </div>
+                        <div class="summary-item">
                             <div class="summary-label">GPAX ของคุณ</div>
-                            <div class="summary-value">${userInfo.user_gpax || 'N/A'}</div>
+                            <div class="summary-value">${debug.user_gpax || 'ไม่ระบุ'}</div>
                         </div>
                         <div class="summary-item">
                             <div class="summary-label">จำนวนการเลือก</div>
@@ -512,6 +546,10 @@
                             <div class="summary-label">คะแนนสูงสุด</div>
                             <div class="summary-value">${summary.highest_score ? summary.highest_score.toFixed(2) : '0'}</div>
                         </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Cache Status</div>
+                            <div class="summary-value">${debug.cache_valid ? '✓' : '✗'}</div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -522,6 +560,8 @@
         function displayUniversityResults(results) {
             const container = document.getElementById("universityResults");
             container.innerHTML = "";
+
+            console.log("Displaying university results:", results);
 
             if (results.length === 0) {
                 container.innerHTML = `
@@ -543,38 +583,37 @@
             const div = document.createElement('div');
             div.className = 'university-card';
             
-            const selection = result.selection_data || {};
-            const universityDetails = result.university_details || {};
+            console.log("Creating card for result:", result);
+            
+            const university = result.university || 'ไม่ระบุมหาวิทยาลัย';
+            const faculty = result.faculty || 'ไม่ระบุคณะ';
+            const field = result.field || 'ไม่ระบุสาขา';
             const status = result.status || 'unknown';
+            const score = result.score;
+            const message = result.message || 'ไม่มีข้อความ';
             
             let headerClass = 'calculated';
-            let statusMessage = '';
             let statusClass = 'success';
             
             switch (status) {
                 case 'calculated':
                     headerClass = 'calculated';
-                    statusMessage = result.message || 'คำนวณคะแนนสำเร็จ';
                     statusClass = 'success';
                     break;
                 case 'gpax_insufficient':
                     headerClass = 'gpax-insufficient';
-                    statusMessage = result.message || 'GPAX ไม่เพียงพอ';
                     statusClass = 'warning';
                     break;
                 case 'not_found':
                     headerClass = 'not-found';
-                    statusMessage = result.message || 'ไม่พบหลักสูตรที่เลือก';
                     statusClass = 'error';
                     break;
                 case 'incomplete':
                     headerClass = 'incomplete';
-                    statusMessage = result.message || 'ข้อมูลการเลือกไม่สมบูรณ์';
                     statusClass = 'info';
                     break;
                 case 'error':
                     headerClass = 'error';
-                    statusMessage = result.message || 'เกิดข้อผิดพลาดในการคำนวณ';
                     statusClass = 'error';
                     break;
             }
@@ -582,125 +621,34 @@
             div.innerHTML = `
                 <div class="card-header ${headerClass}">
                     <div>
-                        <h3>${selection.university || 'ไม่ระบุมหาวิทยาลัย'}</h3>
+                        <h3>${university}</h3>
                         <div class="university-info">
-                            ${selection.faculty || 'ไม่ระบุคณะ'} - ${selection.field || 'ไม่ระบุสาขา'}
+                            ${faculty} - ${field}
                         </div>
                     </div>
                     <div class="card-number">${cardNumber}</div>
                 </div>
                 <div class="card-body">
                     <div class="status-message ${statusClass}">
-                        ${statusMessage}
+                        ${message}
                     </div>
                     
-                    ${status === 'calculated' ? createCalculatedContent(result) : 
-                      status === 'gpax_insufficient' ? createGpaxInsufficientContent(result) :
-                      createEmptyContent()}
+                    ${status === 'calculated' && score !== null ? `
+                        <div class="score-display">
+                            <div class="score-value">${score.toFixed(2)}</div>
+                            <div class="score-label">คะแนนรวม</div>
+                        </div>
+                    ` : ''}
+                    
+                    ${status === 'incomplete' ? `
+                        <div class="empty-state">
+                            <p>ข้อมูลการเลือกไม่สมบูรณ์</p>
+                        </div>
+                    ` : ''}
                 </div>
             `;
             
             return div;
-        }
-
-        function createCalculatedContent(result) {
-            const score = result.score || 0;
-            const universityDetails = result.university_details || {};
-            const calculationDetails = result.calculation_details || [];
-            
-            let detailsHtml = '';
-            if (calculationDetails.length > 0) {
-                detailsHtml = `
-                    <div class="calculation-details">
-                        <div class="calculation-header">รายละเอียดการคำนวณ</div>
-                        ${calculationDetails.map(detail => `
-                            <div class="calculation-item">
-                                <div class="calc-subject">${detail.subject || 'ไม่ระบุ'}</div>
-                                <div class="calc-details">
-                                    คะแนน: ${detail.score || 0} × น้ำหนัก: ${detail.weight || 0}% = ${(detail.contribution || 0).toFixed(2)} คะแนน
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
-            
-            return `
-                <div class="score-display">
-                    <div class="score-value">${score.toFixed(2)}</div>
-                    <div class="score-label">คะแนนรวม</div>
-                </div>
-                
-                <div class="program-details">
-                    <div class="detail-row">
-                        <span class="detail-label">ชื่อหลักสูตร:</span>
-                        <span class="detail-value">${universityDetails.program_name || 'ไม่ระบุ'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">คณะ:</span>
-                        <span class="detail-value">${universityDetails.faculty_name || 'ไม่ระบุ'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">มหาวิทยาลัย:</span>
-                        <span class="detail-value">${universityDetails.university_name || 'ไม่ระบุ'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">GPAX ขั้นต่ำ:</span>
-                        <span class="detail-value">${universityDetails.gpax_requirement || 'ไม่ระบุ'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">รหัสหลักสูตร:</span>
-                        <span class="detail-value">${universityDetails.program_id || 'ไม่ระบุ'}</span>
-                    </div>
-                </div>
-                
-                ${detailsHtml}
-            `;
-        }
-
-        function createGpaxInsufficientContent(result) {
-            const universityDetails = result.university_details || {};
-            
-            return `
-                <div class="program-details">
-                    <div class="detail-row">
-                        <span class="detail-label">GPAX ที่ต้องการ:</span>
-                        <span class="detail-value">${universityDetails.gpax_requirement || 'ไม่ระบุ'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">GPAX ของคุณ:</span>
-                        <span class="detail-value">${universityDetails.user_gpax || 'ไม่ระบุ'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">ชื่อหลักสูตร:</span>
-                        <span class="detail-value">${universityDetails.program_name || 'ไม่ระบุ'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">คณะ:</span>
-                        <span class="detail-value">${universityDetails.faculty_name || 'ไม่ระบุ'}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        function createEmptyContent() {
-            return `
-                <div class="empty-state">
-                    <p>ไม่สามารถแสดงข้อมูลเพิ่มเติมได้</p>
-                </div>
-            `;
-        }
-
-        // Utility function to get status color
-        function getStatusColor(status) {
-            switch (status) {
-                case 'calculated': return '#4caf50';
-                case 'gpax_insufficient': return '#ff9800';
-                case 'not_found': return '#f44336';
-                case 'incomplete': return '#9e9e9e';
-                case 'error': return '#e91e63';
-                default: return '#757575';
-            }
         }
     </script>
 </body>
