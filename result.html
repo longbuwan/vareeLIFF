@@ -108,6 +108,9 @@
             border-radius: 4px;
             overflow-x: auto;
             margin: 8px 0;
+            font-size: 0.8rem;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         .user-summary {
@@ -227,6 +230,40 @@
             color: #666;
         }
 
+        .score-breakdown {
+            background: #f8faff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .score-breakdown h4 {
+            margin: 0 0 12px 0;
+            color: #01579b;
+            font-size: 1rem;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e3f2fd;
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-subject {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .breakdown-calculation {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
         .status-message {
             padding: 12px 16px;
             border-radius: 8px;
@@ -256,6 +293,27 @@
             background: #e3f2fd;
             color: #0288d1;
             border: 1px solid #bbdefb;
+        }
+
+        .missing-scores {
+            background: #fff3e0;
+            border: 1px solid #ffcc02;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+        }
+
+        .missing-scores h4 {
+            margin: 0 0 8px 0;
+            color: #f57c00;
+            font-size: 0.9rem;
+        }
+
+        .missing-scores ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #666;
+            font-size: 0.85rem;
         }
 
         .empty-state {
@@ -520,19 +578,19 @@
 
         function displayUserSummary(data) {
             const summary = data.summary || {};
-            const debug = data.debug || {};
             
+            // Fixed: Use correct data properties instead of debug properties
             const summaryHtml = `
                 <div class="user-summary">
                     <h3>สรุปผลการประเมิน</h3>
                     <div class="summary-grid">
                         <div class="summary-item">
                             <div class="summary-label">ชื่อผู้ใช้</div>
-                            <div class="summary-value">${debug.user_name || 'ไม่ระบุ'}</div>
+                            <div class="summary-value">${data.user_name || 'ไม่ระบุ'}</div>
                         </div>
                         <div class="summary-item">
                             <div class="summary-label">GPAX ของคุณ</div>
-                            <div class="summary-value">${debug.user_gpax || 'ไม่ระบุ'}</div>
+                            <div class="summary-value">${data.user_gpax || 'ไม่ระบุ'}</div>
                         </div>
                         <div class="summary-item">
                             <div class="summary-label">จำนวนการเลือก</div>
@@ -547,8 +605,8 @@
                             <div class="summary-value">${summary.highest_score ? summary.highest_score.toFixed(2) : '0'}</div>
                         </div>
                         <div class="summary-item">
-                            <div class="summary-label">Cache Status</div>
-                            <div class="summary-value">${debug.cache_valid ? '✓' : '✗'}</div>
+                            <div class="summary-label">คะแนนเฉลี่ย</div>
+                            <div class="summary-value">${summary.average_score ? summary.average_score.toFixed(2) : '0'}</div>
                         </div>
                     </div>
                 </div>
@@ -590,7 +648,10 @@
             const field = result.field || 'ไม่ระบุสาขา';
             const status = result.status || 'unknown';
             const score = result.score;
+            const scoreD = result.score_d; // Score difference from projected minimum
             const message = result.message || 'ไม่มีข้อความ';
+            const scoreBreakdown = result.score_breakdown || [];
+            const missingScores = result.missing_scores || [];
             
             let headerClass = 'calculated';
             let statusClass = 'success';
@@ -618,6 +679,78 @@
                     break;
             }
 
+            let bodyContent = `
+                <div class="status-message ${statusClass}">
+                    ${message}
+                </div>
+            `;
+
+            // Add score display for calculated scores
+            if (status === 'calculated' && score !== null) {
+                bodyContent += `
+                    <div class="score-display">
+                        <div class="score-value">${score.toFixed(2)}</div>
+                        <div class="score-label">คะแนนรวม</div>
+                        ${scoreD !== null ? `
+                            <div style="margin-top: 8px; font-size: 0.9rem; color: ${scoreD >= 0 ? '#4caf50' : '#f44336'};">
+                                ${scoreD >= 0 ? '+' : ''}${scoreD.toFixed(2)} จากคะแนนต่ำสุดปีที่แล้ว
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                // Add score breakdown
+                if (scoreBreakdown.length > 0) {
+                    bodyContent += `
+                        <div class="score-breakdown">
+                            <h4>รายละเอียดการคำนวณ</h4>
+                            ${scoreBreakdown.map(item => `
+                                <div class="breakdown-item">
+                                    <span class="breakdown-subject">${item.subject}</span>
+                                    <span class="breakdown-calculation">
+                                        ${item.user_score.toFixed(2)} × ${(item.weight * 100).toFixed(1)}% = ${item.contribution.toFixed(2)}
+                                    </span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+            }
+
+            // Add GPAX requirement info for insufficient GPAX
+            if (status === 'gpax_insufficient') {
+                bodyContent += `
+                    <div class="status-message warning">
+                        <strong>GPAX ไม่เพียงพอ</strong><br>
+                        ต้องการ: ${result.gpax_required || 'N/A'}<br>
+                        ของคุณ: ${result.gpax_current || 'N/A'}
+                    </div>
+                `;
+            }
+
+            // Add missing scores info
+            if (status === 'error' && missingScores.length > 0) {
+                bodyContent += `
+                    <div class="missing-scores">
+                        <h4>คะแนนที่ขาดหาย (${result.missing_count}/${result.total_required}):</h4>
+                        <ul>
+                            ${missingScores.slice(0, 10).map(score => `<li>${score}</li>`).join('')}
+                            ${missingScores.length > 10 ? `<li>และอีก ${missingScores.length - 10} รายการ</li>` : ''}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Add empty state for incomplete selections
+            if (status === 'incomplete') {
+                bodyContent += `
+                    <div class="empty-state">
+                        <p>ข้อมูลการเลือกไม่สมบูรณ์</p>
+                        <small>กรุณากรอกข้อมูลมหาวิทยาลัย คณะ และสาขาให้ครบถ้วน</small>
+                    </div>
+                `;
+            }
+
             div.innerHTML = `
                 <div class="card-header ${headerClass}">
                     <div>
@@ -629,22 +762,7 @@
                     <div class="card-number">${cardNumber}</div>
                 </div>
                 <div class="card-body">
-                    <div class="status-message ${statusClass}">
-                        ${message}
-                    </div>
-                    
-                    ${status === 'calculated' && score !== null ? `
-                        <div class="score-display">
-                            <div class="score-value">${score.toFixed(2)}</div>
-                            <div class="score-label">คะแนนรวม</div>
-                        </div>
-                    ` : ''}
-                    
-                    ${status === 'incomplete' ? `
-                        <div class="empty-state">
-                            <p>ข้อมูลการเลือกไม่สมบูรณ์</p>
-                        </div>
-                    ` : ''}
+                    ${bodyContent}
                 </div>
             `;
             
