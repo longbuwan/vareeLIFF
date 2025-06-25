@@ -146,6 +146,16 @@
             font-weight: bold;
         }
 
+        .sorting-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
         .university-card {
             background: white;
             border-radius: 16px;
@@ -416,6 +426,11 @@
             <!-- User Summary will be inserted here -->
             <div id="userSummary"></div>
             
+            <!-- Sorting explanation -->
+            <div id="sortingInfo" class="sorting-info" style="display: none;">
+                📊 ผลลัพธ์เรียงตามความท้าทาย: โปรแกรมที่ท้าทายที่สุด (คะแนนต่ำกว่าปีก่อน) ไปยังโปรแกรมที่มีโอกาสสูงที่สุด (คะแนนสูงกว่าปีก่อน)
+            </div>
+            
             <!-- University cards will be inserted here -->
             <div id="universityResults"></div>
         </div>
@@ -631,7 +646,43 @@
                 return;
             }
 
-            results.forEach((result, index) => {
+            // Sort results by score_d (score difference) from least to greatest
+            const sortedResults = [...results].sort((a, b) => {
+                // Handle cases where score_d might be null or undefined
+                const scoreA = a.score_d;
+                const scoreB = b.score_d;
+                
+                // If both have valid score_d, sort by score_d (ascending)
+                if (scoreA !== null && scoreA !== undefined && scoreB !== null && scoreB !== undefined) {
+                    return scoreA - scoreB;
+                }
+                
+                // If only A has valid score_d, A comes first
+                if (scoreA !== null && scoreA !== undefined) {
+                    return -1;
+                }
+                
+                // If only B has valid score_d, B comes first
+                if (scoreB !== null && scoreB !== undefined) {
+                    return 1;
+                }
+                
+                // If neither has valid score_d, maintain original order
+                return 0;
+            });
+
+            console.log("Sorted results:", sortedResults);
+
+            // Check if we have any calculated scores to show sorting info
+            const hasCalculatedScores = sortedResults.some(result => 
+                result.status === 'calculated' && result.score_d !== null && result.score_d !== undefined
+            );
+            
+            if (hasCalculatedScores) {
+                document.getElementById("sortingInfo").style.display = "block";
+            }
+
+            sortedResults.forEach((result, index) => {
                 const card = createUniversityCard(result, index + 1);
                 container.appendChild(card);
             });
@@ -687,15 +738,29 @@
 
             // Add score display for calculated scores
             if (status === 'calculated' && score !== null) {
+                let difficultyIndicator = '';
+                if (scoreD !== null && scoreD !== undefined) {
+                    if (scoreD < -10) {
+                        difficultyIndicator = '<div style="margin-top: 8px; font-size: 0.8rem; color: #d32f2f; font-weight: bold;">🔴 ท้าทายมาก</div>';
+                    } else if (scoreD < 0) {
+                        difficultyIndicator = '<div style="margin-top: 8px; font-size: 0.8rem; color: #f57c00; font-weight: bold;">🟡 ท้าทาย</div>';
+                    } else if (scoreD < 10) {
+                        difficultyIndicator = '<div style="margin-top: 8px; font-size: 0.8rem; color: #388e3c; font-weight: bold;">🟢 เหมาะสม</div>';
+                    } else {
+                        difficultyIndicator = '<div style="margin-top: 8px; font-size: 0.8rem; color: #1976d2; font-weight: bold;">🔵 ปลอดภัย</div>';
+                    }
+                }
+
                 bodyContent += `
                     <div class="score-display">
                         <div class="score-value">${score.toFixed(2)}</div>
                         <div class="score-label">คะแนนรวม</div>
-                        ${scoreD !== null ? `
+                        ${scoreD !== null && scoreD !== undefined ? `
                             <div style="margin-top: 8px; font-size: 0.9rem; color: ${scoreD >= 0 ? '#4caf50' : '#f44336'};">
                                 ${scoreD >= 0 ? '+' : ''}${scoreD.toFixed(2)} จากคะแนนต่ำสุดปีที่แล้ว
                             </div>
                         ` : ''}
+                        ${difficultyIndicator}
                     </div>
                 `;
 
