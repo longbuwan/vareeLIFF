@@ -427,7 +427,7 @@ document.querySelector("button").innerText = "กำลังส่ง...";
     const data = {
      userId: profile.userId,
   name: profile.displayName,
-  gpax: parseFloat(gpax),
+  gpax: parseFloat(gpax)*25,
   tgat1: parseFloat(tgat1),
   tgat2: parseFloat(tgat2),
   tgat3: parseFloat(tgat3),
@@ -454,11 +454,11 @@ document.querySelector("button").innerText = "กำลังส่ง...";
   a_lv_83: parseFloat(document.getElementById("A-Level4.3_score").value.trim()),
   a_lv_84: parseFloat(document.getElementById("A-Level4.4_score").value.trim()),
 
-  a_lv_85: parseFloat(document.getElementById("A-Level4.5_score").value.trim()),
-  a_lv_86: parseFloat(document.getElementById("A-Level4.6_score").value.trim()),
-  a_lv_87: parseFloat(document.getElementById("A-Level4.7_score").value.trim()),
-  a_lv_88: parseFloat(document.getElementById("A-Level4.8_score").value.trim()),
-  a_lv_89: parseFloat(document.getElementById("A-Level4.9_score").value.trim()),
+  a_lv_85: parseFloat(document.getElementById("A-Level4.5_score").value.trim())*25,
+  a_lv_86: parseFloat(document.getElementById("A-Level4.6_score").value.trim())*25,
+  a_lv_87: parseFloat(document.getElementById("A-Level4.7_score").value.trim())*25,
+  a_lv_88: parseFloat(document.getElementById("A-Level4.8_score").value.trim())*25,
+  a_lv_89: parseFloat(document.getElementById("A-Level4.9_score").value.trim())*25,
 
       
   gpa21: parseFloat(document.getElementById("gpa21_score").value.trim()) * 25,
