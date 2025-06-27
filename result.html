@@ -387,7 +387,7 @@
         }
 
         .find-alternatives-btn:hover {
-            background: #0288d1;
+            background: #7b1fa2;
         }
 
         .find-alternatives-btn:disabled {
@@ -667,30 +667,39 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify(
-                        { userId: currentUserId },
-                        { University: university }
-                    )
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        university: university
+                    })
                 });
 
                 if (!response.ok) {
-                    console.error("Failed to fetch alternative programs");
+                    const errorText = await response.text();
+                    console.error("Failed to fetch alternative programs:", errorText);
                     return;
                 }
 
                 const alternativeData = await response.json();
                 console.log("Alternative programs data:", alternativeData);
                 
-                // Filter programs with good scores (score_d > 0)
-                const goodAlternatives = alternativeData.results.filter(result => 
-                    result.status === 'calculated' && 
-                    result.score_d !== null && 
-                    result.score_d > 0 &&
-                    result.should === "true"
-                );
+                // Use the recommended_programs from the response, or filter from results
+                let goodAlternatives = alternativeData.recommended_programs || [];
+                
+                if (goodAlternatives.length === 0) {
+                    // Fallback: filter from all results
+                    goodAlternatives = alternativeData.results.filter(result => 
+                        result.status === 'calculated' && 
+                        result.score_d !== null && 
+                        result.score_d > 0 &&
+                        result.should === "true"
+                    );
+                }
 
                 if (goodAlternatives.length > 0) {
                     alternativePrograms[university] = goodAlternatives;
+                    console.log(`Found ${goodAlternatives.length} alternative programs for ${university}`);
+                } else {
+                    console.log(`No good alternative programs found for ${university}`);
                 }
                 
             } catch (error) {
@@ -1133,7 +1142,12 @@
                 console.error('Error finding alternatives:', error);
                 if (button) {
                     button.disabled = false;
-                    button.textContent = "🔍 ค้นหาโปรแกรมทางเลือก";
+                    button.textContent = "❌ ไม่พบโปรแกรมทางเลือก";
+                    
+                    // Reset button text after 3 seconds
+                    setTimeout(() => {
+                        button.textContent = "🔍 ค้นหาโปรแกรมทางเลือก";
+                    }, 3000);
                 }
             }
         }
