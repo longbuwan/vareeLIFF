@@ -437,10 +437,7 @@
 
   function getInputValue(id) {
     const element = document.getElementById(id);
-    if (!element) {
-      console.warn(`Element with id ${id} not found`);
-      return null;
-    }
+    
     const value = element.value.trim();
     return value === '' ? null : parseFloat(value);
   }
