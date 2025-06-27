@@ -435,12 +435,59 @@
             <div id="universityResults"></div>
         </div>
 
-       
+        <!-- Last updated timestamp -->
+        <div id="lastUpdated" class="footer" style="display: none;">
+            อัปเดตล่าสุด: <span id="lastUpdatedTime"></span>
+        </div>
     </div>
 
     <script>
         let currentUserId = null;
         let debugMode = false;
+
+        // Helper function to safely get element
+        function safeGetElement(id) {
+            const element = document.getElementById(id);
+            if (!element) {
+                console.warn(`Element with ID '${id}' not found`);
+            }
+            return element;
+        }
+
+        // Helper function to safely set text content
+        function safeSetText(id, text) {
+            const element = safeGetElement(id);
+            if (element) {
+                element.innerText = text;
+                return true;
+            }
+            return false;
+        }
+
+        // Helper function to safely set HTML content
+        function safeSetHTML(id, html) {
+            const element = safeGetElement(id);
+            if (element) {
+                element.innerHTML = html;
+                return true;
+            }
+            return false;
+        }
+
+        // Helper function to safely set display style
+        function safeSetDisplay(id, display) {
+            const element = safeGetElement(id);
+            if (element) {
+                element.style.display = display;
+                return true;
+            }
+            return false;
+        }
+
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
+        });
 
         window.onload = async function () {
             try {
@@ -450,10 +497,14 @@
                     const profile = await liff.getProfile();
                     currentUserId = profile.userId;
                     
-                    document.getElementById("name").innerText = profile.displayName;
-                    document.getElementById("userId").innerText = `ID: ${profile.userId}`;
-                    document.getElementById("picture").src = profile.pictureUrl;
-                    document.getElementById("picture").style.display = "block";
+                    safeSetText("name", profile.displayName);
+                    safeSetText("userId", `ID: ${profile.userId}`);
+                    
+                    const pictureElement = safeGetElement("picture");
+                    if (pictureElement) {
+                        pictureElement.src = profile.pictureUrl;
+                        pictureElement.style.display = "block";
+                    }
                     
                     console.log("User ID:", currentUserId);
                     
@@ -546,290 +597,354 @@
         }
 
         function displayDebugInfo(data) {
-            const debugContent = document.getElementById("debugContent");
-            debugContent.innerHTML = `
+            const debugContent = `
                 <h4>ข้อมูลผู้ใช้:</h4>
                 <pre>${JSON.stringify(data, null, 2)}</pre>
             `;
             
-            document.getElementById("debugSection").style.display = "block";
+            safeSetHTML("debugContent", debugContent);
+            safeSetDisplay("debugSection", "block");
         }
 
         function hideDebug() {
-            document.getElementById("debugSection").style.display = "none";
+            safeSetDisplay("debugSection", "none");
         }
 
         function showLoading() {
-            document.getElementById("loadingSection").style.display = "block";
-            document.getElementById("errorSection").style.display = "none";
-            document.getElementById("resultsSection").style.display = "none";
-            document.getElementById("debugSection").style.display = "none";
+            safeSetDisplay("loadingSection", "block");
+            safeSetDisplay("errorSection", "none");
+            safeSetDisplay("resultsSection", "none");
+            safeSetDisplay("debugSection", "none");
         }
 
         function showError(message) {
-            document.getElementById("loadingSection").style.display = "none";
-            document.getElementById("errorSection").style.display = "block";
-            document.getElementById("resultsSection").style.display = "none";
-            document.getElementById("errorMessage").innerText = message;
+            safeSetDisplay("loadingSection", "none");
+            safeSetDisplay("errorSection", "block");
+            safeSetDisplay("resultsSection", "none");
+            safeSetText("errorMessage", message);
             console.error("Error:", message);
         }
 
         function displayResults(data) {
-            document.getElementById("loadingSection").style.display = "none";
-            document.getElementById("errorSection").style.display = "none";
-            document.getElementById("resultsSection").style.display = "block";
-            //document.getElementById("lastUpdated").innerText = new Date().toLocaleDateString('th-TH');
+            try {
+                safeSetDisplay("loadingSection", "none");
+                safeSetDisplay("errorSection", "none");
+                safeSetDisplay("resultsSection", "block");
+                
+                // Update last updated timestamp
+                const now = new Date();
+                safeSetText("lastUpdatedTime", now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH'));
+                safeSetDisplay("lastUpdated", "block");
 
-            console.log("Displaying results:", data);
+                console.log("Displaying results:", data);
 
-            // Display user summary
-            displayUserSummary(data);
-            
-            // Display university results
-            displayUniversityResults(data.results || []);
+                // Display user summary
+                displayUserSummary(data);
+                
+                // Display university results
+                displayUniversityResults(data.results || []);
+                
+            } catch (error) {
+                console.error("Error in displayResults:", error);
+                showError("เกิดข้อผิดพลาดในการแสดงผล: " + error.message);
+            }
         }
 
         function displayUserSummary(data) {
-            const summary = data.summary || {};
-            
-            // Fixed: Use correct data properties instead of debug properties
-            const summaryHtml = `
-                <div class="user-summary">
-                    <h3>สรุปผลการประเมิน</h3>
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <div class="summary-label">ชื่อผู้ใช้</div>
-                            <div class="summary-value">${data.user_name || 'ไม่ระบุ'}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-label">GPAX ของคุณ</div>
-                            <div class="summary-value">${data.user_gpax || 'ไม่ระบุ'}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-label">จำนวนการเลือก</div>
-                            <div class="summary-value">${summary.total_selections || 0}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-label">คำนวณได้</div>
-                            <div class="summary-value">${summary.calculated_scores || 0}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-label">คะแนนสูงสุด</div>
-                            <div class="summary-value">${summary.highest_score ? summary.highest_score.toFixed(2) : '0'}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-label">คะแนนเฉลี่ย</div>
-                            <div class="summary-value">${summary.average_score ? summary.average_score.toFixed(2) : '0'}</div>
+            try {
+                const summary = data.summary || {};
+                
+                // Fixed: Use correct data properties instead of debug properties
+                const summaryHtml = `
+                    <div class="user-summary">
+                        <h3>สรุปผลการประเมิน</h3>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div class="summary-label">ชื่อผู้ใช้</div>
+                                <div class="summary-value">${data.user_name || 'ไม่ระบุ'}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">GPAX ของคุณ</div>
+                                <div class="summary-value">${data.user_gpax || 'ไม่ระบุ'}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">จำนวนการเลือก</div>
+                                <div class="summary-value">${summary.total_selections || 0}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">คำนวณได้</div>
+                                <div class="summary-value">${summary.calculated_scores || 0}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">คะแนนสูงสุด</div>
+                                <div class="summary-value">${summary.highest_score ? summary.highest_score.toFixed(2) : '0'}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">คะแนนเฉลี่ย</div>
+                                <div class="summary-value">${summary.average_score ? summary.average_score.toFixed(2) : '0'}</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
-            
-            document.getElementById("userSummary").innerHTML = summaryHtml;
+                `;
+                
+                safeSetHTML("userSummary", summaryHtml);
+                
+            } catch (error) {
+                console.error("Error in displayUserSummary:", error);
+                safeSetHTML("userSummary", `
+                    <div class="user-summary">
+                        <h3>เกิดข้อผิดพลาดในการแสดงสรุปผล</h3>
+                        <p>ไม่สามารถแสดงข้อมูลสรุปได้</p>
+                    </div>
+                `);
+            }
         }
 
         function displayUniversityResults(results) {
-            const container = document.getElementById("universityResults");
-            container.innerHTML = "";
-
-            console.log("Displaying university results:", results);
-
-            if (results.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h3>ยังไม่มีข้อมูลการเลือกมหาวิทยาลัย</h3>
-                        <p>กรุณาเลือกมหาวิทยาลัยที่ต้องการสมัครก่อน</p>
-                    </div>
-                `;
-                return;
-            }
-
-            // Sort results by score_d (score difference) from least to greatest
-            const sortedResults = [...results].sort((a, b) => {
-                // Handle cases where score_d might be null or undefined
-                const scoreA = a.score_d;
-                const scoreB = b.score_d;
-                
-                // If both have valid score_d, sort by score_d (ascending)
-                if (scoreA !== null && scoreA !== undefined && scoreB !== null && scoreB !== undefined) {
-                    return scoreA - scoreB;
+            try {
+                const container = safeGetElement("universityResults");
+                if (!container) {
+                    console.error("universityResults container not found");
+                    return;
                 }
                 
-                // If only A has valid score_d, A comes first
-                if (scoreA !== null && scoreA !== undefined) {
-                    return -1;
+                container.innerHTML = "";
+
+                console.log("Displaying university results:", results);
+
+                if (results.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>ยังไม่มีข้อมูลการเลือกมหาวิทยาลัย</h3>
+                            <p>กรุณาเลือกมหาวิทยาลัยที่ต้องการสมัครก่อน</p>
+                        </div>
+                    `;
+                    return;
                 }
-                
-                // If only B has valid score_d, B comes first
-                if (scoreB !== null && scoreB !== undefined) {
-                    return 1;
-                }
-                
-                // If neither has valid score_d, maintain original order
-                return 0;
-            });
 
-            console.log("Sorted results:", sortedResults);
-
-            // Check if we have any calculated scores to show sorting info
-            const hasCalculatedScores = sortedResults.some(result => 
-                result.status === 'calculated' && result.score_d !== null && result.score_d !== undefined
-            );
-            
-            if (hasCalculatedScores) {
-                document.getElementById("sortingInfo").style.display = "block";
-            }
-
-            sortedResults.forEach((result, index) => {
-                const card = createUniversityCard(result, index + 1);
-                container.appendChild(card);
-            });
-        }
-
-        function createUniversityCard(result, cardNumber) {
-            const div = document.createElement('div');
-            div.className = 'university-card';
-            
-            console.log("Creating card for result:", result);
-            
-            const university = result.university || 'ไม่ระบุมหาวิทยาลัย';
-            const faculty = result.faculty || 'ไม่ระบุคณะ';
-            const field = result.field || 'ไม่ระบุสาขา';
-            const status = result.status || 'unknown';
-            const score = result.score;
-            const scoreD = result.score_d; // Score difference from projected minimum
-            const message = result.message || 'ไม่มีข้อความ';
-            const scoreBreakdown = result.score_breakdown || [];
-            const missingScores = result.missing_scores || [];
-            
-            let headerClass = 'calculated';
-            let statusClass = 'success';
-            
-            switch (status) {
-                case 'calculated':
-                    headerClass = 'calculated';
-                    statusClass = 'success';
-                    break;
-                case 'gpax_insufficient':
-                    headerClass = 'gpax-insufficient';
-                    statusClass = 'warning';
-                    break;
-                case 'not_found':
-                    headerClass = 'not-found';
-                    statusClass = 'error';
-                    break;
-                case 'incomplete':
-                    headerClass = 'incomplete';
-                    statusClass = 'info';
-                    break;
-                case 'error':
-                    headerClass = 'error';
-                    statusClass = 'error';
-                    break;
-            }
-
-            let bodyContent = `
-                <div class="status-message ${statusClass}">
-                    ${message}
-                </div>
-            `;
-
-            // Add score display for calculated scores
-            if (status === 'calculated' && score !== null) {
-                let difficultyIndicator = '';
-                if (scoreD !== null && scoreD !== undefined) {
-                    if (scoreD < -3.6) {
-                        difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #d32f2f; font-weight: bold;">🔴 มีโอกาศติดตํ่ามาก</div>';
-                    } else if (scoreD < 0) {
-                        difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #f57c00; font-weight: bold;">🟡 มีโอกาศติดตํ่า</div>';
-                    } else if (scoreD < 3.6) {
-                        difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #1976d2; font-weight: bold;">🔵 มีโอกาศติดสูง</div>';
-                    } else {
-                        difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #388e3c; font-weight: bold;">🟢 มีโอกาศติดสูงมาก</div>';
+                // Sort results by score_d (score difference) from least to greatest
+                const sortedResults = [...results].sort((a, b) => {
+                    // Handle cases where score_d might be null or undefined
+                    const scoreA = a.score_d;
+                    const scoreB = b.score_d;
+                    
+                    // If both have valid score_d, sort by score_d (ascending)
+                    if (scoreA !== null && scoreA !== undefined && scoreB !== null && scoreB !== undefined) {
+                        return scoreA - scoreB;
                     }
+                    
+                    // If only A has valid score_d, A comes first
+                    if (scoreA !== null && scoreA !== undefined) {
+                        return -1;
+                    }
+                    
+                    // If only B has valid score_d, B comes first
+                    if (scoreB !== null && scoreB !== undefined) {
+                        return 1;
+                    }
+                    
+                    // If neither has valid score_d, maintain original order
+                    return 0;
+                });
+
+                console.log("Sorted results:", sortedResults);
+
+                // Check if we have any calculated scores to show sorting info
+                const hasCalculatedScores = sortedResults.some(result => 
+                    result.status === 'calculated' && result.score_d !== null && result.score_d !== undefined
+                );
+                
+                if (hasCalculatedScores) {
+                    safeSetDisplay("sortingInfo", "block");
                 }
 
-                bodyContent += `
-                    <div class="score-display">
-                        <div class="score-value">${score.toFixed(2)}</div>
-                        <div class="score-label">คะแนนรวม</div>
-                        ${scoreD !== null && scoreD !== undefined ? `
-                            <div style="margin-top: 8px; font-size: 0.9rem; color: ${scoreD >= 0 ? '#4caf50' : '#f44336'};">
-                                ${scoreD >= 0 ? '+' : ''}${scoreD.toFixed(2)} จากคะแนนต่ำสุดปีที่แล้ว
-                            </div>
-                        ` : ''}
-                        ${difficultyIndicator}
-                    </div>
-                `;
-
-                // Add score breakdown
-                if (scoreBreakdown.length > 0) {
-                    bodyContent += `
-                        <div class="score-breakdown">
-                            <h4>รายละเอียดการคำนวณ</h4>
-                            ${scoreBreakdown.map(item => `
-                                <div class="breakdown-item">
-                                    <span class="breakdown-subject">${item.subject}</span>
-                                    <span class="breakdown-calculation">
-                                        ${item.user_score.toFixed(2)} × ${(item.weight * 100).toFixed(1)}% = ${item.contribution.toFixed(2)}
-                                    </span>
-                                </div>
-                            `).join('')}
+                sortedResults.forEach((result, index) => {
+                    const card = createUniversityCard(result, index + 1);
+                    if (card) {
+                        container.appendChild(card);
+                    }
+                });
+                
+            } catch (error) {
+                console.error("Error in displayUniversityResults:", error);
+                const container = safeGetElement("universityResults");
+                if (container) {
+                    container.innerHTML = `
+                        <div class="error-state">
+                            <h3>เกิดข้อผิดพลาดในการแสดงผล</h3>
+                            <p>ไม่สามารถแสดงผลลัพธ์มหาวิทยาลัยได้</p>
                         </div>
                     `;
                 }
             }
+        }
 
-            // Add GPAX requirement info for insufficient GPAX
-            if (status === 'gpax_insufficient') {
-                bodyContent += `
-                    <div class="status-message warning">
-                        <strong>GPAX ไม่เพียงพอ</strong><br>
-                        ต้องการ: ${result.gpax_required || 'N/A'}<br>
-                        ของคุณ: ${result.gpax_current || 'N/A'}
+        function createUniversityCard(result, cardNumber) {
+            try {
+                const div = document.createElement('div');
+                div.className = 'university-card';
+                
+                console.log("Creating card for result:", result);
+                
+                const university = result.university || 'ไม่ระบุมหาวิทยาลัย';
+                const faculty = result.faculty || 'ไม่ระบุคณะ';
+                const field = result.field || 'ไม่ระบุสาขา';
+                const status = result.status || 'unknown';
+                const score = result.score;
+                const scoreD = result.score_d; // Score difference from projected minimum
+                const message = result.message || 'ไม่มีข้อความ';
+                const scoreBreakdown = result.score_breakdown || [];
+                const missingScores = result.missing_scores || [];
+                
+                let headerClass = 'calculated';
+                let statusClass = 'success';
+                
+                switch (status) {
+                    case 'calculated':
+                        headerClass = 'calculated';
+                        statusClass = 'success';
+                        break;
+                    case 'gpax_insufficient':
+                        headerClass = 'gpax-insufficient';
+                        statusClass = 'warning';
+                        break;
+                    case 'not_found':
+                        headerClass = 'not-found';
+                        statusClass = 'error';
+                        break;
+                    case 'incomplete':
+                        headerClass = 'incomplete';
+                        statusClass = 'info';
+                        break;
+                    case 'error':
+                        headerClass = 'error';
+                        statusClass = 'error';
+                        break;
+                }
+
+                let bodyContent = `
+                    <div class="status-message ${statusClass}">
+                        ${message}
                     </div>
                 `;
-            }
 
-            // Add missing scores info
-            if (status === 'error' && missingScores.length > 0) {
-                bodyContent += `
-                    <div class="missing-scores">
-                        <h4>คะแนนที่ขาดหาย (${result.missing_count}/${result.total_required}):</h4>
-                        <ul>
-                            ${missingScores.slice(0, 10).map(score => `<li>${score}</li>`).join('')}
-                            ${missingScores.length > 10 ? `<li>และอีก ${missingScores.length - 10} รายการ</li>` : ''}
-                        </ul>
+                // Add score display for calculated scores
+                if (status === 'calculated' && score !== null) {
+                    let difficultyIndicator = '';
+                    if (scoreD !== null && scoreD !== undefined) {
+                        if (scoreD < -3.6) {
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #d32f2f; font-weight: bold;">🔴 มีโอกาศติดต่ำมาก</div>';
+                        } else if (scoreD < 0) {
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #f57c00; font-weight: bold;">🟡 มีโอกาศติดต่ำ</div>';
+                        } else if (scoreD < 3.6) {
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #1976d2; font-weight: bold;">🔵 มีโอกาศติดสูง</div>';
+                        } else {
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #388e3c; font-weight: bold;">🟢 มีโอกาศติดสูงมาก</div>';
+                        }
+                    }
+
+                    bodyContent += `
+                        <div class="score-display">
+                            <div class="score-value">${score.toFixed(2)}</div>
+                            <div class="score-label">คะแนนรวม</div>
+                            ${scoreD !== null && scoreD !== undefined ? `
+                                <div style="margin-top: 8px; font-size: 0.9rem; color: ${scoreD >= 0 ? '#4caf50' : '#f44336'};">
+                                    ${scoreD >= 0 ? '+' : ''}${scoreD.toFixed(2)} จากคะแนนต่ำสุดปีที่แล้ว
+                                </div>
+                            ` : ''}
+                            ${difficultyIndicator}
+                        </div>
+                    `;
+
+                    // Add score breakdown
+                    if (scoreBreakdown.length > 0) {
+                        bodyContent += `
+                            <div class="score-breakdown">
+                                <h4>รายละเอียดการคำนวณ</h4>
+                                ${scoreBreakdown.map(item => `
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-subject">${item.subject}</span>
+                                        <span class="breakdown-calculation">
+                                            ${item.user_score.toFixed(2)} × ${(item.weight * 100).toFixed(1)}% = ${item.contribution.toFixed(2)}
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+                }
+
+                // Add GPAX requirement info for insufficient GPAX
+                if (status === 'gpax_insufficient') {
+                    bodyContent += `
+                        <div class="status-message warning">
+                            <strong>GPAX ไม่เพียงพอ</strong><br>
+                            ต้องการ: ${result.gpax_required || 'N/A'}<br>
+                            ของคุณ: ${result.gpax_current || 'N/A'}
+                        </div>
+                    `;
+                }
+
+                // Add missing scores info
+                if (status === 'error' && missingScores.length > 0) {
+                    bodyContent += `
+                        <div class="missing-scores">
+                            <h4>คะแนนที่ขาดหาย (${result.missing_count}/${result.total_required}):</h4>
+                            <ul>
+                                ${missingScores.slice(0, 10).map(score => `<li>${score}</li>`).join('')}
+                                ${missingScores.length > 10 ? `<li>และอีก ${missingScores.length - 10} รายการ</li>` : ''}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                // Add empty state for incomplete selections
+                if (status === 'incomplete') {
+                    bodyContent += `
+                        <div class="empty-state">
+                            <p>ข้อมูลการเลือกไม่สมบูรณ์</p>
+                            <small>กรุณากรอกข้อมูลมหาวิทยาลัย คณะ และสาขาให้ครบถ้วน</small>
+                        </div>
+                    `;
+                }
+
+                div.innerHTML = `
+                    <div class="card-header ${headerClass}">
+                        <div>
+                            <h3>${university}</h3>
+                            <div class="university-info">
+                                ${faculty} - ${field}
+                            </div>
+                        </div>
+                        <div class="card-number">${cardNumber}</div>
+                    </div>
+                    <div class="card-body">
+                        ${bodyContent}
                     </div>
                 `;
-            }
-
-            // Add empty state for incomplete selections
-            if (status === 'incomplete') {
-                bodyContent += `
-                    <div class="empty-state">
-                        <p>ข้อมูลการเลือกไม่สมบูรณ์</p>
-                        <small>กรุณากรอกข้อมูลมหาวิทยาลัย คณะ และสาขาให้ครบถ้วน</small>
+                
+                return div;
+                
+            } catch (error) {
+                console.error("Error creating university card:", error);
+                const div = document.createElement('div');
+                div.className = 'university-card';
+                div.innerHTML = `
+                    <div class="card-header error">
+                        <div>
+                            <h3>เกิดข้อผิดพลาด</h3>
+                            <div class="university-info">ไม่สามารถแสดงข้อมูลได้</div>
+                        </div>
+                        <div class="card-number">${cardNumber}</div>
                     </div>
-                `;
-            }
-
-            div.innerHTML = `
-                <div class="card-header ${headerClass}">
-                    <div>
-                        <h3>${university}</h3>
-                        <div class="university-info">
-                            ${faculty} - ${field}
+                    <div class="card-body">
+                        <div class="status-message error">
+                            เกิดข้อผิดพลาดในการสร้างการ์ด
                         </div>
                     </div>
-                    <div class="card-number">${cardNumber}</div>
-                </div>
-                <div class="card-body">
-                    ${bodyContent}
-                </div>
-            `;
-            
-            return div;
+                `;
+                return div;
+            }
         }
     </script>
 </body>
