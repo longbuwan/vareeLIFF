@@ -503,7 +503,7 @@
             <!-- University cards will be inserted here -->
             <div id="universityResults"></div>
         </div>
-
+  <button type="button" class="submit-btn" onclick="sendMessage()">เเบบสอบถาม</button>
         <!-- Last updated timestamp -->
         <div id="lastUpdated" class="footer" style="display: none;">
             อัปเดตล่าสุด: <span id="lastUpdatedTime"></span>
@@ -1151,6 +1151,10 @@
                 }
             }
         }
+         async function sendMessage() {
+              window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSeZDDCm5Cu0JdV_56mQZsxX7Ch6A5LWfrWv1uOYI3Ody69amQ/viewform?usp=dialog";
+         }
+        
     </script>
 </body>
 </html>
