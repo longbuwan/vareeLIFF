@@ -192,6 +192,10 @@
             background: linear-gradient(135deg, #e91e63, #c2185b);
         }
 
+        .card-header.alternative {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+        }
+
         .card-header h3 {
             margin: 0;
             font-size: 1.1rem;
@@ -305,6 +309,12 @@
             border: 1px solid #bbdefb;
         }
 
+        .status-message.alternative {
+            background: #f3e5f5;
+            color: #7b1fa2;
+            border: 1px solid #ce93d8;
+        }
+
         .missing-scores {
             background: #fff3e0;
             border: 1px solid #ffcc02;
@@ -324,6 +334,65 @@
             padding-left: 20px;
             color: #666;
             font-size: 0.85rem;
+        }
+
+        .alternative-programs {
+            background: #f3e5f5;
+            border: 1px solid #ce93d8;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .alternative-programs h4 {
+            margin: 0 0 12px 0;
+            color: #7b1fa2;
+            font-size: 1rem;
+        }
+
+        .alternative-program-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .alternative-program-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .alternative-program-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .alternative-program-score {
+            color: #4caf50;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .find-alternatives-btn {
+            background: #9c27b0;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 16px;
+            width: 100%;
+        }
+
+        .find-alternatives-btn:hover {
+            background: #7b1fa2;
+        }
+
+        .find-alternatives-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
 
         .empty-state {
@@ -444,6 +513,8 @@
     <script>
         let currentUserId = null;
         let debugMode = false;
+        let currentScoreData = null;
+        let alternativePrograms = {};
 
         // Helper function to safely get element
         function safeGetElement(id) {
@@ -553,11 +624,77 @@
                     throw new Error(data.error);
                 }
 
+                currentScoreData = data;
                 displayResults(data);
+                
+                // Check for low scores and find alternatives
+                await checkForLowScoresAndFindAlternatives(data);
                 
             } catch (error) {
                 console.error('Error loading score data:', error);
                 showError(error.message || "ไม่สามารถโหลดข้อมูลคะแนนได้");
+            }
+        }
+
+        async function checkForLowScoresAndFindAlternatives(data) {
+            const lowScoreResults = data.results.filter(result => 
+                result.status === 'calculated' && 
+                result.score_d !== null && 
+                result.score_d < -3.6
+            );
+
+            if (lowScoreResults.length > 0) {
+                console.log("Found low scores, finding alternatives...");
+                
+                // Get unique universities from low score results
+                const universities = [...new Set(lowScoreResults.map(result => result.university))];
+                
+                for (const university of universities) {
+                    await findAlternativePrograms(university);
+                }
+                
+                // Re-display results with alternatives
+                displayResults(currentScoreData);
+            }
+        }
+
+        async function findAlternativePrograms(university) {
+            try {
+                console.log("Finding alternative programs for:", university);
+                
+                const response = await fetch("https://varee.onrender.com/api/new_program", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(
+                        { userId: currentUserId },
+                        { University: university }
+                    )
+                });
+
+                if (!response.ok) {
+                    console.error("Failed to fetch alternative programs");
+                    return;
+                }
+
+                const alternativeData = await response.json();
+                console.log("Alternative programs data:", alternativeData);
+                
+                // Filter programs with good scores (score_d > 0)
+                const goodAlternatives = alternativeData.results.filter(result => 
+                    result.status === 'calculated' && 
+                    result.score_d !== null && 
+                    result.score_d > 0 &&
+                    result.should === "true"
+                );
+
+                if (goodAlternatives.length > 0) {
+                    alternativePrograms[university] = goodAlternatives;
+                }
+                
+            } catch (error) {
+                console.error('Error finding alternative programs:', error);
             }
         }
 
@@ -654,7 +791,6 @@
             try {
                 const summary = data.summary || {};
                 
-                // Fixed: Use correct data properties instead of debug properties
                 const summaryHtml = `
                     <div class="user-summary">
                         <h3>สรุปผลการประเมิน</h3>
@@ -724,26 +860,21 @@
 
                 // Sort results by score_d (score difference) from least to greatest
                 const sortedResults = [...results].sort((a, b) => {
-                    // Handle cases where score_d might be null or undefined
                     const scoreA = a.score_d;
                     const scoreB = b.score_d;
                     
-                    // If both have valid score_d, sort by score_d (ascending)
                     if (scoreA !== null && scoreA !== undefined && scoreB !== null && scoreB !== undefined) {
                         return scoreA - scoreB;
                     }
                     
-                    // If only A has valid score_d, A comes first
                     if (scoreA !== null && scoreA !== undefined) {
                         return -1;
                     }
                     
-                    // If only B has valid score_d, B comes first
                     if (scoreB !== null && scoreB !== undefined) {
                         return 1;
                     }
                     
-                    // If neither has valid score_d, maintain original order
                     return 0;
                 });
 
@@ -791,7 +922,7 @@
                 const field = result.field || 'ไม่ระบุสาขา';
                 const status = result.status || 'unknown';
                 const score = result.score;
-                const scoreD = result.score_d; // Score difference from projected minimum
+                const scoreD = result.score_d;
                 const message = result.message || 'ไม่มีข้อความ';
                 const scoreBreakdown = result.score_breakdown || [];
                 const missingScores = result.missing_scores || [];
@@ -831,9 +962,12 @@
                 // Add score display for calculated scores
                 if (status === 'calculated' && score !== null) {
                     let difficultyIndicator = '';
+                    let showAlternatives = false;
+                    
                     if (scoreD !== null && scoreD !== undefined) {
                         if (scoreD < -3.6) {
                             difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #d32f2f; font-weight: bold;">🔴 มีโอกาศติดต่ำมาก</div>';
+                            showAlternatives = true;
                         } else if (scoreD < 0) {
                             difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #f57c00; font-weight: bold;">🟡 มีโอกาศติดต่ำ</div>';
                         } else if (scoreD < 3.6) {
@@ -870,6 +1004,17 @@
                                     </div>
                                 `).join('')}
                             </div>
+                        `;
+                    }
+
+                    // Add alternative programs if score is very low
+                    if (showAlternatives && alternativePrograms[university]) {
+                        bodyContent += createAlternativeProgramsSection(university);
+                    } else if (showAlternatives) {
+                        bodyContent += `
+                            <button class="find-alternatives-btn" onclick="findAndDisplayAlternatives('${university}', ${cardNumber})">
+                                🔍 ค้นหาโปรแกรมทางเลือกใน${university}
+                            </button>
                         `;
                     }
                 }
@@ -944,6 +1089,52 @@
                     </div>
                 `;
                 return div;
+            }
+        }
+
+        function createAlternativeProgramsSection(university) {
+            const alternatives = alternativePrograms[university];
+            if (!alternatives || alternatives.length === 0) {
+                return '';
+            }
+
+            return `
+                <div class="alternative-programs">
+                    <h4>💡 โปรแกรมทางเลือกที่แนะนำใน${university}</h4>
+                    ${alternatives.slice(0, 5).map(alt => `
+                        <div class="alternative-program-item">
+                            <div class="alternative-program-name">
+                                ${alt.faculty} - ${alt.field}
+                            </div>
+                            <div class="alternative-program-score">
+                                คะแนน: ${alt.score.toFixed(2)} (สูงกว่าเกณฑ์ ${alt.score_d.toFixed(2)} คะแนน)
+                            </div>
+                        </div>
+                    `).join('')}
+                    ${alternatives.length > 5 ? `<div style="text-align: center; margin-top: 8px; color: #666; font-size: 0.8rem;">และอีก ${alternatives.length - 5} โปรแกรม</div>` : ''}
+                </div>
+            `;
+        }
+
+        async function findAndDisplayAlternatives(university, cardNumber) {
+            const button = document.querySelector(`[onclick="findAndDisplayAlternatives('${university}', ${cardNumber})"]`);
+            if (button) {
+                button.disabled = true;
+                button.textContent = "🔄 กำลังค้นหา...";
+            }
+
+            try {
+                await findAlternativePrograms(university);
+                
+                // Re-display the results to show alternatives
+                displayResults(currentScoreData);
+                
+            } catch (error) {
+                console.error('Error finding alternatives:', error);
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = "🔍 ค้นหาโปรแกรมทางเลือก";
+                }
             }
         }
     </script>
