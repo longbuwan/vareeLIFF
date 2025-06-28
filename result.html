@@ -196,6 +196,11 @@
             background: linear-gradient(135deg, #9c27b0, #7b1fa2);
         }
 
+        /* NEW: High risk header style */
+        .card-header.high-risk {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+
         .card-header h3 {
             margin: 0;
             font-size: 1.1rem;
@@ -984,8 +989,14 @@
                 
                 switch (status) {
                     case 'calculated':
-                        headerClass = 'calculated';
-                        statusClass = 'success';
+                        // MODIFIED: Check if this is a high-risk university
+                        if (scoreD !== null && scoreD !== undefined && scoreD < -3.6) {
+                            headerClass = 'high-risk';
+                            statusClass = 'error';
+                        } else {
+                            headerClass = 'calculated';
+                            statusClass = 'success';
+                        }
                         break;
                     case 'gpax_insufficient':
                         headerClass = 'gpax-insufficient';
@@ -1339,13 +1350,13 @@
                 const scoresData = await scoresResponse.json();
                 console.log("Calculated scores for alternatives:", scoresData);
 
-                // Filter for good alternatives (positive score difference)
+                // MODIFIED: Filter for non-risky alternatives (score_d >= -3.6)
                 let goodAlternatives = [];
                 if (scoresData.results) {
                     goodAlternatives = scoresData.results.filter(result => 
                         result.status === 'calculated' && 
                         result.score_d !== null && 
-                        result.score_d > 0 &&
+                        result.score_d >= -3.6 &&  // CHANGED: Only show non-risky programs
                         result.university === selectedUniversity
                     );
                     
@@ -1357,24 +1368,14 @@
                     resultDiv.innerHTML = createDetailedAlternativesDisplay(goodAlternatives, selectedUniversity);
                     findBtn.textContent = `✅ พบ ${goodAlternatives.length} โปรแกรมที่เหมาะสม`;
                 } else {
-                    // Show all calculated results even if not ideal
-                    const allCalculated = scoresData.results?.filter(result => 
-                        result.status === 'calculated' && 
-                        result.university === selectedUniversity
-                    ) || [];
-                    
-                    if (allCalculated.length > 0) {
-                        resultDiv.innerHTML = createDetailedAlternativesDisplay(allCalculated, selectedUniversity, true);
-                        findBtn.textContent = `⚠️ พบ ${allCalculated.length} โปรแกรม (ความท้าทายสูง)`;
-                    } else {
-                        resultDiv.innerHTML = `
-                            <div class="status-message info" style="margin-top: 12px;">
-                                ไม่สามารถคำนวณคะแนนสำหรับโปรแกรมใน${selectedUniversity} ได้<br>
-                                <small>อาจเป็นเพราะข้อมูลคะแนนไม่ครบถ้วนหรือไม่มีโปรแกรมที่เหมาะสม</small>
-                            </div>
-                        `;
-                        findBtn.textContent = "❌ ไม่พบโปรแกรมที่คำนวณได้";
-                    }
+                    // Show message that no safe alternatives were found
+                    resultDiv.innerHTML = `
+                        <div class="status-message info" style="margin-top: 12px;">
+                            ไม่พบโปรแกรมที่มีโอกาสติดดีใน${selectedUniversity}<br>
+                            <small>เฉพาะโปรแกรมที่มีโอกาสติดต่ำมาก (🔴) เท่านั้นที่มีให้</small>
+                        </div>
+                    `;
+                    findBtn.textContent = "❌ ไม่พบโปรแกรมที่เหมาะสม";
                 }
                 
             } catch (error) {
@@ -1389,10 +1390,8 @@
             }
         }
 
-        function createDetailedAlternativesDisplay(alternatives, university, showChallenging = false) {
-            const title = showChallenging ? 
-                `⚠️ โปรแกรมทั้งหมดใน${university} (รวมโปรแกรมที่ท้าทาย)` :
-                `💡 โปรแกรมทางเลือกที่แนะนำใน${university}`;
+        function createDetailedAlternativesDisplay(alternatives, university) {
+            const title = `💡 โปรแกรมทางเลือกที่แนะนำใน${university}`;
 
             return `
                 <div class="alternative-programs" style="margin-top: 12px;">
@@ -1405,11 +1404,7 @@
                         let statusIcon = '🟢';
                         let statusText = 'มีโอกาศติดสูง';
                         
-                        if (alt.score_d < -3.6) {
-                            statusColor = '#d32f2f';
-                            statusIcon = '🔴';
-                            statusText = 'มีโอกาศติดต่ำมาก';
-                        } else if (alt.score_d < 0) {
+                        if (alt.score_d < 0) {
                             statusColor = '#f57c00';
                             statusIcon = '🟡';
                             statusText = 'มีโอกาศติดต่ำ';
