@@ -1028,15 +1028,15 @@
                     let showAlternatives = false;
                     
                     if (scoreD !== null && scoreD !== undefined) {
-                        if (scoreD < -3.6) {
-                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #d32f2f; font-weight: bold;">🔴 มีโอกาศติดต่ำมาก</div>';
+                        if (scoreD < -) {
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #d32f2f; font-weight: bold;">😥 มีโอกาศติดต่ำมาก</div>';
                             showAlternatives = true;
                         } else if (scoreD < 0) {
-                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #f57c00; font-weight: bold;">🟡 มีโอกาศติดต่ำ</div>';
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #f57c00; font-weight: bold;">😧 มีโอกาศติดต่ำ</div>';
                         } else if (scoreD < 3.6) {
-                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #1976d2; font-weight: bold;">🔵 มีโอกาศติดสูง</div>';
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #1976d2; font-weight: bold;">😀 มีโอกาศติดสูง</div>';
                         } else {
-                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #388e3c; font-weight: bold;">🟢 มีโอกาศติดสูงมาก</div>';
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #388e3c; font-weight: bold;">🥳 มีโอกาศติดสูงมาก</div>';
                         }
                     }
 
@@ -1372,7 +1372,7 @@
                     resultDiv.innerHTML = `
                         <div class="status-message info" style="margin-top: 12px;">
                             ไม่พบโปรแกรมที่มีโอกาสติดดีใน${selectedUniversity}<br>
-                            <small>เฉพาะโปรแกรมที่มีโอกาสติดต่ำมาก (🔴) เท่านั้นที่มีให้</small>
+                            <small>เฉพาะโปรแกรมที่มีโอกาสติดต่ำมาก (😥) เท่านั้นที่มีให้</small>
                         </div>
                     `;
                     findBtn.textContent = "❌ ไม่พบโปรแกรมที่เหมาะสม";
@@ -1401,20 +1401,20 @@
                     </div>
                     ${alternatives.slice(0, 8).map((alt, index) => {
                         let statusColor = '#388e3c'; // Green for good
-                        let statusIcon = '🟢';
+                        let statusIcon = '😀';
                         let statusText = 'มีโอกาศติดสูง';
                         
                         if (alt.score_d < 0) {
                             statusColor = '#f57c00';
-                            statusIcon = '🟡';
+                            statusIcon = '😧';
                             statusText = 'มีโอกาศติดต่ำ';
                         } else if (alt.score_d < 3.6) {
                             statusColor = '#1976d2';
-                            statusIcon = '🔵';
+                            statusIcon = '😀';
                             statusText = 'มีโอกาศติดสูง';
                         } else {
                             statusColor = '#388e3c';
-                            statusIcon = '🟢';
+                            statusIcon = '🥳';
                             statusText = 'มีโอกาศติดสูงมาก';
                         }
 
@@ -1424,6 +1424,9 @@
                                  onclick="selectAlternativeProgram('${alt.university.replace(/'/g, "\\'")}', '${alt.faculty.replace(/'/g, "\\'")}', '${alt.field.replace(/'/g, "\\'")}', this)"
                                  onmouseover="this.style.borderColor='#0288d1'; this.style.backgroundColor='#f8faff';"
                                  onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='white';">
+                                 <div style="text-align: center; margin-top: 12px; padding: 8px; background: #e3f2fd; border-radius: 6px; font-size: 0.8rem; color: #01579b;">
+                        💡 <strong>คำแนะนำ:</strong> เลือกโปรแกรมที่มี 🥳 หรือ 😀 เพื่อโอกาสเข้าศึกษาที่ดีกว่า
+                    </div>
                                 <div class="alternative-program-name" style="margin-bottom: 8px;">
                                     <strong>${alt.faculty} - ${alt.field}</strong>
                                 </div>
@@ -1458,9 +1461,7 @@
                             และอีก ${alternatives.length - 8} โปรแกรม (แสดงเฉพาะ 8 อันดับแรก)
                         </div>
                     ` : ''}
-                    <div style="text-align: center; margin-top: 12px; padding: 8px; background: #e3f2fd; border-radius: 6px; font-size: 0.8rem; color: #01579b;">
-                        💡 <strong>คำแนะนำ:</strong> เลือกโปรแกรมที่มี 🟢 หรือ 🔵 เพื่อโอกาสเข้าศึกษาที่ดีกว่า
-                    </div>
+                    
                 </div>
             `;
         }
