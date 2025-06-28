@@ -392,6 +392,25 @@
             gap: 8px;
         }
 
+        .clickable-alternative {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .clickable-alternative:hover {
+            border-color: #0288d1 !important;
+            background-color: #f8faff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .clickable-alternative:active {
+            transform: translateY(0);
+            border-color: #4caf50 !important;
+            background-color: #e8f5e8 !important;
+        }
+
         .search-input {
             width: 100%;
             padding: 12px 16px;
@@ -1126,7 +1145,7 @@
 
             return `
                 <div class="university-selector" id="${selectorId}">
-                    <h4>🔍 ค้นหาโปรแกรมทางเลือกในมหาวิทยาลัยอื่น</h4>
+                    <h4>🔍 คำนวณคะแนนในมหาวิทยาลัยอื่น</h4>
                     <div class="form-group">
                         <input type="text" class="search-input" id="${searchInputId}" 
                                placeholder="พิมพ์เพื่อค้นหามหาวิทยาลัย..." 
@@ -1139,7 +1158,7 @@
                     </div>
                     <button class="find-alternatives-btn" id="find-btn-${cardNumber}" 
                             onclick="findAlternativesInSelectedUniversity('${cardNumber}')" disabled>
-                        🔍 ค้นหาโปรแกรมทางเลือก
+                        🔍 คำนวณคะแนนในมหาวิทยาลัยนี้
                     </button>
                     <div id="alternatives-result-${cardNumber}"></div>
                 </div>
@@ -1366,7 +1385,7 @@
                     </div>
                 `;
                 findBtn.disabled = false;
-                findBtn.textContent = "🔍 ค้นหาโปรแกรมทางเลือก";
+                findBtn.textContent = "🔍 คำนวณคะแนนในมหาวิทยาลัยนี้";
             }
         }
 
@@ -1378,6 +1397,9 @@
             return `
                 <div class="alternative-programs" style="margin-top: 12px;">
                     <h4>${title}</h4>
+                    <div style="margin-bottom: 12px; padding: 8px; background: #e8f5e8; border-radius: 6px; font-size: 0.85rem; color: #2e7d32;">
+                        <strong>💡 คลิกที่โปรแกรมใดก็ได้เพื่อแทนที่ตัวเลือกเดิมและคำนวณใหม่</strong>
+                    </div>
                     ${alternatives.slice(0, 8).map((alt, index) => {
                         let statusColor = '#388e3c'; // Green for good
                         let statusIcon = '🟢';
@@ -1402,7 +1424,11 @@
                         }
 
                         return `
-                            <div class="alternative-program-item" style="margin-bottom: 12px; padding: 16px;">
+                            <div class="alternative-program-item clickable-alternative" 
+                                 style="margin-bottom: 12px; padding: 16px; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent;"
+                                 onclick="selectAlternativeProgram('${alt.university.replace(/'/g, "\\'")}', '${alt.faculty.replace(/'/g, "\\'")}', '${alt.field.replace(/'/g, "\\'")}', this)"
+                                 onmouseover="this.style.borderColor='#0288d1'; this.style.backgroundColor='#f8faff';"
+                                 onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='white';">
                                 <div class="alternative-program-name" style="margin-bottom: 8px;">
                                     <strong>${alt.faculty} - ${alt.field}</strong>
                                 </div>
@@ -1426,6 +1452,9 @@
                                         ${alt.score_breakdown.length > 3 ? `<br><small>และอีก ${alt.score_breakdown.length - 3} วิชา</small>` : ''}
                                     </div>
                                 ` : ''}
+                                <div style="margin-top: 8px; text-align: center; padding: 4px; background: #e3f2fd; border-radius: 4px; font-size: 0.75rem; color: #01579b;">
+                                    👆 คลิกเพื่อเลือกโปรแกรมนี้
+                                </div>
                             </div>
                         `;
                     }).join('')}
@@ -1439,6 +1468,164 @@
                     </div>
                 </div>
             `;
+        }
+
+        async function selectAlternativeProgram(university, faculty, field, element) {
+            // Add visual feedback
+            element.style.borderColor = '#4caf50';
+            element.style.backgroundColor = '#e8f5e8';
+            
+            const confirmMessage = `คุณต้องการแทนที่ตัวเลือกเดิมด้วย:\n\n${university}\n${faculty} - ${field}\n\nระบบจะคำนวณคะแนนใหม่ทั้งหมด`;
+            
+            if (!confirm(confirmMessage)) {
+                // Reset visual feedback if cancelled
+                element.style.borderColor = 'transparent';
+                element.style.backgroundColor = 'white';
+                return;
+            }
+
+            try {
+                // Show loading state
+                const loadingDiv = document.createElement('div');
+                loadingDiv.innerHTML = `
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+                        <div style="background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 300px;">
+                            <div class="loading-spinner"></div>
+                            <h3 style="margin: 16px 0 8px 0; color: #01579b;">กำลังปรับปรุงการเลือก</h3>
+                            <p style="margin: 0; color: #666;">กรุณารอสักครู่...</p>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(loadingDiv);
+
+                console.log("Replacing selection with:", { university, faculty, field });
+
+                // Get current user profile
+                const profile = await liff.getProfile();
+                
+                // Find which selection to replace by finding the one with very low score
+                // We'll replace the first selection that has score_d < -3.6
+                let selectionToReplace = null;
+                let replaceIndex = -1;
+                
+                if (currentScoreData && currentScoreData.results) {
+                    for (let i = 0; i < currentScoreData.results.length; i++) {
+                        const result = currentScoreData.results[i];
+                        if (result.status === 'calculated' && result.score_d !== null && result.score_d < -3.6) {
+                            selectionToReplace = result;
+                            replaceIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (!selectionToReplace) {
+                    // Fallback: replace the first selection
+                    replaceIndex = 0;
+                    selectionToReplace = currentScoreData.results[0];
+                }
+
+                console.log("Replacing selection at index:", replaceIndex, selectionToReplace);
+
+                // Create new selections array
+                const newSelections = currentScoreData.results.map((result, index) => {
+                    if (index === replaceIndex) {
+                        // Replace with new selection
+                        return {
+                            university: university,
+                            faculty: faculty,
+                            field: field
+                        };
+                    } else {
+                        // Keep existing selection
+                        return {
+                            university: result.university,
+                            faculty: result.faculty,
+                            field: result.field
+                        };
+                    }
+                });
+
+                console.log("New selections array:", newSelections);
+
+                // Send updated selections to server
+                const submitResponse = await fetch("https://varee.onrender.com/api/submit_multiple_selections", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        name: profile.displayName,
+                        selections: newSelections
+                    })
+                });
+
+                if (!submitResponse.ok) {
+                    throw new Error("ไม่สามารถอัปเดตการเลือกได้");
+                }
+
+                console.log("Successfully updated selections, reloading results...");
+
+                // Small delay to ensure server processes the update
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Remove loading screen
+                document.body.removeChild(loadingDiv);
+
+                // Reload the score data
+                await loadScoreData();
+
+                // Scroll to top to see the updated results
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.innerHTML = `
+                    <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #4caf50; color: white; padding: 16px 24px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        ✅ อัปเดตการเลือกเรียบร้อยแล้ว!
+                    </div>
+                `;
+                document.body.appendChild(successDiv);
+
+                // Remove success message after 3 seconds
+                setTimeout(() => {
+                    if (document.body.contains(successDiv)) {
+                        document.body.removeChild(successDiv);
+                    }
+                }, 3000);
+
+            } catch (error) {
+                console.error('Error replacing selection:', error);
+                
+                // Remove loading screen if it exists
+                const loadingScreens = document.querySelectorAll('[style*="position: fixed"]');
+                loadingScreens.forEach(screen => {
+                    if (document.body.contains(screen)) {
+                        document.body.removeChild(screen);
+                    }
+                });
+
+                // Reset visual feedback
+                element.style.borderColor = 'transparent';
+                element.style.backgroundColor = 'white';
+
+                // Show error message
+                const errorDiv = document.createElement('div');
+                errorDiv.innerHTML = `
+                    <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #f44336; color: white; padding: 16px 24px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        ❌ เกิดข้อผิดพลาด: ${error.message}
+                    </div>
+                `;
+                document.body.appendChild(errorDiv);
+
+                // Remove error message after 5 seconds
+                setTimeout(() => {
+                    if (document.body.contains(errorDiv)) {
+                        document.body.removeChild(errorDiv);
+                    }
+                }, 5000);
+            }
         }
 
         async function sendMessage() {
