@@ -374,20 +374,97 @@
             font-size: 0.9rem;
         }
 
+        /* University Selector Styles */
+        .university-selector {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .university-selector h4 {
+            margin: 0 0 12px 0;
+            color: #f57c00;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e3f2fd;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            background: #f8faff;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0288d1;
+            background: white;
+        }
+
+        .dropdown-container {
+            position: relative;
+        }
+
+        .custom-dropdown {
+            width: 100%;
+            max-height: 150px;
+            border: 2px solid #e3f2fd;
+            border-radius: 12px;
+            background: white;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .dropdown-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-option:hover {
+            background-color: #f8faff;
+        }
+
+        .dropdown-option.selected {
+            background-color: #e3f2fd;
+            color: #01579b;
+            font-weight: 600;
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .loading-option {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+        }
+
         .find-alternatives-btn {
-            background: #0288d1;
+            background: #ff9800;
             color: white;
             border: none;
             padding: 12px 24px;
             border-radius: 8px;
             font-size: 0.9rem;
             cursor: pointer;
-            margin-top: 16px;
+            margin-top: 12px;
             width: 100%;
         }
 
         .find-alternatives-btn:hover {
-            background: #0288d1;
+            background: #f57c00;
         }
 
         .find-alternatives-btn:disabled {
@@ -437,37 +514,40 @@
             padding: 20px 0;
             font-size: 0.9rem;
         }
-    .submit-section {
-      text-align: center;
-      margin-top: 30px;
-    }
 
-    .submit-btn {
-      width: 100%;
-      max-width: 300px;
-      padding: 16px;
-      background: linear-gradient(135deg, #4caf50, #388e3c);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-    }
+        .submit-section {
+            text-align: center;
+            margin-top: 30px;
+        }
 
-    .submit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
-    }
+        .submit-btn {
+            width: 100%;
+            max-width: 300px;
+            padding: 16px;
+            background: linear-gradient(135deg, #4caf50, #388e3c);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
 
-    .submit-btn:disabled {
-      background: #ccc;
-      color: #666;
-      cursor: not-allowed;
-      transform: none;
-      box-sha
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 0 5px;
@@ -487,6 +567,10 @@
 
             .summary-grid {
                 grid-template-columns: 1fr 1fr;
+            }
+
+            .custom-dropdown {
+                max-height: 120px;
             }
         }
     </style>
@@ -533,7 +617,11 @@
             <!-- University cards will be inserted here -->
             <div id="universityResults"></div>
         </div>
-  <button type="button" class="submit-btn" onclick="sendMessage()">เเบบสอบถาม</button>
+
+        <div class="submit-section">
+            <button type="button" class="submit-btn" onclick="sendMessage()">แบบสอบถาม</button>
+        </div>
+
         <!-- Last updated timestamp -->
         <div id="lastUpdated" class="footer" style="display: none;">
             อัปเดตล่าสุด: <span id="lastUpdatedTime"></span>
@@ -545,6 +633,7 @@
         let debugMode = false;
         let currentScoreData = null;
         let alternativePrograms = {};
+        let allUniversities = []; // Will store the university list
 
         // Helper function to safely get element
         function safeGetElement(id) {
@@ -609,6 +698,9 @@
                     
                     console.log("User ID:", currentUserId);
                     
+                    // Load university list first
+                    loadUniversityList();
+                    
                     // Load score data
                     await loadScoreData();
                 } else {
@@ -619,6 +711,11 @@
                 showError("ไม่สามารถเชื่อมต่อกับ LINE ได้: " + error.message);
             }
         };
+
+        function loadUniversityList() {
+            // University list from the selection page
+            allUniversities = ['มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย', 'มหาวิทยาลัยเกษมบัณฑิต', 'กลุ่มสถาบันแพทยศาสตร์แห่งประเทศไทย', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง', 'มหาวิทยาลัยราชภัฏพิบูลสงคราม', 'มหาวิทยาลัยปทุมธานี', 'มหาวิทยาลัยนครพนม', 'มหาวิทยาลัยเวสเทิร์น', 'มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ', 'ราชวิทยาลัยจุฬาภรณ์', 'มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชชูปถัมภ์', 'สถาบันเทคโนโลยีแห่งสุวรรณภูมิ', 'สถาบันการพยาบาลศรีสวรินทิรา', 'มหาวิทยาลัยกาฬสินธุ์', 'มหาวิทยาลัยธุรกิจบัณฑิตย์', 'มหาวิทยาลัยรามคำแหง', 'มหาวิทยาลัยราชภัฏบ้านสมเด็จเจ้าพระยา', 'มหาาวิทยาลัยมหาสารคาม', 'มหาวิทยาลัยเกษตรศาสตร์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลศรีวิชัย', 'มหาวิทยาลัยเนชั่น', 'มหาวิทยาลัยราชภัฏอุบลราชธานี', 'มหาวิทยาลัยราชภัฏชัยภูมิ', 'มหาวิทยาลัยราชภัฏธนบุรี', 'วิทยาลัยดุสิตธานี', 'มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน', 'มหาวิทยาลัยนวมินทราธิราช', 'มหาวิทยาลัยราชภัฏสวนสุนันทา', 'มหาวิทยาลัยเซาธ์อีสท์บางกอก', 'จุฬาลงกรณ์มหาวิทยาลัย', 'มหาวิทยาลัยราชภัฏพระนคร', 'มหาวิทยาลัยหาดใหญ่', 'มหาวิทยาลัยอีสเทิร์นเอเชีย', 'มหาวิทยาลัยเทคโนโลยีสุรนารี', 'มหาวิทยาลัยสงขลานครินทร์', 'มหาวิทยาลัยอุบลราชธานี', 'มหาวิทยาลัยมหิดล', 'มหาวิทยาลัยเทคโนโลยีราชมงคลตะวันออก', 'มหาวิทยาลัยนานาชาติเอเชีย-แปซิฟิก', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี', 'มหาวิทยาลัยบูรพา', 'มหาวิทยาลัยทักษิณ', 'มหาวิทยาลัยขอนแก่น', 'มหาวิทยาลัยแม่โจ้', 'มหาวิทยาลัยราชภัฏเชียงใหม่', 'มหาวิทยาลัยศรีนครินทรวิโรฒ', 'สถาบันพระบรมราชชนก', 'มหาวิทยาลัยราชธานี', 'มหาวิทยาลัยศิลปากร', 'มหาวิทยาลัยศรีปทุม', 'มหาวิทยาลัยธรรมศาสตร์', 'วิทยาลัยเซนต์หลุยส์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี', 'มหาวิทยาลัยรังสิต', 'มหาวิทยาลัยวลัยลักษณ์', 'มหาวิทยาลัยแม่ฟ้าหลวง', 'มหาวิทยาลัยสวนดุสิต', 'มหาวิทยาลัยพะเยา', 'มหาวิทยาลัยราชภัฏเพชรบุรี', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ', 'มหาวิทยาลัยเทคโนโลยีราชมงคลรัตนโกสินทร์', 'มหาวิทยาลัยนราธิวาสราชนครินทร์', 'มหาวิทยาลัยราชภัฏจันทรเกษม', 'มหาวิทยาลัยเชียงใหม่', 'วิทยาลัยนครราชสีมา', 'มหาวิทยาลัยเทคโนโลยีมหานคร', 'มหาวิทยาลัยหอการค้าไทย', 'มหาวิทยาลัยนเรศวร', 'สถาบันเทคโนโลยีจิตรลดา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลกรุงเทพ', 'สถาบันการจัดการปัญญาภิวัฒน์', 'มหาวิทยาลัยสยาม', 'มหาวิทยาลัยราชภัฏสงขลา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร', 'วิทยาลัยนอร์ทเทิร์น', 'มหาวิทยาลัยมหามกุฏราชวิทยาลัย', 'มหาวิทยาลัยราชภัฏนครราชสีมา'];
+        }
 
         async function loadScoreData() {
             if (!currentUserId) {
@@ -657,85 +754,18 @@
                 currentScoreData = data;
                 displayResults(data);
                 
-                // Check for low scores and find alternatives
-                await checkForLowScoresAndFindAlternatives(data);
-                
             } catch (error) {
                 console.error('Error loading score data:', error);
                 showError(error.message || "ไม่สามารถโหลดข้อมูลคะแนนได้");
             }
         }
 
-        async function checkForLowScoresAndFindAlternatives(data) {
-            const lowScoreResults = data.results.filter(result => 
-                result.status === 'calculated' && 
-                result.score_d !== null && 
-                result.score_d < -3.6
-            );
-
-            if (lowScoreResults.length > 0) {
-                console.log("Found low scores, finding alternatives...");
-                
-                // Get unique universities from low score results
-                const universities = [...new Set(lowScoreResults.map(result => result.university))];
-                
-                for (const university of universities) {
-                    await findAlternativePrograms(university);
-                }
-                
-                // Re-display results with alternatives
-                displayResults(currentScoreData);
+        function loadDebugData() {
+            if (currentScoreData) {
+                displayDebugInfo(currentScoreData);
             }
         }
 
-async function findAlternativePrograms(university) {
-            try {
-                console.log("Finding alternative programs for:", university);
-                
-                const response = await fetch("https://varee.onrender.com/api/new_program", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        userId: currentUserId,
-                        university: university
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error("Failed to fetch alternative programs:", errorText);
-                    return;
-                }
-
-                const alternativeData = await response.json();
-                console.log("Alternative programs data:", alternativeData);
-                
-                // Use the recommended_programs from the response, or filter from results
-                let goodAlternatives = alternativeData.recommended_programs || [];
-                
-                if (goodAlternatives.length === 0) {
-                    // Fallback: filter from all results
-                    goodAlternatives = alternativeData.results.filter(result => 
-                        result.status === 'calculated' && 
-                        result.score_d !== null && 
-                        result.score_d > 0 &&
-                        result.should === "true"
-                    );
-                }
-
-                if (goodAlternatives.length > 0) {
-    alternativePrograms[university] = goodAlternatives;
-    console.log(`Found ${goodAlternatives.length} alternative programs for ${university}`);
-} else {
-    console.log(`No good alternative programs found for ${university}`);
-    alternativePrograms[university] = null; // Add this line
-}
-                
-            } catch (error) {
-                console.error('Error finding alternative programs:', error);
-            }
         function displayDebugInfo(data) {
             const debugContent = `
                 <h4>ข้อมูลผู้ใช้:</h4>
@@ -1010,15 +1040,9 @@ async function findAlternativePrograms(university) {
                         `;
                     }
 
-                    // Add alternative programs if score is very low
-                    if (showAlternatives && alternativePrograms[university]) {
-                        bodyContent += createAlternativeProgramsSection(university);
-                    } else if (showAlternatives) {
-                        bodyContent += `
-                            <button class="find-alternatives-btn" onclick="findAndDisplayAlternatives('${university}', ${cardNumber})">
-                                🔍 ค้นหาโปรแกรมทางเลือกใน${university}
-                            </button>
-                        `;
+                    // Add university selector for low scores
+                    if (showAlternatives) {
+                        bodyContent += createUniversitySelector(cardNumber, university);
                     }
                 }
 
@@ -1095,14 +1119,170 @@ async function findAlternativePrograms(university) {
             }
         }
 
-        function createAlternativeProgramsSection(university) {
-            const alternatives = alternativePrograms[university];
-            if (!alternatives || alternatives.length === 0) {
-                return '';
-            }
+        function createUniversitySelector(cardNumber, currentUniversity) {
+            const selectorId = `university-selector-${cardNumber}`;
+            const searchInputId = `search-input-${cardNumber}`;
+            const dropdownId = `dropdown-${cardNumber}`;
 
             return `
-                <div class="alternative-programs">
+                <div class="university-selector" id="${selectorId}">
+                    <h4>🔍 ค้นหาโปรแกรมทางเลือกในมหาวิทยาลัยอื่น</h4>
+                    <div class="form-group">
+                        <input type="text" class="search-input" id="${searchInputId}" 
+                               placeholder="พิมพ์เพื่อค้นหามหาวิทยาลัย..." 
+                               oninput="filterUniversitiesInSelector('${cardNumber}')" />
+                        <div class="dropdown-container">
+                            <div class="custom-dropdown" id="${dropdownId}">
+                                ${createUniversityOptions(cardNumber, currentUniversity)}
+                            </div>
+                        </div>
+                    </div>
+                    <button class="find-alternatives-btn" id="find-btn-${cardNumber}" 
+                            onclick="findAlternativesInSelectedUniversity('${cardNumber}')" disabled>
+                        🔍 ค้นหาโปรแกรมทางเลือก
+                    </button>
+                    <div id="alternatives-result-${cardNumber}"></div>
+                </div>
+            `;
+        }
+
+        function createUniversityOptions(cardNumber, excludeUniversity) {
+            // Filter out current university and create options
+            const filteredUniversities = allUniversities.filter(uni => uni !== excludeUniversity);
+            
+            if (filteredUniversities.length === 0) {
+                return '<div class="dropdown-option loading-option">ไม่พบมหาวิทยาลัยอื่น</div>';
+            }
+            
+            return filteredUniversities.map(uni => 
+                `<div class="dropdown-option" onclick="selectUniversityForAlternatives('${cardNumber}', '${uni.replace(/'/g, "\\'")}')">
+                    ${uni}
+                </div>`
+            ).join('');
+        }
+
+        function filterUniversitiesInSelector(cardNumber) {
+            const searchInput = document.getElementById(`search-input-${cardNumber}`);
+            const dropdown = document.getElementById(`dropdown-${cardNumber}`);
+            
+            if (!searchInput || !dropdown) return;
+            
+            const filter = searchInput.value.toLowerCase();
+            const options = dropdown.querySelectorAll('.dropdown-option');
+            
+            options.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                option.style.display = text.includes(filter) ? 'block' : 'none';
+            });
+        }
+
+        function selectUniversityForAlternatives(cardNumber, university) {
+            const searchInput = document.getElementById(`search-input-${cardNumber}`);
+            const dropdown = document.getElementById(`dropdown-${cardNumber}`);
+            const findBtn = document.getElementById(`find-btn-${cardNumber}`);
+            
+            if (searchInput) {
+                searchInput.value = university;
+                searchInput.setAttribute('data-selected', university);
+            }
+            
+            if (dropdown) {
+                // Highlight selected option
+                const options = dropdown.querySelectorAll('.dropdown-option');
+                options.forEach(option => {
+                    option.classList.remove('selected');
+                    if (option.textContent === university) {
+                        option.classList.add('selected');
+                    }
+                });
+            }
+            
+            if (findBtn) {
+                findBtn.disabled = false;
+            }
+        }
+
+        async function findAlternativesInSelectedUniversity(cardNumber) {
+            const searchInput = document.getElementById(`search-input-${cardNumber}`);
+            const findBtn = document.getElementById(`find-btn-${cardNumber}`);
+            const resultDiv = document.getElementById(`alternatives-result-${cardNumber}`);
+            
+            if (!searchInput || !findBtn || !resultDiv) return;
+            
+            const selectedUniversity = searchInput.getAttribute('data-selected') || searchInput.value;
+            
+            if (!selectedUniversity) {
+                alert('กรุณาเลือกมหาวิทยาลัยก่อน');
+                return;
+            }
+
+            findBtn.disabled = true;
+            findBtn.textContent = "🔄 กำลังค้นหา...";
+            resultDiv.innerHTML = "";
+
+            try {
+                console.log("Finding alternative programs in:", selectedUniversity);
+                
+                const response = await fetch("https://varee.onrender.com/api/new_program", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        university: selectedUniversity
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Failed to fetch alternative programs:", errorText);
+                    throw new Error("ไม่สามารถค้นหาโปรแกรมทางเลือกได้");
+                }
+
+                const alternativeData = await response.json();
+                console.log("Alternative programs data:", alternativeData);
+                
+                // Use the recommended_programs from the response, or filter from results
+                let goodAlternatives = alternativeData.recommended_programs || [];
+                
+                if (goodAlternatives.length === 0) {
+                    // Fallback: filter from all results
+                    goodAlternatives = alternativeData.results.filter(result => 
+                        result.status === 'calculated' && 
+                        result.score_d !== null && 
+                        result.score_d > 0 &&
+                        result.should === "true"
+                    );
+                }
+
+                if (goodAlternatives.length > 0) {
+                    resultDiv.innerHTML = createAlternativeProgramsDisplay(goodAlternatives, selectedUniversity);
+                    findBtn.textContent = "✅ ค้นหาเสร็จแล้ว";
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="status-message info" style="margin-top: 12px;">
+                            ไม่พบโปรแกรมทางเลือกที่เหมาะสมใน${selectedUniversity}
+                        </div>
+                    `;
+                    findBtn.textContent = "❌ ไม่พบโปรแกรมทางเลือก";
+                }
+                
+            } catch (error) {
+                console.error('Error finding alternative programs:', error);
+                resultDiv.innerHTML = `
+                    <div class="status-message error" style="margin-top: 12px;">
+                        เกิดข้อผิดพลาด: ${error.message}
+                    </div>
+                `;
+                findBtn.disabled = false;
+                findBtn.textContent = "🔍 ค้นหาโปรแกรมทางเลือก";
+            }
+        }
+
+        function createAlternativeProgramsDisplay(alternatives, university) {
+            return `
+                <div class="alternative-programs" style="margin-top: 12px;">
                     <h4>💡 โปรแกรมทางเลือกที่แนะนำใน${university}</h4>
                     ${alternatives.slice(0, 5).map(alt => `
                         <div class="alternative-program-item">
@@ -1119,35 +1299,9 @@ async function findAlternativePrograms(university) {
             `;
         }
 
-        async function findAndDisplayAlternatives(university, cardNumber) {
-            const button = document.querySelector(`[onclick="findAndDisplayAlternatives('${university}', ${cardNumber})"]`);
-            if (button) {
-                button.disabled = true;
-                button.textContent = "🔄 กำลังค้นหา...";
-            }
-
-            try {
-                await findAlternativePrograms(university);
-                
-                // Re-display the results to show alternatives
-                displayResults(currentScoreData);
-                
-            } catch (error) {
-                console.error('Error finding alternatives:', error);
-                if (button) {
-                    button.disabled = false;
-                    button.textContent = "❌ ไม่พบโปรแกรมทางเลือก";
-                    
-                    // Reset button text after 3 seconds
-                    setTimeout(() => {
-                        button.textContent = "🔍 ค้นหาโปรแกรมทางเลือก";
-                    }, 3000);
-                }
-            }
+        async function sendMessage() {
+            window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSeZDDCm5Cu0JdV_56mQZsxX7Ch6A5LWfrWv1uOYI3Ody69amQ/viewform?usp=dialog";
         }
-         async function sendMessage() {
-              window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSeZDDCm5Cu0JdV_56mQZsxX7Ch6A5LWfrWv1uOYI3Ody69amQ/viewform?usp=dialog";
-         }
         
     </script>
 </body>
