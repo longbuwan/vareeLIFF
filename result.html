@@ -689,91 +689,52 @@
         }
 
 async function findAlternativePrograms(university) {
-    try {
-        console.log("Finding alternative programs for:", university);
-        
-        const response = await fetch("https://varee.onrender.com/api/new_program", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                userId: currentUserId,
-                university: university
-            })
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Failed to fetch alternative programs:", errorText);
-            return null;
-        }
-
-        const alternativeData = await response.json();
-        console.log("Alternative programs data:", alternativeData);
-        
-        // Use recommended_programs if available and valid
-        let goodAlternatives = (alternativeData.recommended_programs || []).filter(
-            prog => prog.score_d && prog.score_d > 0
-        );
-
-        // Fallback: filter from results
-        if (goodAlternatives.length === 0 && Array.isArray(alternativeData.results)) {
-            goodAlternatives = alternativeData.results.filter(result => 
-                result.status === 'calculated' && 
-                result.score_d && result.score_d > 0 &&
-                result.should === "true"
-            );
-        }
-
-        if (goodAlternatives.length > 0) {
-            alternativePrograms[university] = goodAlternatives;
-            console.log(`Found ${goodAlternatives.length} alternative programs for ${university}`);
-        } else {
-            console.log(`No good alternative programs found for ${university}`);
-            alternativePrograms[university] = null; // Explicitly set to null
-        }
-
-    } catch (error) {
-        console.error('Error finding alternative programs:', error);
-        alternativePrograms[university] = null;
-    }
-}
-        async function loadDebugData() {
-            if (!currentUserId) {
-                showError("ไม่พบข้อมูลผู้ใช้");
-                return;
-            }
-
             try {
-                console.log("Loading debug data for user:", currentUserId);
+                console.log("Finding alternative programs for:", university);
                 
-                const response = await fetch(`https://varee.onrender.com/api/debug/user/${currentUserId}`, {
-                    method: "GET",
+                const response = await fetch("https://varee.onrender.com/api/new_program", {
+                    method: "POST",
                     headers: {
                         "Content-Type": "application/json"
-                    }
+                    },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        university: university
+                    })
                 });
-
-                console.log("Debug response status:", response.status);
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error("Debug response error:", errorText);
-                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                    console.error("Failed to fetch alternative programs:", errorText);
+                    return;
                 }
 
-                const data = await response.json();
-                console.log("Debug data:", data);
+                const alternativeData = await response.json();
+                console.log("Alternative programs data:", alternativeData);
                 
-                displayDebugInfo(data);
+                // Use the recommended_programs from the response, or filter from results
+                let goodAlternatives = alternativeData.recommended_programs || [];
+                
+                if (goodAlternatives.length === 0) {
+                    // Fallback: filter from all results
+                    goodAlternatives = alternativeData.results.filter(result => 
+                        result.status === 'calculated' && 
+                        result.score_d !== null && 
+                        result.score_d > 0 &&
+                        result.should === "true"
+                    );
+                }
+
+                if (goodAlternatives.length > 0) {
+                    alternativePrograms[university] = goodAlternatives;
+                    console.log(Found ${goodAlternatives.length} alternative programs for ${university});
+                } else {
+                    console.log(No good alternative programs found for ${university});
+                }
                 
             } catch (error) {
-                console.error('Error loading debug data:', error);
-                showError("ไม่สามารถโหลดข้อมูลดีบัก: " + error.message);
+                console.error('Error finding alternative programs:', error);
             }
-        }
-
         function displayDebugInfo(data) {
             const debugContent = `
                 <h4>ข้อมูลผู้ใช้:</h4>
