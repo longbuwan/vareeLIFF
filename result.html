@@ -1028,15 +1028,15 @@
                     let showAlternatives = false;
                     
                     if (scoreD !== null && scoreD !== undefined) {
-                        if (scoreD < -) {
-                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #d32f2f; font-weight: bold;">😥 มีโอกาศติดต่ำมาก</div>';
+                        if (scoreD < -3.6) {
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #d32f2f; font-weight: bold;">😥 มีโอกาสติดต่ำมาก</div>';
                             showAlternatives = true;
                         } else if (scoreD < 0) {
-                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #f57c00; font-weight: bold;">😧 มีโอกาศติดต่ำ</div>';
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #f57c00; font-weight: bold;">😧 มีโอกาสติดต่ำ</div>';
                         } else if (scoreD < 3.6) {
-                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #1976d2; font-weight: bold;">😀 มีโอกาศติดสูง</div>';
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #1976d2; font-weight: bold;">😀 มีโอกาสติดสูง</div>';
                         } else {
-                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #388e3c; font-weight: bold;">🥳 มีโอกาศติดสูงมาก</div>';
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #388e3c; font-weight: bold;">🥳 มีโอกาสติดสูงมาก</div>';
                         }
                     }
 
@@ -1156,10 +1156,13 @@
 
             return `
                 <div class="university-selector" id="${selectorId}">
-                    <h4>🔍 คำนวณคะแนนในมหาวิทยาลัยอื่น</h4>
+                    <h4>🎯 หาโปรแกรมที่มีโอกาสเข้าได้สูงกว่า</h4>
+                    <div style="margin-bottom: 12px; padding: 8px; background: #fff3e0; border-radius: 6px; font-size: 0.85rem; color: #f57c00;">
+                        <strong>💡 เคล็ดลับ:</strong> เลือกมหาวิทยาลัยที่มีโปรแกรมใกล้เคียงกับที่คุณต้องการ แต่มีโอกาสเข้าได้ง่ายกว่า
+                    </div>
                     <div class="form-group">
                         <input type="text" class="search-input" id="${searchInputId}" 
-                               placeholder="พิมพ์เพื่อค้นหามหาวิทยาลัย..." 
+                               placeholder="พิมพ์ชื่อมหาวิทยาลัยที่ต้องการดู..." 
                                oninput="filterUniversitiesInSelector('${cardNumber}')" />
                         <div class="dropdown-container">
                             <div class="custom-dropdown" id="${dropdownId}">
@@ -1169,7 +1172,7 @@
                     </div>
                     <button class="find-alternatives-btn" id="find-btn-${cardNumber}" 
                             onclick="findAlternativesInSelectedUniversity('${cardNumber}')" disabled>
-                        🔍 คำนวณคะแนนในมหาวิทยาลัยนี้
+                        🔍 ค้นหาโปรแกรมที่เข้าได้ง่ายกว่า
                     </button>
                     <div id="alternatives-result-${cardNumber}"></div>
                 </div>
@@ -1247,7 +1250,7 @@
             }
 
             findBtn.disabled = true;
-            findBtn.textContent = "🔄 กำลังคำนวณคะแนน...";
+            findBtn.textContent = "🔄 กำลังค้นหาโปรแกรมที่เหมาะสม...";
             resultDiv.innerHTML = "";
 
             try {
@@ -1350,13 +1353,13 @@
                 const scoresData = await scoresResponse.json();
                 console.log("Calculated scores for alternatives:", scoresData);
 
-                // MODIFIED: Filter for non-risky alternatives (score_d >= -3.6)
+                // MODIFIED: Filter for better alternatives (score_d >= -3.6)
                 let goodAlternatives = [];
                 if (scoresData.results) {
                     goodAlternatives = scoresData.results.filter(result => 
                         result.status === 'calculated' && 
                         result.score_d !== null && 
-                        result.score_d >= -3.6 &&  // CHANGED: Only show non-risky programs
+                        result.score_d >= -3.6 &&  // CHANGED: Only show programs with better chances
                         result.university === selectedUniversity
                     );
                     
@@ -1366,13 +1369,13 @@
 
                 if (goodAlternatives.length > 0) {
                     resultDiv.innerHTML = createDetailedAlternativesDisplay(goodAlternatives, selectedUniversity);
-                    findBtn.textContent = `✅ พบ ${goodAlternatives.length} โปรแกรมที่เหมาะสม`;
+                    findBtn.textContent = `✅ พบ ${goodAlternatives.length} โปรแกรมที่เข้าได้ง่ายกว่า`;
                 } else {
-                    // Show message that no safe alternatives were found
+                    // Show message that no better alternatives were found
                     resultDiv.innerHTML = `
                         <div class="status-message info" style="margin-top: 12px;">
-                            ไม่พบโปรแกรมที่มีโอกาสติดดีใน${selectedUniversity}<br>
-                            <small>เฉพาะโปรแกรมที่มีโอกาสติดต่ำมาก (😥) เท่านั้นที่มีให้</small>
+                            💡 ไม่พบโปรแกรมที่มีโอกาสเข้าได้ดีกว่าใน ${selectedUniversity}<br>
+                            <small style="color: #666;">เฉพาะโปรแกรมที่มีโอกาสติดต่ำมาก (😥) เท่านั้นที่มีให้ - แนะนำให้ลองมหาวิทยาลัยอื่น</small>
                         </div>
                     `;
                     findBtn.textContent = "❌ ไม่พบโปรแกรมที่เหมาะสม";
@@ -1386,36 +1389,39 @@
                     </div>
                 `;
                 findBtn.disabled = false;
-                findBtn.textContent = "🔍 คำนวณคะแนนในมหาวิทยาลัยนี้";
+                findBtn.textContent = "🔍 ค้นหาโปรแกรมที่เข้าได้ง่ายกว่า";
             }
         }
 
         function createDetailedAlternativesDisplay(alternatives, university) {
-            const title = `💡 โปรแกรมทางเลือกที่แนะนำใน${university}`;
+            const title = `💡 โปรแกรมที่มีโอกาสเข้าได้ดีกว่าใน ${university}`;
 
             return `
                 <div class="alternative-programs" style="margin-top: 12px;">
                     <h4>${title}</h4>
                     <div style="margin-bottom: 12px; padding: 8px; background: #e8f5e8; border-radius: 6px; font-size: 0.85rem; color: #2e7d32;">
-                        <strong>💡 คลิกที่โปรแกรมใดก็ได้เพื่อแทนที่ตัวเลือกเดิมและคำนวณใหม่</strong>
+                        <strong>💡 แนะนำ:</strong> คลิกเลือกโปรแกรมที่มีโอกาสเข้าได้ดีกว่าเพื่อแทนที่ตัวเลือกเดิมของคุณ
+                    </div>
+                    <div style="text-align: center; margin-bottom: 12px; padding: 8px; background: #e3f2fd; border-radius: 6px; font-size: 0.8rem; color: #01579b;">
+                        🎯 <strong>เป้าหมาย:</strong> เลือกโปรแกรมที่มี 🥳 (สูงมาก) หรือ 😀 (สูง) เพื่อความมั่นใจในการเข้าศึกษา
                     </div>
                     ${alternatives.slice(0, 8).map((alt, index) => {
                         let statusColor = '#388e3c'; // Green for good
                         let statusIcon = '😀';
-                        let statusText = 'มีโอกาศติดสูง';
+                        let statusText = 'มีโอกาสติดสูง';
                         
                         if (alt.score_d < 0) {
                             statusColor = '#f57c00';
                             statusIcon = '😧';
-                            statusText = 'มีโอกาศติดต่ำ';
+                            statusText = 'มีโอกาสติดต่ำ (แต่ดีกว่าเดิม)';
                         } else if (alt.score_d < 3.6) {
                             statusColor = '#1976d2';
                             statusIcon = '😀';
-                            statusText = 'มีโอกาศติดสูง';
+                            statusText = 'มีโอกาสติดสูง';
                         } else {
                             statusColor = '#388e3c';
                             statusIcon = '🥳';
-                            statusText = 'มีโอกาศติดสูงมาก';
+                            statusText = 'มีโอกาสติดสูงมาก';
                         }
 
                         return `
@@ -1424,9 +1430,6 @@
                                  onclick="selectAlternativeProgram('${alt.university.replace(/'/g, "\\'")}', '${alt.faculty.replace(/'/g, "\\'")}', '${alt.field.replace(/'/g, "\\'")}', this)"
                                  onmouseover="this.style.borderColor='#0288d1'; this.style.backgroundColor='#f8faff';"
                                  onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='white';">
-                                 <div style="text-align: center; margin-top: 12px; padding: 8px; background: #e3f2fd; border-radius: 6px; font-size: 0.8rem; color: #01579b;">
-                        💡 <strong>คำแนะนำ:</strong> เลือกโปรแกรมที่มี 🥳 หรือ 😀 เพื่อโอกาสเข้าศึกษาที่ดีกว่า
-                    </div>
                                 <div class="alternative-program-name" style="margin-bottom: 8px;">
                                     <strong>${alt.faculty} - ${alt.field}</strong>
                                 </div>
@@ -1451,14 +1454,14 @@
                                     </div>
                                 ` : ''}
                                 <div style="margin-top: 8px; text-align: center; padding: 4px; background: #e3f2fd; border-radius: 4px; font-size: 0.75rem; color: #01579b;">
-                                    👆 คลิกเพื่อเลือกโปรแกรมนี้
+                                    👆 คลิกเพื่อแทนที่ตัวเลือกเดิม
                                 </div>
                             </div>
                         `;
                     }).join('')}
                     ${alternatives.length > 8 ? `
                         <div style="text-align: center; margin-top: 12px; padding: 8px; background: #f0f0f0; border-radius: 6px; font-size: 0.85rem; color: #666;">
-                            และอีก ${alternatives.length - 8} โปรแกรม (แสดงเฉพาะ 8 อันดับแรก)
+                            และอีก ${alternatives.length - 8} โปรแกรม (แสดงเฉพาะ 8 โปรแกรมที่ดีที่สุด)
                         </div>
                     ` : ''}
                     
