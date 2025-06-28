@@ -726,11 +726,12 @@ async function findAlternativePrograms(university) {
                 }
 
                 if (goodAlternatives.length > 0) {
-                    alternativePrograms[university] = goodAlternatives;
-                    console.log(Found ${goodAlternatives.length} alternative programs for ${university});
-                } else {
-                    console.log(No good alternative programs found for ${university});
-                }
+    alternativePrograms[university] = goodAlternatives;
+    console.log(`Found ${goodAlternatives.length} alternative programs for ${university}`);
+} else {
+    console.log(`No good alternative programs found for ${university}`);
+    alternativePrograms[university] = null; // Add this line
+}
                 
             } catch (error) {
                 console.error('Error finding alternative programs:', error);
