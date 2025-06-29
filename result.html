@@ -1028,12 +1028,12 @@
                     let showAlternatives = false;
                     
                     if (scoreD !== null && scoreD !== undefined) {
-                        if (scoreD < -3.6) {
+                        if (scoreD < -2.26) {
                             difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #d32f2f; font-weight: bold;">😥 มีโอกาสได้รับการคัดเลือกต่ำมาก</div>';
                             showAlternatives = true;
                         } else if (scoreD < 0) {
                             difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #f57c00; font-weight: bold;">😧 มีโอกาสได้รับการคัดเลือกต่ำ</div>';
-                        } else if (scoreD < 3.6) {
+                        } else if (scoreD < 2.26) {
                             difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #1976d2; font-weight: bold;">😀 มีโอกาสได้รับการคัดเลือกสูง</div>';
                         } else {
                             difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #388e3c; font-weight: bold;">🥳 มีโอกาสได้รับการคัดเลือกสูงมาก</div>';
@@ -1156,9 +1156,9 @@
 
             return `
                 <div class="university-selector" id="${selectorId}">
-                    <h4>🎯 หาโปรแกรมที่มีโอกาสเข้าได้สูงกว่า</h4>
+                    <h4>🎯 ค้นหาคณะและสาขาวิชาที่ให้คุณมีโอกาศโอกาศได้รับการคัดเลือกมากขึ้น</h4>
                     <div style="margin-bottom: 12px; padding: 8px; background: #fff3e0; border-radius: 6px; font-size: 0.85rem; color: #f57c00;">
-                        <strong>💡 เคล็ดลับ:</strong> เลือกมหาวิทยาลัยที่มีโปรแกรมใกล้เคียงกับที่คุณต้องการ แต่มีโอกาสเข้าได้ง่ายกว่า
+                        <strong>💡 เคล็ดลับ:</strong> เลือกมหาวิทยาลัยที่มีคณะ เเละ สาขาใกล้เคียงกับที่คุณต้องการ แต่มีโอกาสเข้าได้ง่ายกว่า
                     </div>
                     <div class="form-group">
                         <input type="text" class="search-input" id="${searchInputId}" 
@@ -1369,7 +1369,7 @@
 
                 if (goodAlternatives.length > 0) {
                     resultDiv.innerHTML = createDetailedAlternativesDisplay(goodAlternatives, selectedUniversity);
-                    findBtn.textContent = `✅ พบ ${goodAlternatives.length} โปรแกรมที่เข้าได้ง่ายกว่า`;
+                    findBtn.textContent = `✅ พบ ${goodAlternatives.length} คณะ เเละ สาขาที่เข้าได้ง่ายกว่า`;
                 } else {
                     // Show message that no better alternatives were found
                     resultDiv.innerHTML = `
@@ -1394,7 +1394,7 @@
         }
 
         function createDetailedAlternativesDisplay(alternatives, university) {
-            const title = `💡VR THE FUTURE ขอแนะนำคณะเเละสาขาวิชาที่ให้คุณมีโอกาศโอกาศได้รับการคัดเลือกมากขึ้น${university}`;
+            const title = `💡VR THE  FUTURE ได้ค้นหามหาวิทยาลัย คณะ และสาขาวิชาที่คุณมีโอกาสได้รับการคัดเลือกสูงขึ้นให้แล้วครับ${university}`;
 
             return `
                 <div class="alternative-programs" style="margin-top: 12px;">
