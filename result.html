@@ -1074,13 +1074,14 @@
                 displayUserSummary(data);
                 
                 // Display GPAX analysis
-                displayGpaxAnalysis(data);
+             
                 
                 // Display general alternatives
-                displayGeneralAlternatives(data);
+               
                 
                 // Display university results
                 displayUniversityResults(data.results || []);
+                   displayGpaxAnalysis(data);
                 
             } catch (error) {
                 console.error("Error in displayResults:", error);
@@ -1143,95 +1144,7 @@
             safeSetDisplay("gpaxAnalysis", "none");
         }
 
-        function displayGeneralAlternatives(data) {
-            try {
-                const alternatives = data.general_alternatives || [];
-                
-                if (alternatives.length === 0) {
-                    safeSetDisplay("generalAlternatives", "none");
-                    return;
-                }
 
-                const alternativesHtml = `
-                    <div class="general-alternatives">
-                        <h3>💡 ข้อเสนอแนะโปรแกรมทางเลือก</h3>
-                        <p style="margin: 0 0 16px 0; color: #666;">
-                            VR THE FUTURE พบโปรแกรมที่เหมาะกับคุณ ${alternatives.length} โปรแกรม
-                        </p>
-                        
-                        <div style="margin-bottom: 16px; padding: 12px; background: #e8f5e8; border-radius: 8px; border: 1px solid #c8e6c9;">
-                            <strong style="color: #2e7d32;">💡 วิธีใช้:</strong>
-                            <ol style="margin: 8px 0 0 0; padding-left: 20px; color: #2e7d32;">
-                                <li>คลิกเลือกโปรแกรมที่สนใจ</li>
-                                <li>กดปุ่ม "แทนที่ตัวเลือกที่มีปัญหา"</li>
-                                <li>ระบบจะอัปเดตการเลือกของคุณทันที</li>
-                            </ol>
-                        </div>
-                        
-                        <div class="alternatives-grid">
-                            ${alternatives.slice(0, 12).map((alt, index) => {
-                                let competitivenessClass = 'low';
-                                let competitivenessText = 'ปานกลาง';
-                                
-                                if (alt.score_difference > 2.26) {
-                                    competitivenessClass = 'high';
-                                    competitivenessText = 'สูงมาก';
-                                } else if (alt.score_difference > 0) {
-                                    competitivenessClass = 'medium';
-                                    competitivenessText = 'สูง';
-                                }
-                                
-                                return `
-                                    <div class="alternative-card" onclick="selectGeneralAlternative(${index}, this)">
-                                        <div class="alternative-info">
-                                            <div class="alternative-university">${alt.university}</div>
-                                            <div class="alternative-program">${alt.faculty} - ${alt.field}</div>
-                                        </div>
-                                        <div class="alternative-scores">
-                                            <div class="alternative-score">คะแนน: ${alt.calculated_score.toFixed(2)}</div>
-                                            <div class="alternative-competitiveness ${competitivenessClass}">
-                                                โอกาส${competitivenessText}
-                                            </div>
-                                        </div>
-                                        <div style="margin-top: 8px; font-size: 0.8rem; color: #666;">
-                                            GPAX ต้องการ: ${alt.gpax_required || 'ไม่ระบุ'}
-                                            ${alt.score_difference !== null ? `
-                                                <br>เหนือเกณฑ์: +${alt.score_difference.toFixed(2)}
-                                            ` : ''}
-                                        </div>
-                                        <div style="margin-top: 8px; text-align: center; font-size: 0.75rem; color: #0288d1;">
-                                            👆 คลิกเพื่อเลือก
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                        
-                        ${alternatives.length > 12 ? `
-                            <div style="text-align: center; margin-top: 16px; padding: 12px; background: #f0f0f0; border-radius: 8px; color: #666;">
-                                และอีก ${alternatives.length - 12} โปรแกรม (แสดงเฉพาะ 12 โปรแกรมที่ดีที่สุด)
-                            </div>
-                        ` : ''}
-                        
-                        <div id="selectedAlternativesCount" style="margin-top: 16px; text-align: center; font-weight: bold; color: #0288d1;">
-                            เลือกแล้ว: <span id="selectedCount">0</span> โปรแกรม
-                        </div>
-                        
-                        <button id="replaceSelectionsBtn" class="replace-selection-btn" 
-                                onclick="replaceProblematicSelections()" disabled>
-                            🔄 แทนที่ตัวเลือกที่มีปัญหา
-                        </button>
-                    </div>
-                `;
-                
-                safeSetHTML("generalAlternatives", alternativesHtml);
-                safeSetDisplay("generalAlternatives", "block");
-                
-            } catch (error) {
-                console.error("Error in displayGeneralAlternatives:", error);
-                safeSetDisplay("generalAlternatives", "none");
-            }
-        }
 
         function selectGeneralAlternative(index, element) {
             const alternatives = currentScoreData.general_alternatives || [];
