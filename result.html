@@ -420,7 +420,7 @@
 
         .status-message {
             padding: 12px 16px;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 0.9rem;
             margin-bottom: 16px;
         }
@@ -456,36 +456,51 @@
         }
 
         .gpax-check-display {
-            background: #fff3e0;
-            border: 2px solid #ff9800;
-            border-radius: 8px;
+            background: #fff8e1;
+            border: 2px solid #ffb74d;
+            border-radius: 12px;
             padding: 16px;
             margin-bottom: 16px;
         }
 
         .gpax-check-display h4 {
-            margin: 0 0 8px 0;
+            margin: 0 0 12px 0;
             color: #f57c00;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 1rem;
         }
 
         .gpax-requirement-details {
             background: rgba(255,255,255,0.8);
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 8px;
+            padding: 14px;
+            border-radius: 8px;
+            margin-top: 12px;
             font-size: 0.9rem;
+            line-height: 1.5;
         }
 
         .gpax-eligible {
             background: #e8f5e8;
-            border-color: #4caf50;
+            border: 2px solid #66bb6a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
         }
 
         .gpax-eligible h4 {
             color: #388e3c;
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+
+        .gpax-eligible .gpax-requirement-details {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #c8e6c9;
         }
 
         .missing-scores {
@@ -904,6 +919,32 @@
             return false;
         }
 
+        // Helper function to format GPAX for display (divide by 25)
+        function formatGpaxForDisplay(gpax) {
+            if (gpax === null || gpax === undefined || gpax === 'ไม่ระบุ') {
+                return 'ไม่ระบุ';
+            }
+            const numericGpax = parseFloat(gpax);
+            if (isNaN(numericGpax)) {
+                return 'ไม่ระบุ';
+            }
+            return (numericGpax / 25).toFixed(2);
+        }
+
+        // Helper function to translate status messages to Thai
+        function translateStatusMessage(message) {
+            if (!message) return 'ไม่มีข้อความ';
+            
+            // Replace common English phrases with Thai
+            let translatedMessage = message
+                .replace(/Score calculated successfully/gi, 'คำนวณคะแนนเรียบร้อยแล้ว')
+                .replace(/Calculation completed/gi, 'การคำนวณเสร็จสิ้น')
+                .replace(/Successfully calculated/gi, 'คำนวณเรียบร้อยแล้ว')
+                .replace(/Score calculation complete/gi, 'การคำนวณคะแนนเสร็จสิ้น');
+            
+            return translatedMessage;
+        }
+
         // Wait for DOM to be fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM fully loaded');
@@ -1093,6 +1134,9 @@
             try {
                 const summary = data.summary || {};
                 
+                // Format user GPAX for display (divide by 25)
+                const displayGpax = formatGpaxForDisplay(data.user_gpax);
+                
                 const summaryHtml = `
                     <div class="user-summary">
                         <h3>สรุปผลการประเมิน</h3>
@@ -1103,7 +1147,7 @@
                             </div>
                             <div class="summary-item">
                                 <div class="summary-label">GPAX ของคุณ</div>
-                                <div class="summary-value">${data.user_gpax || 'ไม่ระบุ'}</div>
+                                <div class="summary-value">${displayGpax}</div>
                             </div>
                             <div class="summary-item">
                                 <div class="summary-label">จำนวนการเลือก</div>
@@ -1429,7 +1473,7 @@
                 const status = result.status || 'unknown';
                 const score = result.score;
                 const scoreD = result.score_d;
-                const message = result.message || 'ไม่มีข้อความ';
+                const message = translateStatusMessage(result.message) || 'ไม่มีข้อความ';
                 const scoreBreakdown = result.score_breakdown || [];
                 const missingScores = result.missing_scores || [];
                 const gpaxCheck = result.gpax_check;
@@ -1477,17 +1521,31 @@
                     const gpaxClass = gpaxCheck.eligible ? 'gpax-eligible' : 'gpax-check-display';
                     const gpaxIcon = gpaxCheck.eligible ? '✅' : '⚠️';
                     
+                    // Format GPAX values for display (divide by 25)
+                    const displayUserGpax = formatGpaxForDisplay(gpaxCheck.user_gpax);
+                    const displayRequiredGpax = formatGpaxForDisplay(gpaxCheck.required_gpax);
+                    
+                    // Format buffer/deficit for display (divide by 25)
+                    let bufferDeficitInfo = '';
+                    if (gpaxCheck.gpax_buffer !== undefined) {
+                        const displayBuffer = (gpaxCheck.gpax_buffer / 25).toFixed(2);
+                        bufferDeficitInfo = `<strong>สูงกว่าข้อกำหนด:</strong> +${displayBuffer}<br>`;
+                    }
+                    if (gpaxCheck.gpax_deficit !== undefined) {
+                        const displayDeficit = (gpaxCheck.gpax_deficit / 25).toFixed(2);
+                        bufferDeficitInfo = `<strong>ต่ำกว่าข้อกำหนด:</strong> ${displayDeficit}<br>`;
+                    }
+                    
                     bodyContent += `
                         <div class="${gpaxClass}">
-                            <h4>${gpaxIcon} การตรวจสอบ GPAX</h4>
-                            <p style="margin: 8px 0; color: ${gpaxCheck.eligible ? '#388e3c' : '#f57c00'};">
-                                ${gpaxCheck.message}
+                            <h4>${gpaxIcon} การตรวจสอบเกรดเฉลี่ยสะสม (GPAX)</h4>
+                            <p style="margin: 8px 0; color: ${gpaxCheck.eligible ? '#388e3c' : '#f57c00'}; font-weight: 500;">
+                                ${gpaxCheck.eligible ? 'ผ่านการตรวจสอบเกรดเฉลี่ยสะสม' : 'ไม่ผ่านการตรวจสอบเกรดเฉลี่ยสะสม'}
                             </p>
                             <div class="gpax-requirement-details">
-                                <strong>GPAX ของคุณ:</strong> ${gpaxCheck.user_gpax || 'ไม่ระบุ'}<br>
-                                <strong>GPAX ที่ต้องการ:</strong> ${gpaxCheck.required_gpax || 'ไม่มีข้อกำหนด'}<br>
-                                ${gpaxCheck.gpax_buffer !== undefined ? `<strong>เหนือข้อกำหนด:</strong> +${gpaxCheck.gpax_buffer.toFixed(2)}<br>` : ''}
-                                ${gpaxCheck.gpax_deficit !== undefined ? `<strong>ขาดจากข้อกำหนด:</strong> ${gpaxCheck.gpax_deficit.toFixed(2)}<br>` : ''}
+                                <strong>เกรดเฉลี่ยสะสมของคุณ:</strong> ${displayUserGpax}<br>
+                                <strong>เกรดเฉลี่ยสะสมที่ต้องการ:</strong> ${displayRequiredGpax || 'ไม่มีข้อกำหนด'}<br>
+                                ${bufferDeficitInfo}
                             </div>
                         </div>
                     `;
