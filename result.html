@@ -146,6 +146,142 @@
             font-weight: bold;
         }
 
+        /* NEW: GPAX Analysis Section */
+        .gpax-analysis {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            border: 3px solid #ffcc02;
+        }
+
+        .gpax-analysis h3 {
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gpax-issues-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .gpax-issue-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .gpax-issue-card h4 {
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .gpax-requirement {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .general-alternatives {
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .general-alternatives h3 {
+            margin: 0 0 16px 0;
+            color: #0288d1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alternatives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .alternative-card {
+            background: #f8faff;
+            border: 2px solid #e3f2fd;
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .alternative-card:hover {
+            border-color: #0288d1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .alternative-card.selected {
+            border-color: #4caf50;
+            background: #e8f5e8;
+        }
+
+        .alternative-info {
+            margin-bottom: 12px;
+        }
+
+        .alternative-university {
+            font-weight: bold;
+            color: #01579b;
+            margin-bottom: 4px;
+        }
+
+        .alternative-program {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .alternative-scores {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .alternative-score {
+            font-weight: bold;
+            color: #0288d1;
+        }
+
+        .alternative-competitiveness {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .alternative-competitiveness.high {
+            background: #e8f5e8;
+            color: #388e3c;
+        }
+
+        .alternative-competitiveness.medium {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .alternative-competitiveness.low {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
         .sorting-info {
             background: rgba(255,255,255,0.1);
             border-radius: 8px;
@@ -196,7 +332,6 @@
             background: linear-gradient(135deg, #9c27b0, #7b1fa2);
         }
 
-        /* NEW: High risk header style */
         .card-header.high-risk {
             background: linear-gradient(135deg, #f44336, #d32f2f);
         }
@@ -320,6 +455,39 @@
             border: 1px solid #ce93d8;
         }
 
+        .gpax-check-display {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .gpax-check-display h4 {
+            margin: 0 0 8px 0;
+            color: #f57c00;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gpax-requirement-details {
+            background: rgba(255,255,255,0.8);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        .gpax-eligible {
+            background: #e8f5e8;
+            border-color: #4caf50;
+        }
+
+        .gpax-eligible h4 {
+            color: #388e3c;
+        }
+
         .missing-scores {
             background: #fff3e0;
             border: 1px solid #ffcc02;
@@ -379,7 +547,6 @@
             font-size: 0.9rem;
         }
 
-        /* University Selector Styles */
         .university-selector {
             background: #fff3e0;
             border: 1px solid #ff9800;
@@ -572,6 +739,30 @@
             box-shadow: none;
         }
 
+        .replace-selection-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 12px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .replace-selection-btn:hover {
+            background: #388e3c;
+            transform: translateY(-1px);
+        }
+
+        .replace-selection-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 0 5px;
@@ -596,6 +787,14 @@
             .custom-dropdown {
                 max-height: 120px;
             }
+
+            .gpax-issues-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .alternatives-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -613,7 +812,7 @@
 
         <div id="loadingSection" class="loading">
             <div class="loading-spinner"></div>
-            <p>กำลังคำนวณคะแนน...</p>
+            <p>กำลังคำนวณคะแนนและตรวจสอบ GPAX...</p>
         </div>
 
         <div id="errorSection" class="error-state" style="display: none;">
@@ -630,15 +829,21 @@
         </div>
 
         <div id="resultsSection" style="display: none;">
-            <!-- User Summary will be inserted here -->
+            <!-- User Summary -->
             <div id="userSummary"></div>
+            
+            <!-- GPAX Analysis Section -->
+            <div id="gpaxAnalysis" style="display: none;"></div>
+            
+            <!-- General Alternatives Section -->
+            <div id="generalAlternatives" style="display: none;"></div>
             
             <!-- Sorting explanation -->
             <div id="sortingInfo" class="sorting-info" style="display: none;">
                 📊 ผลลัพธ์เรียงตามความท้าทาย: โปรแกรมที่ท้าทายที่สุด (คะแนนต่ำกว่าปีก่อน) ไปยังโปรแกรมที่มีโอกาสสูงที่สุด (คะแนนสูงกว่าปีก่อน)
             </div>
             
-            <!-- University cards will be inserted here -->
+            <!-- University cards -->
             <div id="universityResults"></div>
         </div>
 
@@ -656,8 +861,9 @@
         let currentUserId = null;
         let debugMode = false;
         let currentScoreData = null;
-        let alternativePrograms = {};
-        let allUniversities = []; // Will store the university list
+        let currentGpaxAnalysis = null;
+        let selectedAlternatives = [];
+        let allUniversities = [];
 
         // Helper function to safely get element
         function safeGetElement(id) {
@@ -725,7 +931,7 @@
                     // Load university list first
                     loadUniversityList();
                     
-                    // Load score data
+                    // Load score data and GPAX analysis
                     await loadScoreData();
                 } else {
                     liff.login();
@@ -737,8 +943,7 @@
         };
 
         function loadUniversityList() {
-            // University list from the selection page
-            allUniversities = ['มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย', 'มหาวิทยาลัยเกษมบัณฑิต', 'กลุ่มสถาบันแพทยศาสตร์แห่งประเทศไทย', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง', 'มหาวิทยาลัยราชภัฏพิบูลสงคราม', 'มหาวิทยาลัยปทุมธานี', 'มหาวิทยาลัยนครพนม', 'มหาวิทยาลัยเวสเทิร์น', 'มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ', 'ราชวิทยาลัยจุฬาภรณ์', 'มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชชูปถัมภ์', 'สถาบันเทคโนโลยีแห่งสุวรรณภูมิ', 'สถาบันการพยาบาลศรีสวรินทิรา', 'มหาวิทยาลัยกาฬสินธุ์', 'มหาวิทยาลัยธุรกิจบัณฑิตย์', 'มหาวิทยาลัยรามคำแหง', 'มหาวิทยาลัยราชภัฏบ้านสมเด็จเจ้าพระยา', 'มหาาวิทยาลัยมหาสารคาม', 'มหาวิทยาลัยเกษตรศาสตร์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลศรีวิชัย', 'มหาวิทยาลัยเนชั่น', 'มหาวิทยาลัยราชภัฏอุบลราชธานี', 'มหาวิทยาลัยราชภัฏชัยภูมิ', 'มหาวิทยาลัยราชภัฏธนบุรี', 'วิทยาลัยดุสิตธานี', 'มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน', 'มหาวิทยาลัยนวมินทราธิราช', 'มหาวิทยาลัยราชภัฏสวนสุนันทา', 'มหาวิทยาลัยเซาธ์อีสท์บางกอก', 'จุฬาลงกรณ์มหาวิทยาลัย', 'มหาวิทยาลัยราชภัฏพระนคร', 'มหาวิทยาลัยหาดใหญ่', 'มหาวิทยาลัยอีสเทิร์นเอเชีย', 'มหาวิทยาลัยเทคโนโลยีสุรนารี', 'มหาวิทยาลัยสงขลานครินทร์', 'มหาวิทยาลัยอุบลราชธานี', 'มหาวิทยาลัยมหิดล', 'มหาวิทยาลัยเทคโนโลยีราชมงคลตะวันออก', 'มหาวิทยาลัยนานาชาติเอเชีย-แปซิฟิก', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี', 'มหาวิทยาลัยบูรพา', 'มหาวิทยาลัยทักษิณ', 'มหาวิทยาลัยขอนแก่น', 'มหาวิทยาลัยแม่โจ้', 'มหาวิทยาลัยราชภัฏเชียงใหม่', 'มหาวิทยาลัยศรีนครินทรวิโรฒ', 'สถาบันพระบรมราชชนก', 'มหาวิทยาลัยราชธานี', 'มหาวิทยาลัยศิลปากร', 'มหาวิทยาลัยศรีปทุม', 'มหาวิทยาลัยธรรมศาสตร์', 'วิทยาลัยเซนต์หลุยส์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี', 'มหาวิทยาลัยรังสิต', 'มหาวิทยาลัยวลัยลักษณ์', 'มหาวิทยาลัยแม่ฟ้าหลวง', 'มหาวิทยาลัยสวนดุสิต', 'มหาวิทยาลัยพะเยา', 'มหาวิทยาลัยราชภัฏเพชรบุรี', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ', 'มหาวิทยาลัยเทคโนโลยีราชมงคลรัตนโกสินทร์', 'มหาวิทยาลัยนราธิวาสราชนครินทร์', 'มหาวิทยาลัยราชภัฏจันทรเกษม', 'มหาวิทยาลัยเชียงใหม่', 'วิทยาลัยนครราชสีมา', 'มหาวิทยาลัยเทคโนโลยีมหานคร', 'มหาวิทยาลัยหอการค้าไทย', 'มหาวิทยาลัยนเรศวร', 'สถาบันเทคโนโลยีจิตรลดา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลกรุงเทพ', 'สถาบันการจัดการปัญญาภิวัฒน์', 'มหาวิทยาลัยสยาม', 'มหาวิทยาลัยราชภัฏสงขลา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร', 'วิทยาลัยนอร์ทเทิร์น', 'มหาวิทยาลัยมหามกุฏราชวิทยาลัย', 'มหาวิทยาลัยราชภัฏนครราชสีมา'];
+            allUniversities = ['มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย', 'มหาวิทยาลัยเกษมบัณฑิต', 'กลุ่มสถาบันแพทยศาสตร์แห่งประเทศไทย', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง', 'มหาวิทยาลัยราชภัฏพิบูลสงคราม', 'มหาวิทยาลัยปทุมธานี', 'มหาวิทยาลัยนครพนม', 'มหาวิทยาลัยเวสเทิร์น', 'มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ', 'ราชวิทยาลัยจุฬาภรณ์', 'มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์', 'สถาบันเทคโนโลยีแห่งสุวรรณภูมิ', 'สถาบันการพยาบาลศรีสวรินทิรา', 'มหาวิทยาลัยกาฬสินธุ์', 'มหาวิทยาลัยธุรกิจบัณฑิตย์', 'มหาวิทยาลัยรามคำแหง', 'มหาวิทยาลัยราชภัฏบ้านสมเด็จเจ้าพระยา', 'มหาาวิทยาลัยมหาสารคาม', 'มหาวิทยาลัยเกษตรศาสตร์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลศรีวิชัย', 'มหาวิทยาลัยเนชั่น', 'มหาวิทยาลัยราชภัฏอุบลราชธานี', 'มหาวิทยาลัยราชภัฏชัยภูมิ', 'มหาวิทยาลัยราชภัฏธนบุรี', 'วิทยาลัยดุสิตธานี', 'มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน', 'มหาวิทยาลัยนวมินทราธิราช', 'มหาวิทยาลัยราชภัฏสวนสุนันทา', 'มหาวิทยาลัยเซาธ์อีสท์บางกอก', 'จุฬาลงกรณ์มหาวิทยาลัย', 'มหาวิทยาลัยราชภัฏพระนคร', 'มหาวิทยาลัยหาดใหญ่', 'มหาวิทยาลัยอีสเทิร์นเอเชีย', 'มหาวิทยาลัยเทคโนโลยีสุรนารี', 'มหาวิทยาลัยสงขลานครินทร์', 'มหาวิทยาลัยอุบลราชธานี', 'มหาวิทยาลัยมหิดล', 'มหาวิทยาลัยเทคโนโลยีราชมงคลตะวันออก', 'มหาวิทยาลัยนานาชาติเอเชีย-แปซิฟิก', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี', 'มหาวิทยาลัยบูรพา', 'มหาวิทยาลัยทักษิณ', 'มหาวิทยาลัยขอนแก่น', 'มหาวิทยาลัยแม่โจ้', 'มหาวิทยาลัยราชภัฏเชียงใหม่', 'มหาวิทยาลัยศรีนครินทรวิโรฒ', 'สถาบันพระบรมราชชนก', 'มหาวิทยาลัยราชธานี', 'มหาวิทยาลัยศิลปากร', 'มหาวิทยาลัยศรีปทุม', 'มหาวิทยาลัยธรรมศาสตร์', 'วิทยาลัยเซนต์หลุยส์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี', 'มหาวิทยาลัยรังสิต', 'มหาวิทยาลัยวลัยลักษณ์', 'มหาวิทยาลัยแม่ฟ้าหลวง', 'มหาวิทยาลัยสวนดุสิต', 'มหาวิทยาลัยพะเยา', 'มหาวิทยาลัยราชภัฏเพชรบุรี', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ', 'มหาวิทยาลัยเทคโนโลยีราชมงคลรัตนโกสินทร์', 'มหาวิทยาลัยนราธิวาสราชนครินทร์', 'มหาวิทยาลัยราชภัฏจันทรเกษม', 'มหาวิทยาลัยเชียงใหม่', 'วิทยาลัยนครราชสีมา', 'มหาวิทยาลัยเทคโนโลยีมหานคร', 'มหาวิทยาลัยหอการค้าไทย', 'มหาวิทยาลัยนเรศวร', 'สถาบันเทคโนโลยีจิตรลดา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลกรุงเทพ', 'สถาบันการจัดการปัญญาภิวัฒน์', 'มหาวิทยาลัยสยาม', 'มหาวิทยาลัยราชภัฏสงขลา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร', 'วิทยาลัยนอร์ทเทิร์น', 'มหาวิทยาลัยมหามกุฏราชวิทยาลัย', 'มหาวิทยาลัยราชภัฏนครราชสีมา'];
         }
 
         async function loadScoreData() {
@@ -760,7 +965,6 @@
                 });
 
                 console.log("Response status:", response.status);
-                console.log("Response headers:", response.headers);
 
                 if (!response.ok) {
                     const errorText = await response.text();
@@ -776,11 +980,41 @@
                 }
 
                 currentScoreData = data;
+                
+                // Also load GPAX analysis
+                await loadGpaxAnalysis();
+                
                 displayResults(data);
                 
             } catch (error) {
                 console.error('Error loading score data:', error);
                 showError(error.message || "ไม่สามารถโหลดข้อมูลคะแนนได้");
+            }
+        }
+
+        async function loadGpaxAnalysis() {
+            if (!currentUserId) return;
+
+            try {
+                console.log("Loading GPAX analysis for user:", currentUserId);
+                
+                const response = await fetch("https://varee.onrender.com/api/gpax_analysis", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ userId: currentUserId })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Received GPAX analysis:", data);
+                    currentGpaxAnalysis = data;
+                } else {
+                    console.warn("Failed to load GPAX analysis");
+                }
+            } catch (error) {
+                console.error('Error loading GPAX analysis:', error);
             }
         }
 
@@ -794,6 +1028,10 @@
             const debugContent = `
                 <h4>ข้อมูลผู้ใช้:</h4>
                 <pre>${JSON.stringify(data, null, 2)}</pre>
+                ${currentGpaxAnalysis ? `
+                    <h4>การวิเคราะห์ GPAX:</h4>
+                    <pre>${JSON.stringify(currentGpaxAnalysis, null, 2)}</pre>
+                ` : ''}
             `;
             
             safeSetHTML("debugContent", debugContent);
@@ -835,6 +1073,12 @@
                 // Display user summary
                 displayUserSummary(data);
                 
+                // Display GPAX analysis
+                displayGpaxAnalysis(data);
+                
+                // Display general alternatives
+                displayGeneralAlternatives(data);
+                
                 // Display university results
                 displayUniversityResults(data.results || []);
                 
@@ -869,8 +1113,10 @@
                                 <div class="summary-value">${summary.calculated_scores || 0}</div>
                             </div>
                             <div class="summary-item">
-                                <div class="summary-label">คะแนนสูงสุด</div>
-                                <div class="summary-value">${summary.highest_score ? summary.highest_score.toFixed(2) : '0'}</div>
+                                <div class="summary-label">ปัญหา GPAX</div>
+                                <div class="summary-value" style="color: ${summary.gpax_issues_count > 0 ? '#f44336' : '#4caf50'};">
+                                    ${summary.gpax_issues_count || 0}
+                                </div>
                             </div>
                             <div class="summary-item">
                                 <div class="summary-label">คะแนนเฉลี่ย</div>
@@ -891,6 +1137,352 @@
                     </div>
                 `);
             }
+        }
+
+        function displayGpaxAnalysis(data) {
+            try {
+                const gpaxIssues = data.gpax_issues || [];
+                
+                if (gpaxIssues.length === 0) {
+                    safeSetDisplay("gpaxAnalysis", "none");
+                    return;
+                }
+
+                const analysisHtml = `
+                    <div class="gpax-analysis">
+                        <h3>⚠️ ปัญหาข้อกำหนด GPAX</h3>
+                        <p style="margin: 0 0 16px 0; opacity: 0.9;">
+                            พบ ${gpaxIssues.length} โปรแกรมที่ GPAX ของคุณไม่เพียงพอ
+                        </p>
+                        <div class="gpax-issues-grid">
+                            ${gpaxIssues.map(issue => `
+                                <div class="gpax-issue-card">
+                                    <h4>${issue.university}</h4>
+                                    <p style="margin: 4px 0; font-size: 0.9rem;">
+                                        ${issue.faculty} - ${issue.field}
+                                    </p>
+                                    <div class="gpax-requirement">
+                                        <strong>ต้องการ:</strong> ${issue.gpax_check?.required_gpax || 'N/A'}<br>
+                                        <strong>ของคุณ:</strong> ${issue.gpax_check?.user_gpax || 'N/A'}<br>
+                                        <strong>ขาด:</strong> ${issue.gpax_check?.gpax_deficit ? issue.gpax_check.gpax_deficit.toFixed(2) : 'N/A'}
+                                    </div>
+                                    ${issue.alternatives && issue.alternatives.length > 0 ? `
+                                        <div style="margin-top: 12px;">
+                                            <strong style="color: white;">ทางเลือกใน ${issue.university}:</strong>
+                                            <div style="margin-top: 8px; max-height: 100px; overflow-y: auto;">
+                                                ${issue.alternatives.slice(0, 3).map(alt => `
+                                                    <div style="background: rgba(255,255,255,0.1); padding: 8px; margin: 4px 0; border-radius: 4px; font-size: 0.85rem;">
+                                                        <strong>${alt.faculty}</strong><br>
+                                                        ${alt.field} (คะแนน: ${alt.calculated_score?.toFixed(2) || 'N/A'})
+                                                    </div>
+                                                `).join('')}
+                                                ${issue.alternatives.length > 3 ? `
+                                                    <div style="text-align: center; margin-top: 8px; font-size: 0.8rem; opacity: 0.8;">
+                                                        และอีก ${issue.alternatives.length - 3} ตัวเลือก
+                                                    </div>
+                                                ` : ''}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                safeSetHTML("gpaxAnalysis", analysisHtml);
+                safeSetDisplay("gpaxAnalysis", "block");
+                
+            } catch (error) {
+                console.error("Error in displayGpaxAnalysis:", error);
+                safeSetDisplay("gpaxAnalysis", "none");
+            }
+        }
+
+        function displayGeneralAlternatives(data) {
+            try {
+                const alternatives = data.general_alternatives || [];
+                
+                if (alternatives.length === 0) {
+                    safeSetDisplay("generalAlternatives", "none");
+                    return;
+                }
+
+                const alternativesHtml = `
+                    <div class="general-alternatives">
+                        <h3>💡 ข้อเสนอแนะโปรแกรมทางเลือก</h3>
+                        <p style="margin: 0 0 16px 0; color: #666;">
+                            VR THE FUTURE พบโปรแกรมที่เหมาะกับคุณ ${alternatives.length} โปรแกรม
+                        </p>
+                        
+                        <div style="margin-bottom: 16px; padding: 12px; background: #e8f5e8; border-radius: 8px; border: 1px solid #c8e6c9;">
+                            <strong style="color: #2e7d32;">💡 วิธีใช้:</strong>
+                            <ol style="margin: 8px 0 0 0; padding-left: 20px; color: #2e7d32;">
+                                <li>คลิกเลือกโปรแกรมที่สนใจ</li>
+                                <li>กดปุ่ม "แทนที่ตัวเลือกที่มีปัญหา"</li>
+                                <li>ระบบจะอัปเดตการเลือกของคุณทันที</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="alternatives-grid">
+                            ${alternatives.slice(0, 12).map((alt, index) => {
+                                let competitivenessClass = 'low';
+                                let competitivenessText = 'ปานกลาง';
+                                
+                                if (alt.score_difference > 2.26) {
+                                    competitivenessClass = 'high';
+                                    competitivenessText = 'สูงมาก';
+                                } else if (alt.score_difference > 0) {
+                                    competitivenessClass = 'medium';
+                                    competitivenessText = 'สูง';
+                                }
+                                
+                                return `
+                                    <div class="alternative-card" onclick="selectGeneralAlternative(${index}, this)">
+                                        <div class="alternative-info">
+                                            <div class="alternative-university">${alt.university}</div>
+                                            <div class="alternative-program">${alt.faculty} - ${alt.field}</div>
+                                        </div>
+                                        <div class="alternative-scores">
+                                            <div class="alternative-score">คะแนน: ${alt.calculated_score.toFixed(2)}</div>
+                                            <div class="alternative-competitiveness ${competitivenessClass}">
+                                                โอกาส${competitivenessText}
+                                            </div>
+                                        </div>
+                                        <div style="margin-top: 8px; font-size: 0.8rem; color: #666;">
+                                            GPAX ต้องการ: ${alt.gpax_required || 'ไม่ระบุ'}
+                                            ${alt.score_difference !== null ? `
+                                                <br>เหนือเกณฑ์: +${alt.score_difference.toFixed(2)}
+                                            ` : ''}
+                                        </div>
+                                        <div style="margin-top: 8px; text-align: center; font-size: 0.75rem; color: #0288d1;">
+                                            👆 คลิกเพื่อเลือก
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        
+                        ${alternatives.length > 12 ? `
+                            <div style="text-align: center; margin-top: 16px; padding: 12px; background: #f0f0f0; border-radius: 8px; color: #666;">
+                                และอีก ${alternatives.length - 12} โปรแกรม (แสดงเฉพาะ 12 โปรแกรมที่ดีที่สุด)
+                            </div>
+                        ` : ''}
+                        
+                        <div id="selectedAlternativesCount" style="margin-top: 16px; text-align: center; font-weight: bold; color: #0288d1;">
+                            เลือกแล้ว: <span id="selectedCount">0</span> โปรแกรม
+                        </div>
+                        
+                        <button id="replaceSelectionsBtn" class="replace-selection-btn" 
+                                onclick="replaceProblematicSelections()" disabled>
+                            🔄 แทนที่ตัวเลือกที่มีปัญหา
+                        </button>
+                    </div>
+                `;
+                
+                safeSetHTML("generalAlternatives", alternativesHtml);
+                safeSetDisplay("generalAlternatives", "block");
+                
+            } catch (error) {
+                console.error("Error in displayGeneralAlternatives:", error);
+                safeSetDisplay("generalAlternatives", "none");
+            }
+        }
+
+        function selectGeneralAlternative(index, element) {
+            const alternatives = currentScoreData.general_alternatives || [];
+            const alternative = alternatives[index];
+            
+            if (!alternative) return;
+            
+            // Toggle selection
+            const isSelected = selectedAlternatives.some(alt => 
+                alt.university === alternative.university && 
+                alt.faculty === alternative.faculty && 
+                alt.field === alternative.field
+            );
+            
+            if (isSelected) {
+                // Remove from selection
+                selectedAlternatives = selectedAlternatives.filter(alt => 
+                    !(alt.university === alternative.university && 
+                      alt.faculty === alternative.faculty && 
+                      alt.field === alternative.field)
+                );
+                element.classList.remove('selected');
+            } else {
+                // Add to selection
+                selectedAlternatives.push(alternative);
+                element.classList.add('selected');
+            }
+            
+            // Update counter
+            const countElement = safeGetElement('selectedCount');
+            if (countElement) {
+                countElement.textContent = selectedAlternatives.length;
+            }
+            
+            // Enable/disable replace button
+            const replaceBtn = safeGetElement('replaceSelectionsBtn');
+            if (replaceBtn) {
+                replaceBtn.disabled = selectedAlternatives.length === 0;
+            }
+        }
+
+        async function replaceProblematicSelections() {
+            if (selectedAlternatives.length === 0) {
+                alert('กรุณาเลือกโปรแกรมทางเลือกก่อน');
+                return;
+            }
+            
+            const confirmMessage = `คุณต้องการแทนที่ตัวเลือกที่มีปัญหาด้วย ${selectedAlternatives.length} โปรแกรมที่เลือกหรือไม่?\n\nระบบจะแทนที่ตัวเลือกที่มีปัญหา GPAX และคะแนนต่ำ`;
+            
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+            
+            try {
+                // Show loading
+                showLoadingOverlay('กำลังแทนที่ตัวเลือกที่มีปัญหา...');
+                
+                const profile = await liff.getProfile();
+                
+                // Get current selections and identify problematic ones
+                const currentResults = currentScoreData.results || [];
+                const gpaxIssues = currentScoreData.gpax_issues || [];
+                
+                // Find problematic selections (GPAX issues or very low scores)
+                const problematicIndices = [];
+                for (let i = 0; i < currentResults.length; i++) {
+                    const result = currentResults[i];
+                    // Mark as problematic if GPAX insufficient or score difference < -2.26
+                    if (result.status === 'gpax_insufficient' || 
+                        (result.status === 'calculated' && result.score_d !== null && result.score_d < -2.26)) {
+                        problematicIndices.push(i);
+                    }
+                }
+                
+                console.log('Problematic selections indices:', problematicIndices);
+                console.log('Selected alternatives:', selectedAlternatives);
+                
+                // Create new selections array
+                const newSelections = [...currentResults];
+                
+                // Replace problematic selections with selected alternatives
+                for (let i = 0; i < Math.min(problematicIndices.length, selectedAlternatives.length); i++) {
+                    const index = problematicIndices[i];
+                    const alternative = selectedAlternatives[i];
+                    
+                    newSelections[index] = {
+                        university: alternative.university,
+                        faculty: alternative.faculty,
+                        field: alternative.field
+                    };
+                }
+                
+                // Convert to the format expected by the API
+                const selectionsForAPI = newSelections.map(result => ({
+                    university: result.university || '',
+                    faculty: result.faculty || '',
+                    field: result.field || ''
+                })).filter(sel => sel.university && sel.faculty && sel.field);
+                
+                console.log('New selections for API:', selectionsForAPI);
+                
+                // Submit new selections
+                const submitResponse = await fetch("https://varee.onrender.com/api/submit_multiple_selections", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        name: profile.displayName,
+                        selections: selectionsForAPI
+                    })
+                });
+                
+                if (!submitResponse.ok) {
+                    throw new Error("ไม่สามารถอัปเดตการเลือกได้");
+                }
+                
+                // Wait a moment for server processing
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Reload the page data
+                await loadScoreData();
+                
+                // Clear selected alternatives
+                selectedAlternatives = [];
+                
+                // Remove loading overlay
+                hideLoadingOverlay();
+                
+                // Show success message
+                showSuccessMessage(`✅ แทนที่ตัวเลือกเรียบร้อยแล้ว!`);
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+            } catch (error) {
+                console.error('Error replacing selections:', error);
+                hideLoadingOverlay();
+                showErrorMessage(`❌ เกิดข้อผิดพลาด: ${error.message}`);
+            }
+        }
+
+        function showLoadingOverlay(message) {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loadingOverlay';
+            loadingDiv.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 300px;">
+                        <div class="loading-spinner"></div>
+                        <h3 style="margin: 16px 0 8px 0; color: #01579b;">${message}</h3>
+                        <p style="margin: 0; color: #666;">กรุณารอสักครู่...</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loadingDiv);
+        }
+
+        function hideLoadingOverlay() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                document.body.removeChild(loadingOverlay);
+            }
+        }
+
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.innerHTML = `
+                <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #4caf50; color: white; padding: 16px 24px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                    ${message}
+                </div>
+            `;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                if (document.body.contains(successDiv)) {
+                    document.body.removeChild(successDiv);
+                }
+            }, 3000);
+        }
+
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.innerHTML = `
+                <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #f44336; color: white; padding: 16px 24px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                    ${message}
+                </div>
+            `;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                if (document.body.contains(errorDiv)) {
+                    document.body.removeChild(errorDiv);
+                }
+            }, 5000);
         }
 
         function displayUniversityResults(results) {
@@ -983,14 +1575,15 @@
                 const message = result.message || 'ไม่มีข้อความ';
                 const scoreBreakdown = result.score_breakdown || [];
                 const missingScores = result.missing_scores || [];
+                const gpaxCheck = result.gpax_check;
                 
                 let headerClass = 'calculated';
                 let statusClass = 'success';
                 
                 switch (status) {
                     case 'calculated':
-                        // MODIFIED: Check if this is a high-risk university
-                        if (scoreD !== null && scoreD !== undefined && scoreD < -3.6) {
+                        // Check if this is a high-risk university
+                        if (scoreD !== null && scoreD !== undefined && scoreD < -2.26) {
                             headerClass = 'high-risk';
                             statusClass = 'error';
                         } else {
@@ -1021,6 +1614,27 @@
                         ${message}
                     </div>
                 `;
+
+                // Add GPAX check display if available
+                if (gpaxCheck) {
+                    const gpaxClass = gpaxCheck.eligible ? 'gpax-eligible' : 'gpax-check-display';
+                    const gpaxIcon = gpaxCheck.eligible ? '✅' : '⚠️';
+                    
+                    bodyContent += `
+                        <div class="${gpaxClass}">
+                            <h4>${gpaxIcon} การตรวจสอบ GPAX</h4>
+                            <p style="margin: 8px 0; color: ${gpaxCheck.eligible ? '#388e3c' : '#f57c00'};">
+                                ${gpaxCheck.message}
+                            </p>
+                            <div class="gpax-requirement-details">
+                                <strong>GPAX ของคุณ:</strong> ${gpaxCheck.user_gpax || 'ไม่ระบุ'}<br>
+                                <strong>GPAX ที่ต้องการ:</strong> ${gpaxCheck.required_gpax || 'ไม่มีข้อกำหนด'}<br>
+                                ${gpaxCheck.gpax_buffer !== undefined ? `<strong>เหนือข้อกำหนด:</strong> +${gpaxCheck.gpax_buffer.toFixed(2)}<br>` : ''}
+                                ${gpaxCheck.gpax_deficit !== undefined ? `<strong>ขาดจากข้อกำหนด:</strong> ${gpaxCheck.gpax_deficit.toFixed(2)}<br>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
 
                 // Add score display for calculated scores
                 if (status === 'calculated' && score !== null) {
@@ -1076,13 +1690,25 @@
                     }
                 }
 
-                // Add GPAX requirement info for insufficient GPAX
-                if (status === 'gpax_insufficient') {
+                // Add alternatives display for GPAX insufficient
+                if (status === 'gpax_insufficient' && result.alternatives && result.alternatives.length > 0) {
                     bodyContent += `
-                        <div class="status-message warning">
-                            <strong>GPAX ไม่เพียงพอ</strong><br>
-                            ต้องการ: ${result.gpax_required || 'N/A'}<br>
-                            ของคุณ: ${result.gpax_current || 'N/A'}
+                        <div class="alternative-programs">
+                            <h4>💡 ทางเลือกใน ${university}</h4>
+                            ${result.alternatives.slice(0, 3).map(alt => `
+                                <div class="alternative-program-item clickable-alternative" 
+                                     onclick="selectAlternativeProgram('${alt.university.replace(/'/g, "\\'")}', '${alt.faculty.replace(/'/g, "\\'")}', '${alt.field.replace(/'/g, "\\'")}', this)"
+                                     style="cursor: pointer;">
+                                    <div class="alternative-program-name">${alt.faculty} - ${alt.field}</div>
+                                    <div class="alternative-program-score">
+                                        คะแนน: ${alt.calculated_score ? alt.calculated_score.toFixed(2) : 'N/A'}
+                                        ${alt.score_difference ? ` (+${alt.score_difference.toFixed(2)})` : ''}
+                                    </div>
+                                    <div style="margin-top: 4px; font-size: 0.8rem; color: #666;">
+                                        GPAX ต้องการ: ${alt.gpax_required || 'ไม่ระบุ'}
+                                    </div>
+                                </div>
+                            `).join('')}
                         </div>
                     `;
                 }
@@ -1156,9 +1782,9 @@
 
             return `
                 <div class="university-selector" id="${selectorId}">
-                    <h4>🎯 ให้ VR THE FUTURE ช่วยค้นหาคณะและสาขาวิชาที่ให้คุณมีโอกาศโอกาศได้รับการคัดเลือกมากขึ้น</h4>
+                    <h4>🎯 ให้ VR THE FUTURE ช่วยค้นหาคณะและสาขาวิชาที่ให้คุณมีโอกาศได้รับการคัดเลือกมากขึ้น</h4>
                     <div style="margin-bottom: 12px; padding: 8px; background: #fff3e0; border-radius: 6px; font-size: 0.85rem; color: #f57c00;">
-                        <strong>💡 เคล็ดลับ:</strong> เลือกมหาวิทยาลัยที่มีคณะ เเละ สาขาใกล้เคียงกับที่คุณต้องการ แต่มีโอกาสเข้าได้ง่ายกว่า
+                        <strong>💡 เคล็ดลับ:</strong> เลือกมหาวิทยาลัยที่มีคณะและสาขาใกล้เคียงกับที่คุณต้องการ แต่มีโอกาสเข้าได้ง่ายกว่า
                     </div>
                     <div class="form-group">
                         <input type="text" class="search-input" id="${searchInputId}" 
@@ -1180,7 +1806,6 @@
         }
 
         function createUniversityOptions(cardNumber, excludeUniversity) {
-            // Filter out current university and create options
             const filteredUniversities = allUniversities.filter(uni => uni !== excludeUniversity);
             
             if (filteredUniversities.length === 0) {
@@ -1220,7 +1845,6 @@
             }
             
             if (dropdown) {
-                // Highlight selected option
                 const options = dropdown.querySelectorAll('.dropdown-option');
                 options.forEach(option => {
                     option.classList.remove('selected');
@@ -1254,147 +1878,55 @@
             resultDiv.innerHTML = "";
 
             try {
-                console.log("Recalculating scores for university:", selectedUniversity);
+                console.log("Finding alternatives for university:", selectedUniversity);
                 
-                // First, get all faculties and programs from this university
-                const facultyResponse = await fetch("https://varee.onrender.com/api/find_faculty", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        name: selectedUniversity,
-                        userId: currentUserId
-                    })
-                });
-
-                if (!facultyResponse.ok) {
-                    throw new Error("ไม่สามารถโหลดข้อมูลคณะและสาขาได้");
-                }
-
-                const facultyData = await facultyResponse.json();
-                const faculties = facultyData.faculties || [];
-
-                if (faculties.length === 0) {
-                    throw new Error("ไม่พบข้อมูลคณะในมหาวิทยาลัยนี้");
-                }
-
-                // Create selections for all faculties/programs in this university
-                const universitySelections = [];
-                
-                for (const faculty of faculties) {
-                    // Get fields for each faculty
-                    const fieldResponse = await fetch("https://varee.onrender.com/api/find_field", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            name: selectedUniversity,
-                            faculty: faculty
-                        })
-                    });
-
-                    if (fieldResponse.ok) {
-                        const fieldData = await fieldResponse.json();
-                        const fields = fieldData.faculties || [];
-                        
-                        // Add each field as a selection
-                        fields.forEach(field => {
-                            universitySelections.push({
-                                university: selectedUniversity,
-                                faculty: faculty,
-                                field: field
-                            });
-                        });
-                    }
-                }
-
-                if (universitySelections.length === 0) {
-                    throw new Error("ไม่พบโปรแกรมในมหาวิทยาลัยนี้");
-                }
-
-                console.log(`Found ${universitySelections.length} programs in ${selectedUniversity}`);
-                
-                // Send selections back to calculate scores
-                const calculateResponse = await fetch("https://varee.onrender.com/api/submit_multiple_selections", {
+                const response = await fetch("https://varee.onrender.com/api/new_program", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         userId: currentUserId,
-                        name: currentScoreData.user_name || "Alternative Search",
-                        selections: universitySelections,
-                        temporary: true // Flag to indicate this is a temporary calculation
+                        university: selectedUniversity
                     })
                 });
 
-                if (!calculateResponse.ok) {
-                    throw new Error("ไม่สามารถคำนวณคะแนนได้");
+                if (!response.ok) {
+                    throw new Error("ไม่สามารถค้นหาทางเลือกได้");
                 }
 
-                // Now get the calculated results
-                const scoresResponse = await fetch("https://varee.onrender.com/api/calculate_scores", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ 
-                        userId: currentUserId,
-                        university_filter: selectedUniversity // Only get results for this university
-                    })
-                });
+                const data = await response.json();
+                console.log("Alternative programs data:", data);
 
-                if (!scoresResponse.ok) {
-                    throw new Error("ไม่สามารถโหลดผลคะแนนได้");
-                }
-
-                const scoresData = await scoresResponse.json();
-                console.log("Calculated scores for alternatives:", scoresData);
-
-                // MODIFIED: Filter for better alternatives (score_d >= -3.6)
-                let goodAlternatives = [];
-                if (scoresData.results) {
-                    goodAlternatives = scoresData.results.filter(result => 
-                        result.status === 'calculated' && 
-                        result.score_d !== null && 
-                        result.score_d >= -2.26 &&  // CHANGED: Only show programs with better chances
-                        result.university === selectedUniversity
-                    );
-                    
-                    // Sort by score difference (best opportunities first)
-                    goodAlternatives.sort((a, b) => b.score_d - a.score_d);
-                }
+                const goodAlternatives = data.recommended_programs || [];
 
                 if (goodAlternatives.length > 0) {
                     resultDiv.innerHTML = createDetailedAlternativesDisplay(goodAlternatives, selectedUniversity);
-                    findBtn.textContent = `✅ พบ ${goodAlternatives.length} คณะ เเละ สาขาที่เข้าได้ง่ายกว่า`;
+                    findBtn.textContent = `✅ พบ ${goodAlternatives.length} คณะและสาขาที่เข้าได้ง่ายกว่า`;
                 } else {
-                    // Show message that no better alternatives were found
                     resultDiv.innerHTML = `
                         <div class="status-message info" style="margin-top: 12px;">
                             💡 ไม่พบคณะและสาขาที่มีโอกาสเข้าได้ดีกว่าใน ${selectedUniversity}<br>
-                            <small style="color: #ffffff;">เฉพาะคณะและสาขาที่มีโอกาสติดต่ำมาก (😥) เท่านั้นที่มีให้ - แนะนำให้ลองมหาวิทยาลัยอื่น</small>
+                            <small>แนะนำให้ลองมหาวิทยาลัยอื่น</small>
                         </div>
                     `;
                     findBtn.textContent = "❌ ไม่พบคณะและสาขาที่เหมาะสม";
                 }
                 
             } catch (error) {
-                console.error('Error recalculating scores:', error);
+                console.error('Error finding alternatives:', error);
                 resultDiv.innerHTML = `
                     <div class="status-message error" style="margin-top: 12px;">
                         เกิดข้อผิดพลาด: ${error.message}
                     </div>
                 `;
                 findBtn.disabled = false;
-                findBtn.textContent = "🔍 ค้นหาคณะและสาขาวิชาที่ให้คุณมีโอกาศโอกาศได้รับการคัดเลือกมากขึ้น";
+                findBtn.textContent = "🔍 ค้นหาโปรแกรมที่เข้าได้ง่ายกว่า";
             }
         }
 
         function createDetailedAlternativesDisplay(alternatives, university) {
-            const title = `💡VR THE  FUTURE ได้ค้นหามหาวิทยาลัย คณะ และสาขาวิชาที่คุณมีโอกาสได้รับการคัดเลือกสูงขึ้นให้แล้วครับ :${university}`;
+            const title = `💡 VR THE FUTURE ได้ค้นหาคณะและสาขาวิชาที่คุณมีโอกาสได้รับการคัดเลือกสูงขึ้นให้แล้ว: ${university}`;
 
             return `
                 <div class="alternative-programs" style="margin-top: 12px;">
@@ -1402,11 +1934,8 @@
                     <div style="margin-bottom: 12px; padding: 8px; background: #e8f5e8; border-radius: 6px; font-size: 0.85rem; color: #2e7d32;">
                         <strong>💡 แนะนำ:</strong> คลิกเลือกโปรแกรมที่มีโอกาสเข้าได้ดีกว่าเพื่อแทนที่ตัวเลือกเดิมของคุณ
                     </div>
-                    <div style="text-align: center; margin-bottom: 12px; padding: 8px; background: #e3f2fd; border-radius: 6px; font-size: 0.8rem; color: #01579b;">
-                        🎯 <strong>เป้าหมาย:</strong> เลือกโปรแกรมที่มี 🥳 (สูงมาก) หรือ 😀 (สูง) เพื่อความมั่นใจในการเข้าศึกษา
-                    </div>
                     ${alternatives.slice(0, 8).map((alt, index) => {
-                        let statusColor = '#388e3c'; // Green for good
+                        let statusColor = '#388e3c';
                         let statusIcon = '😀';
                         let statusText = 'มีโอกาสติดสูง';
                         
@@ -1414,7 +1943,7 @@
                             statusColor = '#f57c00';
                             statusIcon = '😧';
                             statusText = 'มีโอกาสได้รับการคัดเลือกต่ำ (แต่ดีกว่าเดิม)';
-                        } else if (alt.score_d < 3.6) {
+                        } else if (alt.score_d < 2.26) {
                             statusColor = '#1976d2';
                             statusIcon = '😀';
                             statusText = 'มีโอกาสได้รับการคัดเลือกสูง';
@@ -1427,9 +1956,7 @@
                         return `
                             <div class="alternative-program-item clickable-alternative" 
                                  style="margin-bottom: 12px; padding: 16px; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent;"
-                                 onclick="selectAlternativeProgram('${alt.university.replace(/'/g, "\\'")}', '${alt.faculty.replace(/'/g, "\\'")}', '${alt.field.replace(/'/g, "\\'")}', this)"
-                                 onmouseover="this.style.borderColor='#0288d1'; this.style.backgroundColor='#f8faff';"
-                                 onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='white';">
+                                 onclick="selectAlternativeProgram('${alt.university.replace(/'/g, "\\'")}', '${alt.faculty.replace(/'/g, "\\'")}', '${alt.field.replace(/'/g, "\\'")}', this)">
                                 <div class="alternative-program-name" style="margin-bottom: 8px;">
                                     <strong>${alt.faculty} - ${alt.field}</strong>
                                 </div>
@@ -1444,99 +1971,54 @@
                                 <div style="font-size: 0.85rem; color: #0ad700; margin-bottom: 8px;">
                                     ${alt.score_d >= 0 ? '+' : ''}${alt.score_d.toFixed(2)} จากคะแนนต่ำสุดปีที่แล้ว
                                 </div>
-                                ${alt.score_breakdown && alt.score_breakdown.length > 0 ? `
-                                    <div style="background: #f8faff; padding: 8px; border-radius: 6px; font-size: 0.8rem;">
-                                        <strong>รายละเอียดคะแนน:</strong><br>
-                                        ${alt.score_breakdown.slice(0, 3).map(item => 
-                                            `${item.subject}: ${item.user_score.toFixed(1)} × ${(item.weight * 100).toFixed(0)}% = ${item.contribution.toFixed(2)}`
-                                        ).join('<br>')}
-                                        ${alt.score_breakdown.length > 3 ? `<br><small>และอีก ${alt.score_breakdown.length - 3} วิชา</small>` : ''}
-                                    </div>
-                                ` : ''}
                                 <div style="margin-top: 8px; text-align: center; padding: 4px; background: #e3f2fd; border-radius: 4px; font-size: 0.75rem; color: #01579b;">
                                     👆 คลิกเพื่อแทนที่ตัวเลือกเดิม
                                 </div>
                             </div>
                         `;
                     }).join('')}
-                    ${alternatives.length > 8 ? `
-                        <div style="text-align: center; margin-top: 12px; padding: 8px; background: #f0f0f0; border-radius: 6px; font-size: 0.85rem; color: #666;">
-                            และอีก ${alternatives.length - 8} โปรแกรม (แสดงเฉพาะ 8 โปรแกรมที่ดีที่สุด)
-                        </div>
-                    ` : ''}
-                    
                 </div>
             `;
         }
 
         async function selectAlternativeProgram(university, faculty, field, element) {
-            // Add visual feedback
             element.style.borderColor = '#4caf50';
             element.style.backgroundColor = '#e8f5e8';
             
             const confirmMessage = `คุณต้องการแทนที่ตัวเลือกเดิมด้วย:\n\n${university}\n${faculty} - ${field}\n\nระบบจะคำนวณคะแนนใหม่ทั้งหมด`;
             
             if (!confirm(confirmMessage)) {
-                // Reset visual feedback if cancelled
                 element.style.borderColor = 'transparent';
                 element.style.backgroundColor = 'white';
                 return;
             }
 
             try {
-                // Show loading state
-                const loadingDiv = document.createElement('div');
-                loadingDiv.innerHTML = `
-                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center;">
-                        <div style="background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 300px;">
-                            <div class="loading-spinner"></div>
-                            <h3 style="margin: 16px 0 8px 0; color: #01579b;">กำลังปรับปรุงการเลือก</h3>
-                            <p style="margin: 0; color: #666;">กรุณารอสักครู่...</p>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(loadingDiv);
+                showLoadingOverlay('กำลังปรับปรุงการเลือก...');
 
-                console.log("Replacing selection with:", { university, faculty, field });
-
-                // Get current user profile
                 const profile = await liff.getProfile();
                 
-                // Find which selection to replace by finding the one with very low score
-                // We'll replace the first selection that has score_d < -3.6
-                let selectionToReplace = null;
+                // Find problematic selection to replace
                 let replaceIndex = -1;
-                
                 if (currentScoreData && currentScoreData.results) {
                     for (let i = 0; i < currentScoreData.results.length; i++) {
                         const result = currentScoreData.results[i];
-                        if (result.status === 'calculated' && result.score_d !== null && result.score_d < -2.26) {
-                            selectionToReplace = result;
+                        if (result.status === 'gpax_insufficient' || 
+                            (result.status === 'calculated' && result.score_d !== null && result.score_d < -2.26)) {
                             replaceIndex = i;
                             break;
                         }
                     }
                 }
 
-                if (!selectionToReplace) {
-                    // Fallback: replace the first selection
+                if (replaceIndex === -1) {
                     replaceIndex = 0;
-                    selectionToReplace = currentScoreData.results[0];
                 }
 
-                console.log("Replacing selection at index:", replaceIndex, selectionToReplace);
-
-                // Create new selections array
                 const newSelections = currentScoreData.results.map((result, index) => {
                     if (index === replaceIndex) {
-                        // Replace with new selection
-                        return {
-                            university: university,
-                            faculty: faculty,
-                            field: field
-                        };
+                        return { university, faculty, field };
                     } else {
-                        // Keep existing selection
                         return {
                             university: result.university,
                             faculty: result.faculty,
@@ -1545,9 +2027,6 @@
                     }
                 });
 
-                console.log("New selections array:", newSelections);
-
-                // Send updated selections to server
                 const submitResponse = await fetch("https://varee.onrender.com/api/submit_multiple_selections", {
                     method: "POST",
                     headers: {
@@ -1564,66 +2043,20 @@
                     throw new Error("ไม่สามารถอัปเดตการเลือกได้");
                 }
 
-                console.log("Successfully updated selections, reloading results...");
-
-                // Small delay to ensure server processes the update
                 await new Promise(resolve => setTimeout(resolve, 1000));
-
-                // Remove loading screen
-                document.body.removeChild(loadingDiv);
-
-                // Reload the score data
+                
+                hideLoadingOverlay();
                 await loadScoreData();
-
-                // Scroll to top to see the updated results
+                
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-
-                // Show success message
-                const successDiv = document.createElement('div');
-                successDiv.innerHTML = `
-                    <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #4caf50; color: white; padding: 16px 24px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-                        ✅ อัปเดตการเลือกเรียบร้อยแล้ว!
-                    </div>
-                `;
-                document.body.appendChild(successDiv);
-
-                // Remove success message after 3 seconds
-                setTimeout(() => {
-                    if (document.body.contains(successDiv)) {
-                        document.body.removeChild(successDiv);
-                    }
-                }, 3000);
+                showSuccessMessage('✅ อัปเดตการเลือกเรียบร้อยแล้ว!');
 
             } catch (error) {
                 console.error('Error replacing selection:', error);
-                
-                // Remove loading screen if it exists
-                const loadingScreens = document.querySelectorAll('[style*="position: fixed"]');
-                loadingScreens.forEach(screen => {
-                    if (document.body.contains(screen)) {
-                        document.body.removeChild(screen);
-                    }
-                });
-
-                // Reset visual feedback
+                hideLoadingOverlay();
                 element.style.borderColor = 'transparent';
                 element.style.backgroundColor = 'white';
-
-                // Show error message
-                const errorDiv = document.createElement('div');
-                errorDiv.innerHTML = `
-                    <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #f44336; color: white; padding: 16px 24px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-                        ❌ เกิดข้อผิดพลาด: ${error.message}
-                    </div>
-                `;
-                document.body.appendChild(errorDiv);
-
-                // Remove error message after 5 seconds
-                setTimeout(() => {
-                    if (document.body.contains(errorDiv)) {
-                        document.body.removeChild(errorDiv);
-                    }
-                }, 5000);
+                showErrorMessage(`❌ เกิดข้อผิดพลาด: ${error.message}`);
             }
         }
 
