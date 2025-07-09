@@ -1113,10 +1113,8 @@
                                 <div class="summary-value">${summary.calculated_scores || 0}</div>
                             </div>
                             <div class="summary-item">
-                                <div class="summary-label">ปัญหา GPAX</div>
-                                <div class="summary-value" style="color: ${summary.gpax_issues_count > 0 ? '#f44336' : '#4caf50'};">
-                                    ${summary.gpax_issues_count || 0}
-                                </div>
+                                <div class="summary-label">คะแนนสูงสุด</div>
+                                <div class="summary-value">${summary.highest_score ? summary.highest_score.toFixed(2) : '0'}</div>
                             </div>
                             <div class="summary-item">
                                 <div class="summary-label">คะแนนเฉลี่ย</div>
@@ -1140,63 +1138,9 @@
         }
 
         function displayGpaxAnalysis(data) {
-            try {
-                const gpaxIssues = data.gpax_issues || [];
-                
-                if (gpaxIssues.length === 0) {
-                    safeSetDisplay("gpaxAnalysis", "none");
-                    return;
-                }
-
-                const analysisHtml = `
-                    <div class="gpax-analysis">
-                        <h3>⚠️ ปัญหาข้อกำหนด GPAX</h3>
-                        <p style="margin: 0 0 16px 0; opacity: 0.9;">
-                            พบ ${gpaxIssues.length} โปรแกรมที่ GPAX ของคุณไม่เพียงพอ
-                        </p>
-                        <div class="gpax-issues-grid">
-                            ${gpaxIssues.map(issue => `
-                                <div class="gpax-issue-card">
-                                    <h4>${issue.university}</h4>
-                                    <p style="margin: 4px 0; font-size: 0.9rem;">
-                                        ${issue.faculty} - ${issue.field}
-                                    </p>
-                                    <div class="gpax-requirement">
-                                        <strong>ต้องการ:</strong> ${issue.gpax_check?.required_gpax || 'N/A'}<br>
-                                        <strong>ของคุณ:</strong> ${issue.gpax_check?.user_gpax || 'N/A'}<br>
-                                        <strong>ขาด:</strong> ${issue.gpax_check?.gpax_deficit ? issue.gpax_check.gpax_deficit.toFixed(2) : 'N/A'}
-                                    </div>
-                                    ${issue.alternatives && issue.alternatives.length > 0 ? `
-                                        <div style="margin-top: 12px;">
-                                            <strong style="color: white;">ทางเลือกใน ${issue.university}:</strong>
-                                            <div style="margin-top: 8px; max-height: 100px; overflow-y: auto;">
-                                                ${issue.alternatives.slice(0, 3).map(alt => `
-                                                    <div style="background: rgba(255,255,255,0.1); padding: 8px; margin: 4px 0; border-radius: 4px; font-size: 0.85rem;">
-                                                        <strong>${alt.faculty}</strong><br>
-                                                        ${alt.field} (คะแนน: ${alt.calculated_score?.toFixed(2) || 'N/A'})
-                                                    </div>
-                                                `).join('')}
-                                                ${issue.alternatives.length > 3 ? `
-                                                    <div style="text-align: center; margin-top: 8px; font-size: 0.8rem; opacity: 0.8;">
-                                                        และอีก ${issue.alternatives.length - 3} ตัวเลือก
-                                                    </div>
-                                                ` : ''}
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-                
-                safeSetHTML("gpaxAnalysis", analysisHtml);
-                safeSetDisplay("gpaxAnalysis", "block");
-                
-            } catch (error) {
-                console.error("Error in displayGpaxAnalysis:", error);
-                safeSetDisplay("gpaxAnalysis", "none");
-            }
+            // Simplified - no separate GPAX analysis section
+            // GPAX issues will be shown as normal university cards with yellow headers
+            safeSetDisplay("gpaxAnalysis", "none");
         }
 
         function displayGeneralAlternatives(data) {
@@ -1690,27 +1634,9 @@
                     }
                 }
 
-                // Add alternatives display for GPAX insufficient
-                if (status === 'gpax_insufficient' && result.alternatives && result.alternatives.length > 0) {
-                    bodyContent += `
-                        <div class="alternative-programs">
-                            <h4>💡 ทางเลือกใน ${university}</h4>
-                            ${result.alternatives.slice(0, 3).map(alt => `
-                                <div class="alternative-program-item clickable-alternative" 
-                                     onclick="selectAlternativeProgram('${alt.university.replace(/'/g, "\\'")}', '${alt.faculty.replace(/'/g, "\\'")}', '${alt.field.replace(/'/g, "\\'")}', this)"
-                                     style="cursor: pointer;">
-                                    <div class="alternative-program-name">${alt.faculty} - ${alt.field}</div>
-                                    <div class="alternative-program-score">
-                                        คะแนน: ${alt.calculated_score ? alt.calculated_score.toFixed(2) : 'N/A'}
-                                        ${alt.score_difference ? ` (+${alt.score_difference.toFixed(2)})` : ''}
-                                    </div>
-                                    <div style="margin-top: 4px; font-size: 0.8rem; color: #666;">
-                                        GPAX ต้องการ: ${alt.gpax_required || 'ไม่ระบุ'}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
+                // Add university selector for GPAX insufficient programs (same as high-risk programs)
+                if (status === 'gpax_insufficient') {
+                    bodyContent += createUniversitySelector(cardNumber, university);
                 }
 
                 // Add missing scores info
@@ -1782,9 +1708,9 @@
 
             return `
                 <div class="university-selector" id="${selectorId}">
-                    <h4>🎯 ให้ VR THE FUTURE ช่วยค้นหาคณะและสาขาวิชาที่ให้คุณมีโอกาศได้รับการคัดเลือกมากขึ้น</h4>
+                    <h4>🎯 ให้ VR THE FUTURE ช่วยค้นหาคณะและสาขาวิชาที่เหมาะสมกับคุณ</h4>
                     <div style="margin-bottom: 12px; padding: 8px; background: #fff3e0; border-radius: 6px; font-size: 0.85rem; color: #f57c00;">
-                        <strong>💡 เคล็ดลับ:</strong> เลือกมหาวิทยาลัยที่มีคณะและสาขาใกล้เคียงกับที่คุณต้องการ แต่มีโอกาสเข้าได้ง่ายกว่า
+                        <strong>💡 เคล็ดลับ:</strong> เลือกมหาวิทยาลัยที่มีคณะและสาขาใกล้เคียงกับที่คุณต้องการ แต่มีโอกาสเข้าได้ดีกว่า
                     </div>
                     <div class="form-group">
                         <input type="text" class="search-input" id="${searchInputId}" 
@@ -1798,7 +1724,7 @@
                     </div>
                     <button class="find-alternatives-btn" id="find-btn-${cardNumber}" 
                             onclick="findAlternativesInSelectedUniversity('${cardNumber}')" disabled>
-                        🔍 ค้นหาโปรแกรมที่เข้าได้ง่ายกว่า
+                        🔍 ค้นหาโปรแกรมที่เหมาะสม
                     </button>
                     <div id="alternatives-result-${cardNumber}"></div>
                 </div>
@@ -1902,11 +1828,11 @@
 
                 if (goodAlternatives.length > 0) {
                     resultDiv.innerHTML = createDetailedAlternativesDisplay(goodAlternatives, selectedUniversity);
-                    findBtn.textContent = `✅ พบ ${goodAlternatives.length} คณะและสาขาที่เข้าได้ง่ายกว่า`;
+                    findBtn.textContent = `✅ พบ ${goodAlternatives.length} คณะและสาขาที่เหมาะสม`;
                 } else {
                     resultDiv.innerHTML = `
                         <div class="status-message info" style="margin-top: 12px;">
-                            💡 ไม่พบคณะและสาขาที่มีโอกาสเข้าได้ดีกว่าใน ${selectedUniversity}<br>
+                            💡 ไม่พบคณะและสาขาที่เหมาะสมใน ${selectedUniversity}<br>
                             <small>แนะนำให้ลองมหาวิทยาลัยอื่น</small>
                         </div>
                     `;
@@ -1921,18 +1847,18 @@
                     </div>
                 `;
                 findBtn.disabled = false;
-                findBtn.textContent = "🔍 ค้นหาโปรแกรมที่เข้าได้ง่ายกว่า";
+                findBtn.textContent = "🔍 ค้นหาโปรแกรมที่เหมาะสม";
             }
         }
 
         function createDetailedAlternativesDisplay(alternatives, university) {
-            const title = `💡 VR THE FUTURE ได้ค้นหาคณะและสาขาวิชาที่คุณมีโอกาสได้รับการคัดเลือกสูงขึ้นให้แล้ว: ${university}`;
+            const title = `💡 VR THE FUTURE ได้ค้นหาคณะและสาขาวิชาที่เหมาะสมกับคุณให้แล้ว: ${university}`;
 
             return `
                 <div class="alternative-programs" style="margin-top: 12px;">
                     <h4 style="color: #FFFFFF !important;">${title}</h4>
                     <div style="margin-bottom: 12px; padding: 8px; background: #e8f5e8; border-radius: 6px; font-size: 0.85rem; color: #2e7d32;">
-                        <strong>💡 แนะนำ:</strong> คลิกเลือกโปรแกรมที่มีโอกาสเข้าได้ดีกว่าเพื่อแทนที่ตัวเลือกเดิมของคุณ
+                        <strong>💡 แนะนำ:</strong> คลิกเลือกโปรแกรมที่เหมาะสมเพื่อแทนที่ตัวเลือกเดิมของคุณ
                     </div>
                     ${alternatives.slice(0, 8).map((alt, index) => {
                         let statusColor = '#388e3c';
