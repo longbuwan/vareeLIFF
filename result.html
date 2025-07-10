@@ -384,6 +384,19 @@
             color: #666;
         }
 
+        /* T-Score indicator styling */
+        .tscore-indicator {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 8px;
+            display: inline-block;
+            letter-spacing: 0.5px;
+        }
+
         .score-breakdown {
             background: #f8faff;
             border-radius: 8px;
@@ -395,12 +408,15 @@
             margin: 0 0 12px 0;
             color: #01579b;
             font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .breakdown-item {
             display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
+            flex-direction: column;
+            padding: 12px 0;
             border-bottom: 1px solid #e3f2fd;
         }
 
@@ -411,11 +427,41 @@
         .breakdown-subject {
             font-weight: 500;
             color: #333;
+            margin-bottom: 4px;
+        }
+
+        .breakdown-scores {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .breakdown-original-score {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .breakdown-final-score {
+            color: #7b1fa2;
+            font-weight: 500;
+            font-size: 0.9rem;
         }
 
         .breakdown-calculation {
-            color: #666;
-            font-size: 0.9rem;
+            color: #0288d1;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .tscore-note {
+            background: #f3e5f5;
+            border: 1px solid #ce93d8;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #7b1fa2;
         }
 
         .status-message {
@@ -810,6 +856,12 @@
             .alternatives-grid {
                 grid-template-columns: 1fr;
             }
+
+            .breakdown-scores {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
         }
     </style>
 </head>
@@ -940,7 +992,8 @@
                 .replace(/Score calculated successfully/gi, 'คำนวณคะแนนเรียบร้อยแล้ว')
                 .replace(/Calculation completed/gi, 'การคำนวณเสร็จสิ้น')
                 .replace(/Successfully calculated/gi, 'คำนวณเรียบร้อยแล้ว')
-                .replace(/Score calculation complete/gi, 'การคำนวณคะแนนเสร็จสิ้น');
+                .replace(/Score calculation complete/gi, 'การคำนวณคะแนนเสร็จสิ้น')
+                .replace(/\(with T-score conversion\)/gi, '(ใช้การแปลงคะแนน T-Score)');
             
             return translatedMessage;
         }
@@ -1115,14 +1168,10 @@
                 displayUserSummary(data);
                 
                 // Display GPAX analysis
-             
-                
-                // Display general alternatives
-               
+                displayGpaxAnalysis(data);
                 
                 // Display university results
                 displayUniversityResults(data.results || []);
-                   displayGpaxAnalysis(data);
                 
             } catch (error) {
                 console.error("Error in displayResults:", error);
@@ -1136,6 +1185,19 @@
                 
                 // Format user GPAX for display (divide by 25)
                 const displayGpax = formatGpaxForDisplay(data.user_gpax);
+                
+                // Count T-score programs
+                const tScoreCount = summary.t_score_programs || 0;
+                
+                let tScoreInfo = '';
+                if (tScoreCount > 0) {
+                    tScoreInfo = `
+                        <div class="summary-item">
+                            <div class="summary-label">ใช้ T-Score</div>
+                            <div class="summary-value" style="color: #9c27b0;">${tScoreCount}</div>
+                        </div>
+                    `;
+                }
                 
                 const summaryHtml = `
                     <div class="user-summary">
@@ -1157,6 +1219,7 @@
                                 <div class="summary-label">คำนวณได้</div>
                                 <div class="summary-value">${summary.calculated_scores || 0}</div>
                             </div>
+                            ${tScoreInfo}
                             <div class="summary-item">
                                 <div class="summary-label">คะแนนสูงสุด</div>
                                 <div class="summary-value">${summary.highest_score ? summary.highest_score.toFixed(2) : '0'}</div>
@@ -1187,8 +1250,6 @@
             // GPAX issues will be shown as normal university cards with yellow headers
             safeSetDisplay("gpaxAnalysis", "none");
         }
-
-
 
         function selectGeneralAlternative(index, element) {
             const alternatives = currentScoreData.general_alternatives || [];
@@ -1477,6 +1538,7 @@
                 const scoreBreakdown = result.score_breakdown || [];
                 const missingScores = result.missing_scores || [];
                 const gpaxCheck = result.gpax_check;
+                const tScoreEnabled = result.t_score_enabled || false;
                 
                 let headerClass = 'calculated';
                 let statusClass = 'success';
@@ -1569,10 +1631,14 @@
                         }
                     }
 
+                    // T-Score indicator
+                    const tScoreIndicator = tScoreEnabled ? '<div class="tscore-indicator">📊 T-Score</div>' : '';
+
                     bodyContent += `
                         <div class="score-display">
                             <div class="score-value">${score.toFixed(2)}</div>
                             <div class="score-label">คะแนนรวม</div>
+                            ${tScoreIndicator}
                             ${scoreD !== null && scoreD !== undefined ? `
                                 <div style="margin-top: 8px; font-size: 0.9rem; color: ${scoreD >= 0 ? '#4caf50' : '#f44336'};">
                                     ${scoreD >= 0 ? '+' : ''}${scoreD.toFixed(2)} จากคะแนนต่ำสุดปีที่แล้ว
@@ -1582,19 +1648,41 @@
                         </div>
                     `;
 
-                    // Add score breakdown
+                    // Add enhanced score breakdown
                     if (scoreBreakdown.length > 0) {
+                        const hasAnyTScore = scoreBreakdown.some(item => item.t_score_applied);
+                        const breakdownTitle = hasAnyTScore ? '📊 รายละเอียดการคำนวณ (มี T-Score)' : '📊 รายละเอียดการคำนวณ';
+                        
                         bodyContent += `
                             <div class="score-breakdown">
-                                <h4>รายละเอียดการคำนวณ</h4>
-                                ${scoreBreakdown.map(item => `
-                                    <div class="breakdown-item">
-                                        <span class="breakdown-subject">${item.subject}</span>
-                                        <span class="breakdown-calculation">
-                                            ${item.user_score.toFixed(2)} × ${(item.weight * 100).toFixed(1)}% = ${item.contribution.toFixed(2)}
-                                        </span>
+                                <h4>${breakdownTitle}</h4>
+                                ${scoreBreakdown.map(item => {
+                                    const showTScoreConversion = item.t_score_applied && item.user_score !== item.final_score;
+                                    
+                                    return `
+                                        <div class="breakdown-item">
+                                            <div class="breakdown-subject">${item.subject}</div>
+                                            ${showTScoreConversion ? `
+                                                <div class="breakdown-scores">
+                                                    <div class="breakdown-original-score">คะแนนเดิม: ${item.user_score.toFixed(2)}</div>
+                                                    <div class="breakdown-final-score">T-Score: ${item.final_score.toFixed(2)}</div>
+                                                </div>
+                                            ` : `
+                                                <div class="breakdown-scores">
+                                                    <div class="breakdown-original-score">คะแนน: ${item.user_score.toFixed(2)}</div>
+                                                </div>
+                                            `}
+                                            <div class="breakdown-calculation">
+                                                ${item.final_score.toFixed(2)} × ${(item.weight * 100).toFixed(1)}% = ${item.contribution.toFixed(2)} คะแนน
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                                ${hasAnyTScore ? `
+                                    <div class="tscore-note">
+                                        💡 T-Score คือการปรับคะแนนตามสถิติของผู้สอบทั้งหมด เพื่อความยุติธรรมในการเปรียบเทียบ
                                     </div>
-                                `).join('')}
+                                ` : ''}
                             </div>
                         `;
                     }
