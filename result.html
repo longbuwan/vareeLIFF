@@ -1319,7 +1319,7 @@
                     const result = currentResults[i];
                     // Mark as problematic if GPAX insufficient or score difference < -2.26
                     if (result.status === 'gpax_insufficient' || 
-                        (result.status === 'calculated' && result.score_d !== null && result.score_d < -2.26)) {
+                        (result.status === 'calculated' && result.score_d !== null && result.score_d < -1.64)) {
                         problematicIndices.push(i);
                     }
                 }
@@ -1546,7 +1546,7 @@
                 switch (status) {
                     case 'calculated':
                         // Check if this is a high-risk university
-                        if (scoreD !== null && scoreD !== undefined && scoreD < -2.26) {
+                        if (scoreD !== null && scoreD !== undefined && scoreD < -1.64) {
                             headerClass = 'high-risk';
                             statusClass = 'error';
                         } else {
@@ -1619,12 +1619,12 @@
                     let showAlternatives = false;
                     
                     if (scoreD !== null && scoreD !== undefined) {
-                        if (scoreD < -2.26) {
+                        if (scoreD < -1.64) {
                             difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #d32f2f; font-weight: bold;">😥 มีโอกาสได้รับการคัดเลือกต่ำมาก</div>';
                             showAlternatives = true;
                         } else if (scoreD < 0) {
                             difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #f57c00; font-weight: bold;">😧 มีโอกาสได้รับการคัดเลือกต่ำ</div>';
-                        } else if (scoreD < 2.26) {
+                        } else if (scoreD < 1.64) {
                             difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #1976d2; font-weight: bold;">😀 มีโอกาสได้รับการคัดเลือกสูง</div>';
                         } else {
                             difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #388e3c; font-weight: bold;">🥳 มีโอกาสได้รับการคัดเลือกสูงมาก</div>';
@@ -1928,7 +1928,7 @@
                             statusColor = '#f57c00';
                             statusIcon = '😧';
                             statusText = 'มีโอกาสได้รับการคัดเลือกต่ำ (แต่ดีกว่าเดิม)';
-                        } else if (alt.score_d < 2.26) {
+                        } else if (alt.score_d < 1.64) {
                             statusColor = '#1976d2';
                             statusIcon = '😀';
                             statusText = 'มีโอกาสได้รับการคัดเลือกสูง';
