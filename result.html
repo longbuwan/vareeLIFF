@@ -1050,7 +1050,7 @@
                 showLoading();
                 console.log("Loading score data for user:", currentUserId);
                 
-                const response = await fetch("https://fbc465264911.ngrok-free.app/api/calculate_scores", {
+                const response = await fetch("https://c83365ff5eed.ngrok-free.app/api/calculate_scores", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -1092,7 +1092,7 @@
             try {
                 console.log("Loading GPAX analysis for user:", currentUserId);
                 
-                const response = await fetch("https://fbc465264911.ngrok-free.app/api/gpax_analysis", {
+                const response = await fetch("https://c83365ff5eed.ngrok-free.app/api/gpax_analysis", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -1352,7 +1352,7 @@
                 console.log('New selections for API:', selectionsForAPI);
                 
                 // Submit new selections
-                const submitResponse = await fetch("https://fbc465264911.ngrok-free.app/api/submit_multiple_selections", {
+                const submitResponse = await fetch("https://c83365ff5eed.ngrok-free.app/api/submit_multiple_selections", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -1865,7 +1865,7 @@
             try {
                 console.log("Finding alternatives for university:", selectedUniversity);
                 
-                const response = await fetch("https://fbc465264911.ngrok-free.app/api/new_program", {
+                const response = await fetch("https://c83365ff5eed.ngrok-free.app/api/new_program", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -2012,7 +2012,7 @@
                     }
                 });
 
-                const submitResponse = await fetch("https://fbc465264911.ngrok-free.app/api/submit_multiple_selections", {
+                const submitResponse = await fetch("https://c83365ff5eed.ngrok-free.app/api/submit_multiple_selections", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
