@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>ประเมินตนเองก่อนสอบ</title>
+  <title>ค้นหาหลักสูตรและคำนวณคะแนน</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   
@@ -17,133 +17,302 @@
       background: linear-gradient(135deg, #0288d1 0%, #01579b 100%);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
       min-height: 100vh;
-      padding: 20px;
+      padding: 10px;
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 0 auto;
+      padding: 0 10px;
     }
 
     .header {
       text-align: center;
       color: white;
-      margin-bottom: 30px;
-      animation: fadeInDown 0.8s ease-out;
-    }
-
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: white;
-      text-decoration: none;
-      font-size: 1rem;
       margin-bottom: 20px;
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      transition: all 0.3s ease;
-      animation: fadeIn 0.8s ease-out;
+      padding: 20px 0;
     }
 
-    .back-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateX(-5px);
+    #profile {
+      text-align: center;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    #profile img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 8px;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
     .header h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 10px;
+      margin: 10px 0;
+      font-size: 1.8rem;
+      font-weight: 600;
     }
 
     .header p {
+      margin: 8px 0 0 0;
+      opacity: 0.9;
       font-size: 1rem;
-      opacity: 0.95;
     }
 
-    .info-banner {
-      background: rgba(255, 255, 255, 0.95);
+    .progress-bar {
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      background: white;
+      height: 8px;
+      border-radius: 6px;
+      transition: width 0.3s ease;
+      width: 33%;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: white;
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    .selection-card {
+      background: white;
       border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      animation: fadeInUp 0.6s ease-out 0.2s backwards;
+      overflow: hidden;
+      animation: fadeInUp 0.5s ease-out;
     }
 
-    .info-banner h3 {
-      color: #01579b;
-      font-size: 1.2rem;
-      margin-bottom: 12px;
+    .card-header {
+      background: linear-gradient(135deg, #0288d1, #0277bd);
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-header.green {
+      background: linear-gradient(135deg, #4caf50, #388e3c);
+    }
+
+    .card-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .info-banner ul {
-      color: #666;
-      line-height: 2;
-      margin-left: 20px;
+    .card-number {
+      background: rgba(255,255,255,0.2);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9rem;
     }
 
-    .info-banner .highlight {
-      background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-      padding: 12px;
-      border-radius: 8px;
-      border-left: 4px solid #ff9800;
-      margin-top: 15px;
-      color: #856404;
+    .card-body {
+      padding: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
       font-weight: 600;
+      color: #01579b;
+      font-size: 0.95rem;
     }
 
-    .program-card {
-      background: white;
-      border-radius: 20px;
-      margin-bottom: 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      overflow: hidden;
-      animation: fadeInUp 0.6s ease-out backwards;
+    .search-input, .score-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e3f2fd;
+      border-radius: 12px;
+      font-size: 1rem;
+      margin-bottom: 8px;
+      background: #f8faff;
       transition: all 0.3s ease;
     }
 
-    .program-card:nth-child(1) {
-      animation-delay: 0.3s;
+    .score-input {
+      max-width: 150px;
     }
 
-    .program-card:nth-child(2) {
-      animation-delay: 0.4s;
+    .search-input:focus, .score-input:focus {
+      outline: none;
+      border-color: #0288d1;
+      background: white;
     }
 
-    .program-card:nth-child(3) {
-      animation-delay: 0.5s;
+    .custom-dropdown {
+      width: 100%;
+      max-height: 200px;
+      border: 2px solid #e3f2fd;
+      border-radius: 12px;
+      background: white;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
-    .program-card:hover {
-      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-      transform: translateY(-5px);
+    .dropdown-option {
+      padding: 12px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background-color 0.2s ease;
+      font-size: 0.95rem;
     }
 
-    .program-header {
-      background: linear-gradient(135deg, #0288d1, #0277bd);
-      color: white;
-      padding: 20px 25px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .dropdown-option:hover {
+      background-color: #f8faff;
     }
 
-    .program-icon {
-      font-size: 1.8rem;
-    }
-
-    .program-header h3 {
-      font-size: 1.3rem;
+    .dropdown-option.selected {
+      background-color: #e3f2fd;
+      color: #01579b;
       font-weight: 600;
     }
 
-    .program-content {
+    .dropdown-option:last-child {
+      border-bottom: none;
+    }
+
+    .loading-option {
+      color: #666;
+      font-style: italic;
+      text-align: center;
+      cursor: default;
+    }
+
+    .loading-option:hover {
+      background-color: white;
+    }
+
+    .selection-summary {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 12px;
+      color: #01579b;
+    }
+
+    .summary-item {
+      margin: 6px 0;
+      line-height: 1.5;
+    }
+
+    .summary-label {
+      font-weight: 600;
+    }
+
+    .navigation-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-height: 48px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0288d1, #01579b);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(2, 136, 209, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #4caf50, #388e3c);
+      color: white;
+    }
+
+    .btn-success:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn:disabled {
+      background: #ccc;
+      color: #666;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .results-container {
+      display: none;
+    }
+
+    .results-container.active {
+      display: block;
+    }
+
+    .program-info {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      border-radius: 16px;
       padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .program-info h3 {
+      color: #01579b;
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .program-info p {
+      color: #0277bd;
+      font-size: 1rem;
+      line-height: 1.8;
+      margin: 8px 0;
+    }
+
+    .program-info strong {
+      font-weight: 600;
     }
 
     .test-list {
@@ -152,46 +321,31 @@
     }
 
     .test-item {
-      background: #f8faff;
+      background: white;
       border: 2px solid #e3f2fd;
       border-radius: 12px;
-      padding: 18px;
+      padding: 20px;
       transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
     .test-item:hover {
       border-color: #0288d1;
-      background: white;
       transform: translateX(5px);
-    }
-
-    .test-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(2, 136, 209, 0.2);
     }
 
     .test-name {
       font-weight: 600;
       color: #01579b;
       font-size: 1.1rem;
+      margin-bottom: 8px;
     }
 
-    .test-badge {
-      background: linear-gradient(135deg, #4caf50, #388e3c);
-      color: white;
-      padding: 5px 12px;
-      border-radius: 15px;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .test-description {
+    .test-weight {
       color: #666;
-      font-size: 0.95rem;
-      margin-bottom: 15px;
-      line-height: 1.5;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
     }
 
     .test-link-btn {
@@ -215,61 +369,70 @@
       box-shadow: 0 6px 20px rgba(2, 136, 209, 0.4);
     }
 
-    .evaluate-section {
-      margin-top: 30px;
-      padding: 30px;
-      background: linear-gradient(135deg, #f3e5f5, #e1bee7);
-      border-radius: 20px;
-      text-align: center;
-      animation: fadeInUp 0.6s ease-out 0.6s backwards;
-    }
-
-    .evaluate-section h3 {
-      color: #6a1b9a;
-      font-size: 1.5rem;
+    .score-input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       margin-bottom: 15px;
     }
 
-    .evaluate-section p {
-      color: #4a148c;
-      margin-bottom: 25px;
-      font-size: 1rem;
-      line-height: 1.6;
+    .score-input-row label {
+      flex: 1;
+      margin: 0;
     }
 
-    .btn-evaluate {
-      padding: 16px 45px;
+    .results-table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    .results-table th,
+    .results-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e3f2fd;
+    }
+
+    .results-table th {
+      background: #f8faff;
+      color: #01579b;
+      font-weight: 600;
+    }
+
+    .results-table .good {
+      color: #4caf50;
+      font-weight: 600;
+    }
+
+    .results-table .bad {
+      color: #f44336;
+      font-weight: 600;
+    }
+
+    .btn-restart {
       background: linear-gradient(135deg, #9c27b0, #7b1fa2);
       color: white;
+      padding: 14px 35px;
       border: none;
       border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
+      display: block;
+      margin: 20px auto 0;
+    }
+
+    .btn-restart:hover {
+      transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
-    }
-
-    .btn-evaluate:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(156, 39, 176, 0.5);
-    }
-
-    @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
 
     @keyframes fadeInUp {
       from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(20px);
       }
       to {
         opacity: 1;
@@ -277,236 +440,730 @@
       }
     }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
     @media (max-width: 768px) {
+      .container {
+        padding: 0 5px;
+      }
+      
       .header h1 {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
+      }
+      
+      .card-body {
+        padding: 16px;
+      }
+      
+      .custom-dropdown {
+        max-height: 150px;
+      }
+      
+      .btn {
+        font-size: 0.95rem;
+        padding: 12px;
       }
 
-      .program-header {
-        flex-direction: column;
-        text-align: center;
+      .program-info {
+        padding: 20px;
       }
 
-      .test-header {
+      .program-info h3 {
+        font-size: 1.2rem;
+      }
+
+      .score-input-row {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
+        align-items: stretch;
+      }
+
+      .score-input {
+        max-width: 100%;
+      }
+
+      .results-table {
+        font-size: 0.9rem;
+      }
+
+      .results-table th,
+      .results-table td {
+        padding: 8px;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-
-
     <div class="header">
-      <h1>📚 ประเมินตนเองก่อนสอบ</h1>
-      <p>เลือกหลักสูตรและทำแบบทดสอบเพื่อประเมินความพร้อม</p>
+      <div id="profile">
+        <img id="picture" src="" alt="Profile Picture">
+        <h2 id="name">Loading...</h2>
+      </div>
+      <h1>🎓 ค้นหาหลักสูตรและคำนวณคะแนน</h1>
+      <p>เลือกหลักสูตร ทำข้อสอบ และคำนวณคะแนนที่ควรได้</p>
     </div>
 
-    <div class="info-banner">
-      <h3>📋 วิธีการใช้งาน</h3>
-      <ul>
-        <li>เลือกหลักสูตรที่คุณสนใจด้านล่าง</li>
-        <li>คลิกลิงก์ข้อสอบแต่ละวิชาเพื่อไปทำข้อสอบ</li>
-        <li>จดคะแนนที่ได้จากการทำข้อสอบแต่ละวิชาไว้</li>
-        <li>กลับมาประเมินโอกาส TCAS รอบที่ 3 ด้วยคะแนนที่ได้</li>
-      </ul>
-      <div class="highlight">
-        ⚠️ สำคัญ: กรุณาจดคะแนนที่ได้ไว้เพื่อนำมากรอกในการประเมินรอบที่ 3
-      </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
     </div>
+    <div class="progress-text" id="progressText">ขั้นตอนที่ 1: เลือกมหาวิทยาลัย</div>
 
-    <!-- Program 1: แพทยศาสตร์ -->
-    <div class="program-card">
-      <div class="program-header">
-        <span class="program-icon">🧪</span>
-        <h3>หลักสูตร - วท.บ.เคมี/วท.บ.เคมีอุตสาหกรรม/วท.บ.ชีวเคมีและชีวเคมีนวัตกรรม (มหาวิทยาลัยเชียงใหม่)</h3>
+    <!-- Step 1: Select University -->
+    <div class="selection-card" id="card1">
+      <div class="card-header">
+        <h3>🏛️ เลือกมหาวิทยาลัย</h3>
+        <div class="card-number">1</div>
       </div>
-      <div class="program-content">
-        <div class="test-list">
-          <div class="test-item">
-            <div class="test-header">
-              <span class="test-name">ความถนัดทั่วไป (TGAT)</span>
-           
-            </div>
-        
-            <a href="#" target="_blank" class="test-link-btn">
-              <span>📝</span>
-              <span>ไปทำข้อสอบ</span>
-            </a>
+      <div class="card-body">
+        <div class="form-group">
+          <label for="searchUniversity">ค้นหามหาวิทยาลัย:</label>
+          <input type="text" class="search-input" id="searchUniversity" placeholder="พิมพ์เพื่อค้นหา...">
+          <div class="custom-dropdown" id="universityDropdown">
+            <div class="dropdown-option loading-option">กำลังโหลดรายการมหาวิทยาลัย...</div>
           </div>
+        </div>
 
-          <div class="test-item">
-            <div class="test-header">
-              <span class="test-name">ความถนัดวิทยาศาสตร์ เทคโนโลยี วิศวกรรมศาสตร์ (TPAT3)</span>
-            
-            </div>
-           
-            <a href="#" target="_blank" class="test-link-btn">
-              <span>📝</span>
-              <span>ไปทำข้อสอบ</span>
-            </a>
+        <div class="selection-summary" id="universitySummary" style="display: none;">
+          <div class="summary-item">
+            <span class="summary-label">มหาวิทยาลัยที่เลือก:</span> <span id="selectedUniversity">-</span>
           </div>
+        </div>
 
- 
+        <div class="navigation-buttons">
+          <button class="btn btn-primary" id="nextBtn1" disabled>ถัดไป →</button>
         </div>
       </div>
     </div>
 
-     <!-- Program 1: แพทยศาสตร์ -->
-    <div class="program-card">
-      <div class="program-header">
-        <span class="program-icon">🧑‍⚖️</span>
-        <h3>หลักสูตร - หลักสูตรนิติศาสตรบัณฑิต (จุฬาลงกรณ์มหาวิทยาลัย)</h3>
+    <!-- Step 2: Select Faculty -->
+    <div class="selection-card" id="card2" style="display: none;">
+      <div class="card-header">
+        <h3>🏫 เลือกคณะ</h3>
+        <div class="card-number">2</div>
       </div>
-      <div class="program-content">
-        <div class="test-list">
-          <div class="test-item">
-            <div class="test-header">
-              <span class="test-name">ความถนัดทั่วไป (TGAT)</span>
-           
-            </div>
-        
-            <a href="#" target="_blank" class="test-link-btn">
-              <span>📝</span>
-              <span>ไปทำข้อสอบ</span>
-            </a>
+      <div class="card-body">
+        <div class="form-group">
+          <label for="searchFaculty">ค้นหาคณะ:</label>
+          <input type="text" class="search-input" id="searchFaculty" placeholder="พิมพ์เพื่อค้นหา...">
+          <div class="custom-dropdown" id="facultyDropdown">
+            <div class="dropdown-option loading-option">กรุณาเลือกมหาวิทยาลัยก่อน</div>
           </div>
+        </div>
 
-          <div class="test-item">
-            <div class="test-header">
-              <span class="test-name">A-Level คณิตศาสตร์ประยุกต์ 2 (พื้นฐาน)</span>
-            </div>
-            <a href="#" target="_blank" class="test-link-btn">
-              <span>📝</span>
-              <span>ไปทำข้อสอบ</span>
-            </a>
+        <div class="selection-summary" id="facultySummary" style="display: none;">
+          <div class="summary-item">
+            <span class="summary-label">มหาวิทยาลัย:</span> <span id="summaryUni2">-</span>
           </div>
+          <div class="summary-item">
+            <span class="summary-label">คณะที่เลือก:</span> <span id="selectedFaculty">-</span>
+          </div>
+        </div>
 
-          
-          <div class="test-item">
-            <div class="test-header">
-              <span class="test-name">A-Level สังคมศาสตร์</span>
-            </div>
-            <a href="#" target="_blank" class="test-link-btn">
-              <span>📝</span>
-              <span>ไปทำข้อสอบ</span>
-            </a>
-          </div>
-
-             <div class="test-item">
-            <div class="test-header">
-              <span class="test-name">A-Level ภาษาไทย</span>
-            </div>
-            <a href="#" target="_blank" class="test-link-btn">
-              <span>📝</span>
-              <span>ไปทำข้อสอบ</span>
-            </a>
-          </div>
-  <div class="test-item">
-            <div class="test-header">
-              <span class="test-name">A-Level ภาษาอังกฤษ</span>
-            </div>
-            <a href="#" target="_blank" class="test-link-btn">
-              <span>📝</span>
-              <span>ไปทำข้อสอบ</span>
-            </a>
-          </div>
-
- 
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" onclick="goToStep(1)">← กลับ</button>
+          <button class="btn btn-primary" id="nextBtn2" disabled>ถัดไป →</button>
         </div>
       </div>
     </div>
 
-     <!-- Program 1: แพทยศาสตร์ -->
-    <div class="program-card">
-      <div class="program-header">
-        <span class="program-icon">👨🏼‍💼</span>
-        <h3>หลักสูตร - บธ.บ.การบริหารอุตสาหกรรมการผลิตและบริการ (มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ )</h3>
+    <!-- Step 3: Select Program -->
+    <div class="selection-card" id="card3" style="display: none;">
+      <div class="card-header">
+        <h3>📚 เลือกหลักสูตร</h3>
+        <div class="card-number">3</div>
       </div>
-      <div class="program-content">
-        <div class="test-list">
-          <div class="test-item">
-            <div class="test-header">
-              <span class="test-name">ความถนัดทั่วไป (TGAT)</span>
-           
-            </div>
-        
-            <a href="#" target="_blank" class="test-link-btn">
-              <span>📝</span>
-              <span>ไปทำข้อสอบ</span>
-            </a>
+      <div class="card-body">
+        <div class="form-group">
+          <label for="searchProgram">ค้นหาหลักสูตร:</label>
+          <input type="text" class="search-input" id="searchProgram" placeholder="พิมพ์เพื่อค้นหา...">
+          <div class="custom-dropdown" id="programDropdown">
+            <div class="dropdown-option loading-option">กรุณาเลือกคณะก่อน</div>
           </div>
-          <div class="test-item">
-            <div class="test-header">
-              <span class="test-name">A-Level คณิตศาสตร์ประยุกต์ 1 (พื้นฐาน+เพิ่มเติม)</span>
-            </div>
-            <a href="#" target="_blank" class="test-link-btn">
-              <span>📝</span>
-              <span>ไปทำข้อสอบ</span>
-            </a>
-          </div>
+        </div>
 
-          
-          <div class="test-item">
-            <div class="test-header">
-              <span class="test-name">A-Level สังคมศาสตร์</span>
-            </div>
-            <a href="#" target="_blank" class="test-link-btn">
-              <span>📝</span>
-              <span>ไปทำข้อสอบ</span>
-            </a>
+        <div class="selection-summary" id="programSummary" style="display: none;">
+          <div class="summary-item">
+            <span class="summary-label">มหาวิทยาลัย:</span> <span id="summaryUni3">-</span>
           </div>
-           <div class="test-item">
-            <div class="test-header">
-              <span class="test-name">A-Level ภาษาอังกฤษ</span>
-            </div>
-            <a href="#" target="_blank" class="test-link-btn">
-              <span>📝</span>
-              <span>ไปทำข้อสอบ</span>
-            </a>
+          <div class="summary-item">
+            <span class="summary-label">คณะ:</span> <span id="summaryFac3">-</span>
           </div>
+          <div class="summary-item">
+            <span class="summary-label">หลักสูตรที่เลือก:</span> <span id="selectedProgram">-</span>
+          </div>
+        </div>
 
-
- 
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" onclick="goToStep(2)">← กลับ</button>
+          <button class="btn btn-primary" id="showTestsBtn" disabled>ดูข้อสอบ</button>
         </div>
       </div>
     </div>
 
+    <!-- Results Section -->
+    <div class="results-container" id="resultsContainer">
+      <div class="program-info" id="programInfo"></div>
+      
+      <div class="selection-card">
+        <div class="card-header">
+          <h3>📝 รายการข้อสอบ</h3>
+        </div>
+        <div class="card-body">
+          <div class="test-list" id="testList"></div>
+          <div class="navigation-buttons">
+            <button class="btn btn-primary" onclick="showScoreInput()">กรอกคะแนนที่ได้ →</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <!-- Score Input Section -->
+    <div class="results-container" id="scoreInputContainer">
+      <div class="program-info" id="programInfo2"></div>
+      
+      <div class="selection-card">
+        <div class="card-header green">
+          <h3>✍️ กรอกคะแนนที่ได้</h3>
+        </div>
+        <div class="card-body">
+          <div id="scoreInputList"></div>
 
-    <div class="evaluate-section">
-      <h3>🎯 พร้อมประเมินโอกาสแล้ว?</h3>
-      <p>
-        หลังจากทำข้อสอบและจดคะแนนไว้แล้ว<br>
-        คุณสามารถนำคะแนนมาประเมินโอกาสในการเข้าศึกษาต่อ TCAS รอบที่ 3
-      </p>
-      <button class="btn-evaluate" onclick="goToEvaluation()">
-        📊 ไปประเมิน TCAS รอบ 3
-      </button>
+          <div class="navigation-buttons">
+            <button class="btn btn-secondary" onclick="backToTests()">← กลับ</button>
+            <button class="btn btn-success" onclick="calculateScores()">คำนวณคะแนน</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calculation Results -->
+    <div class="results-container" id="calculationContainer">
+      <div class="program-info" id="programInfo3"></div>
+      
+      <div class="selection-card">
+        <div class="card-header green">
+          <h3>📊 ผลการคำนวณ</h3>
+        </div>
+        <div class="card-body">
+          <div id="calculationResults"></div>
+          <div class="navigation-buttons">
+            <button class="btn btn-secondary" onclick="backToScoreInput()">← แก้ไขคะแนน</button>
+            <button class="btn btn-restart" onclick="restart()">🔄 ค้นหาหลักสูตรใหม่</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
+    // Data structure with weights for each program
+    const data = {
+      universities: [
+        {
+          id: 'mahidol',
+          name: 'มหาวิทยาลัยมหิดล',
+          faculties: [
+            {
+              id: 'medicine_rama',
+              name: 'คณะแพทยศาสตร์โรงพยาบาลรามาธิบดี',
+              programs: [
+                {
+                  id: 'speech_disorder',
+                  name: 'หลักสูตรวิทยาศาสตรบัณฑิต สาขาวิชาความผิดปกติของการสื่อความหมาย',
+                  fullName: 'หลักสูตรวิทยาศาสตรบัณฑิต สาขาวิชาความผิดปกติของการสื่อความหมาย สาขาวิชาแก้ไขการได้ยิน (ภาษาไทย ปกติ) วิทยาเขต ศาลายา',
+                  targetScore: 55.75,
+                  tests: [
+                    { name: 'TGAT', fullName: 'ความถนัดทั่วไป (TGAT)', link: '#', weight: 0.25 },
+                    { name: 'A-Level apmath', fullName: 'A-Level วิชาคณิตศาสตร์ประยุกต์ 1', link: '#', weight: 0.1125 },
+                    { name: 'A-Level phys', fullName: 'A-Level วิชาฟิสิกส์', link: '#', weight: 0.1125 },
+                    { name: 'A-Level chem', fullName: 'A-Level วิชาเคมี', link: '#', weight: 0.075 },
+                    { name: 'A-Level bio', fullName: 'A-Level วิชาชีววิทยา', link: '#', weight: 0.1125 },
+                    { name: 'A-Level soc', fullName: 'A-Level สังคมศาสตร์', link: '#', weight: 0.075 },
+                    { name: 'A-Level th', fullName: 'A-Level ภาษาไทย', link: '#', weight: 0.1125 },
+                    { name: 'A-Level eng', fullName: 'A-Level ภาษาอังกฤษ', link: '#', weight: 0.15 }
+                  ]
+                }
+              ]
+            },
+            {
+              id: 'engineering',
+              name: 'คณะวิศวกรรมศาสตร์',
+              programs: [
+                {
+                  id: 'chemical_eng',
+                  name: 'หลักสูตรวิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมเคมี',
+                  fullName: 'หลักสูตรวิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมเคมี (ภาษาไทย ปกติ) วิทยาเขต ศาลายา',
+                  targetScore: 50.6,
+                  tests: [
+                    { name: 'TPAT3', fullName: 'TPAT3 ความถนัดด้านวิทยาศาสตร์ เทคโนโลยี และวิศวกรรมศาสตร์', link: '#', weight: 0.30 },
+                    { name: 'A-Level apmath', fullName: 'A-Level วิชาคณิตศาสตร์ประยุกต์ 1', link: '#', weight: 0.20 },
+                    { name: 'A-Level phys', fullName: 'A-Level วิชาฟิสิกส์', link: '#', weight: 0.20 },
+                    { name: 'A-Level chem', fullName: 'A-Level วิชาเคมี', link: '#', weight: 0.20 },
+                    { name: 'A-Level eng', fullName: 'A-Level ภาษาอังกฤษ', link: '#', weight: 0.10 }
+                  ]
+                }
+              ]
+            },
+            {
+              id: 'liberal_arts',
+              name: 'คณะศิลปศาสตร์',
+              programs: [
+                {
+                  id: 'thai_lang',
+                  name: 'หลักสูตรศิลปศาสตรบัณฑิต สาขาวิชาภาษาไทย',
+                  fullName: 'หลักสูตรศิลปศาสตรบัณฑิต สาขาวิชาภาษาไทย (ภาษาไทย ปกติ) วิทยาเขต ศาลายา',
+                  targetScore: 73.05,
+                  tests: [
+                    { name: 'GPAX', fullName: 'GPAX', link: '#', weight: 0.20 },
+                    { name: 'A-Level soc', fullName: 'A-Level สังคมศาสตร์', link: '#', weight: 0.20 },
+                    { name: 'A-Level th', fullName: 'A-Level ภาษาไทย', link: '#', weight: 0.40 },
+                    { name: 'A-Level eng', fullName: 'A-Level ภาษาอังกฤษ', link: '#', weight: 0.20 }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    // State management
+    let selectedUniversity = null;
+    let selectedFaculty = null;
+    let selectedProgram = null;
+    let currentStep = 1;
+    let allUniversities = [];
+    let currentFaculties = [];
+    let currentPrograms = [];
+    let userScores = {};
+
+    // Initialize
     window.onload = async function () {
-      await liff.init({ liffId: "2007611527-z7ZNLXOk" });
-      if (!liff.isLoggedIn()) {
-        liff.login();
+      populateUniversities();
+      setupEventListeners();
+      
+      try {
+        await liff.init({ liffId: "2007611527-z7ZNLXOk" });
+        if (liff.isLoggedIn()) {
+          const profile = await liff.getProfile();
+          document.getElementById("name").innerText = profile.displayName;
+          document.getElementById("picture").src = profile.pictureUrl;
+        } else {
+          liff.login();
+        }
+      } catch (error) {
+        console.log('LIFF initialization error:', error);
       }
     };
 
-    function goToEvaluation() {
-      window.location.href = 'https://vrthefuture.varee.ac.th/vrthefuture_round3.html';
+    function setupEventListeners() {
+      document.getElementById('searchUniversity').addEventListener('input', filterUniversities);
+      document.getElementById('searchFaculty').addEventListener('input', filterFaculties);
+      document.getElementById('searchProgram').addEventListener('input', filterPrograms);
+      
+      document.getElementById('nextBtn1').addEventListener('click', () => goToStep(2));
+      document.getElementById('nextBtn2').addEventListener('click', () => goToStep(3));
+      document.getElementById('showTestsBtn').addEventListener('click', showTests);
+    }
+
+    function populateUniversities() {
+      allUniversities = data.universities.map(u => ({ id: u.id, name: u.name, data: u }));
+      renderUniversityDropdown(allUniversities);
+    }
+
+    function renderUniversityDropdown(universities) {
+      const dropdown = document.getElementById('universityDropdown');
+      dropdown.innerHTML = '';
+      
+      if (universities.length === 0) {
+        dropdown.innerHTML = '<div class="dropdown-option loading-option">ไม่พบมหาวิทยาลัย</div>';
+        return;
+      }
+      
+      universities.forEach(uni => {
+        const option = document.createElement('div');
+        option.className = 'dropdown-option';
+        option.textContent = uni.name;
+        option.onclick = () => selectUniversity(uni);
+        dropdown.appendChild(option);
+      });
+    }
+
+    function renderFacultyDropdown(faculties) {
+      const dropdown = document.getElementById('facultyDropdown');
+      dropdown.innerHTML = '';
+      
+      if (faculties.length === 0) {
+        dropdown.innerHTML = '<div class="dropdown-option loading-option">ไม่พบคณะ</div>';
+        return;
+      }
+      
+      faculties.forEach(fac => {
+        const option = document.createElement('div');
+        option.className = 'dropdown-option';
+        option.textContent = fac.name;
+        option.onclick = () => selectFaculty(fac);
+        dropdown.appendChild(option);
+      });
+    }
+
+    function renderProgramDropdown(programs) {
+      const dropdown = document.getElementById('programDropdown');
+      dropdown.innerHTML = '';
+      
+      if (programs.length === 0) {
+        dropdown.innerHTML = '<div class="dropdown-option loading-option">ไม่พบหลักสูตร</div>';
+        return;
+      }
+      
+      programs.forEach(prog => {
+        const option = document.createElement('div');
+        option.className = 'dropdown-option';
+        option.textContent = prog.name;
+        option.onclick = () => selectProgram(prog);
+        dropdown.appendChild(option);
+      });
+    }
+
+    function selectUniversity(uni) {
+      selectedUniversity = uni;
+      document.getElementById('searchUniversity').value = uni.name;
+      document.getElementById('selectedUniversity').textContent = uni.name;
+      document.getElementById('universitySummary').style.display = 'block';
+      document.getElementById('nextBtn1').disabled = false;
+      
+      highlightSelected('universityDropdown', uni.name);
+      
+      currentFaculties = uni.data.faculties || [];
+    }
+
+    function selectFaculty(fac) {
+      selectedFaculty = fac;
+      document.getElementById('searchFaculty').value = fac.name;
+      document.getElementById('selectedFaculty').textContent = fac.name;
+      document.getElementById('summaryUni2').textContent = selectedUniversity.name;
+      document.getElementById('facultySummary').style.display = 'block';
+      document.getElementById('nextBtn2').disabled = false;
+      
+      highlightSelected('facultyDropdown', fac.name);
+      
+      currentPrograms = fac.programs || [];
+    }
+
+    function selectProgram(prog) {
+      selectedProgram = prog;
+      document.getElementById('searchProgram').value = prog.name;
+      document.getElementById('selectedProgram').textContent = prog.name;
+      document.getElementById('summaryUni3').textContent = selectedUniversity.name;
+      document.getElementById('summaryFac3').textContent = selectedFaculty.name;
+      document.getElementById('programSummary').style.display = 'block';
+      document.getElementById('showTestsBtn').disabled = false;
+      
+      highlightSelected('programDropdown', prog.name);
+    }
+
+    function highlightSelected(dropdownId, text) {
+      const dropdown = document.getElementById(dropdownId);
+      const options = dropdown.querySelectorAll('.dropdown-option');
+      options.forEach(opt => {
+        opt.classList.remove('selected');
+        if (opt.textContent === text) {
+          opt.classList.add('selected');
+        }
+      });
+    }
+
+    function filterUniversities() {
+      const search = document.getElementById('searchUniversity').value.toLowerCase();
+      const filtered = allUniversities.filter(u => u.name.toLowerCase().includes(search));
+      renderUniversityDropdown(filtered);
+    }
+
+    function filterFaculties() {
+      const search = document.getElementById('searchFaculty').value.toLowerCase();
+      const filtered = currentFaculties.filter(f => f.name.toLowerCase().includes(search));
+      renderFacultyDropdown(filtered);
+    }
+
+    function filterPrograms() {
+      const search = document.getElementById('searchProgram').value.toLowerCase();
+      const filtered = currentPrograms.filter(p => p.name.toLowerCase().includes(search));
+      renderProgramDropdown(filtered);
+    }
+
+    function goToStep(step) {
+      document.getElementById('card1').style.display = 'none';
+      document.getElementById('card2').style.display = 'none';
+      document.getElementById('card3').style.display = 'none';
+      
+      document.getElementById(`card${step}`).style.display = 'block';
+      currentStep = step;
+      
+      const progress = (step / 3) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+      
+      const stepTexts = {
+        1: 'ขั้นตอนที่ 1: เลือกมหาวิทยาลัย',
+        2: 'ขั้นตอนที่ 2: เลือกคณะ',
+        3: 'ขั้นตอนที่ 3: เลือกหลักสูตร'
+      };
+      document.getElementById('progressText').textContent = stepTexts[step];
+      
+      if (step === 2 && currentFaculties.length > 0) {
+        renderFacultyDropdown(currentFaculties);
+      }
+      if (step === 3 && currentPrograms.length > 0) {
+        renderProgramDropdown(currentPrograms);
+      }
+    }
+
+    function showTests() {
+      document.getElementById('card1').style.display = 'none';
+      document.getElementById('card2').style.display = 'none';
+      document.getElementById('card3').style.display = 'none';
+      
+      document.getElementById('progressFill').style.width = '100%';
+      document.getElementById('progressText').textContent = 'ดูรายการข้อสอบและน้ำหนักคะแนน';
+      
+      const programInfoHtml = `
+        <h3>📚 ${selectedProgram.name}</h3>
+        <p><strong>มหาวิทยาลัย:</strong> ${selectedUniversity.name}</p>
+        <p><strong>คณะ:</strong> ${selectedFaculty.name}</p>
+        <p><strong>หลักสูตรเต็ม:</strong> ${selectedProgram.fullName}</p>
+        <p><strong>🎯 คะแนนรวมที่ต้องการ:</strong> ${selectedProgram.targetScore} คะแนน</p>
+      `;
+      
+      document.getElementById('programInfo').innerHTML = programInfoHtml;
+      
+      const testList = document.getElementById('testList');
+      testList.innerHTML = '';
+      selectedProgram.tests.forEach(test => {
+        const testItem = document.createElement('div');
+        testItem.className = 'test-item';
+        testItem.innerHTML = `
+          <div class="test-name">${test.fullName}</div>
+          <div class="test-weight">น้ำหนักคะแนน: ${(test.weight * 100).toFixed(0)}%</div>
+          <a href="${test.link}" target="_blank" class="test-link-btn">
+            <span>📝</span>
+            <span>ไปทำข้อสอบ</span>
+          </a>
+        `;
+        testList.appendChild(testItem);
+      });
+      
+      document.getElementById('resultsContainer').classList.add('active');
+    }
+
+    function showScoreInput() {
+      document.getElementById('resultsContainer').classList.remove('active');
+      
+      const programInfoHtml = `
+        <h3>📚 ${selectedProgram.name}</h3>
+        <p><strong>มหาวิทยาลัย:</strong> ${selectedUniversity.name}</p>
+        <p><strong>คณะ:</strong> ${selectedFaculty.name}</p>
+        <p><strong>🎯 คะแนนรวมที่ต้องการ:</strong> ${selectedProgram.targetScore} คะแนน</p>
+      `;
+      
+      document.getElementById('programInfo2').innerHTML = programInfoHtml;
+      
+      const scoreInputList = document.getElementById('scoreInputList');
+      scoreInputList.innerHTML = '';
+      
+      selectedProgram.tests.forEach((test, index) => {
+        const inputRow = document.createElement('div');
+        inputRow.className = 'score-input-row';
+        inputRow.innerHTML = `
+          <label>${test.fullName}:</label>
+          <input type="number" class="score-input" id="score_${index}" placeholder="คะแนน" min="0" max="100">
+        `;
+        scoreInputList.appendChild(inputRow);
+      });
+      
+      document.getElementById('scoreInputContainer').classList.add('active');
+    }
+
+    function backToTests() {
+      document.getElementById('scoreInputContainer').classList.remove('active');
+      document.getElementById('resultsContainer').classList.add('active');
+    }
+
+    function backToScoreInput() {
+      document.getElementById('calculationContainer').classList.remove('active');
+      document.getElementById('scoreInputContainer').classList.add('active');
+    }
+
+    function calculateScores() {
+      // Get user scores
+      userScores = {};
+      let allFilled = true;
+      
+      selectedProgram.tests.forEach((test, index) => {
+        const scoreInput = document.getElementById(`score_${index}`);
+        const score = parseFloat(scoreInput.value);
+        
+        if (isNaN(score) || score < 0) {
+          allFilled = false;
+        } else {
+          userScores[test.name] = score;
+        }
+      });
+      
+      // Use pre-defined target score from program
+      const targetScore = selectedProgram.targetScore;
+      
+      if (!allFilled) {
+        alert('กรุณากรอกคะแนนทุกช่อง');
+        return;
+      }
+      
+      // Calculate weighted target scores
+      const weights = {};
+      selectedProgram.tests.forEach(test => {
+        weights[test.name] = test.weight;
+      });
+      
+      const targetScores = weightedTargetScores(weights, targetScore);
+      
+      // Display results
+      showCalculationResults(userScores, targetScores, targetScore);
+    }
+
+    function weightedTargetScores(weights, target) {
+      // Convert weights if they sum to 100
+      let totalW = Object.values(weights).reduce((sum, w) => sum + w, 0);
+      if (totalW > 1.01) {
+        const newWeights = {};
+        for (let key in weights) {
+          newWeights[key] = weights[key] / 100;
+        }
+        weights = newWeights;
+      }
+      
+      // Calculate k
+      const sumW2 = Object.values(weights).reduce((sum, w) => sum + w * w, 0);
+      const k = target / sumW2;
+      
+      // Compute scores
+      const scores = {};
+      for (let subject in weights) {
+        scores[subject] = k * weights[subject];
+      }
+      
+      return scores;
+    }
+
+    function showCalculationResults(userScores, targetScores, targetTotal) {
+      document.getElementById('scoreInputContainer').classList.remove('active');
+      
+      const programInfoHtml = `
+        <h3>📚 ${selectedProgram.name}</h3>
+        <p><strong>มหาวิทยาลัย:</strong> ${selectedUniversity.name}</p>
+        <p><strong>คณะ:</strong> ${selectedFaculty.name}</p>
+        <p><strong>🎯 คะแนนรวมที่ต้องการ:</strong> ${targetTotal.toFixed(2)}</p>
+      `;
+      
+      document.getElementById('programInfo3').innerHTML = programInfoHtml;
+      
+      const actualTotal = Object.values(userScores).reduce((sum, score) => sum + score, 0);
+      const targetTotalCalc = Object.values(targetScores).reduce((sum, score) => sum + score, 0);
+      
+      let tableHtml = `
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>วิชา</th>
+              <th>น้ำหนัก</th>
+              <th>คะแนนที่ได้</th>
+              <th>คะแนนที่ควรได้</th>
+              <th>ส่วนต่าง</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      selectedProgram.tests.forEach(test => {
+        const userScore = userScores[test.name];
+        const targetScore = targetScores[test.name];
+        const diff = userScore - targetScore;
+        const diffClass = diff >= 0 ? 'good' : 'bad';
+        const diffSymbol = diff >= 0 ? '+' : '';
+        
+        tableHtml += `
+          <tr>
+            <td>${test.fullName}</td>
+            <td>${(test.weight * 100).toFixed(0)}%</td>
+            <td>${userScore.toFixed(2)}</td>
+            <td>${targetScore.toFixed(2)}</td>
+            <td class="${diffClass}">${diffSymbol}${diff.toFixed(2)}</td>
+          </tr>
+        `;
+      });
+      
+      const totalDiff = actualTotal - targetTotal;
+      const totalDiffClass = totalDiff >= 0 ? 'good' : 'bad';
+      const totalDiffSymbol = totalDiff >= 0 ? '+' : '';
+      
+      tableHtml += `
+          <tr style="font-weight: 600; background: #f8faff;">
+            <td>รวม</td>
+            <td>100%</td>
+            <td>${actualTotal.toFixed(2)}</td>
+            <td>${targetTotal.toFixed(2)}</td>
+            <td class="${totalDiffClass}">${totalDiffSymbol}${totalDiff.toFixed(2)}</td>
+          </tr>
+        </tbody>
+      </table>
+      `;
+      
+      if (totalDiff >= 0) {
+        tableHtml += `
+          <div class="selection-summary" style="margin-top: 20px; background: linear-gradient(135deg, #e8f5e9, #c8e6c9);">
+            <div style="font-size: 1.1rem; font-weight: 600; color: #2e7d32;">
+              ✅ ยินดีด้วย! คะแนนของคุณสูงกว่าเป้าหมาย ${Math.abs(totalDiff).toFixed(2)} คะแนน
+            </div>
+          </div>
+        `;
+      } else {
+        tableHtml += `
+          <div class="selection-summary" style="margin-top: 20px; background: linear-gradient(135deg, #ffebee, #ffcdd2);">
+            <div style="font-size: 1.1rem; font-weight: 600; color: #c62828;">
+              ⚠️ คะแนนของคุณต่ำกว่าเป้าหมาย ${Math.abs(totalDiff).toFixed(2)} คะแนน
+            </div>
+            <div style="margin-top: 10px; color: #d32f2f;">
+              แนะนำให้ทบทวนวิชาที่มีคะแนนต่ำกว่าเป้าหมาย
+            </div>
+          </div>
+        `;
+      }
+      
+      document.getElementById('calculationResults').innerHTML = tableHtml;
+      document.getElementById('calculationContainer').classList.add('active');
+    }
+
+    function restart() {
+      selectedUniversity = null;
+      selectedFaculty = null;
+      selectedProgram = null;
+      currentFaculties = [];
+      currentPrograms = [];
+      userScores = {};
+      
+      document.getElementById('searchUniversity').value = '';
+      document.getElementById('searchFaculty').value = '';
+      document.getElementById('searchProgram').value = '';
+      
+      document.getElementById('universitySummary').style.display = 'none';
+      document.getElementById('facultySummary').style.display = 'none';
+      document.getElementById('programSummary').style.display = 'none';
+      
+      document.getElementById('nextBtn1').disabled = true;
+      document.getElementById('nextBtn2').disabled = true;
+      document.getElementById('showTestsBtn').disabled = true;
+      
+      document.getElementById('resultsContainer').classList.remove('active');
+      document.getElementById('scoreInputContainer').classList.remove('active');
+      document.getElementById('calculationContainer').classList.remove('active');
+      
+      populateUniversities();
+      goToStep(1);
     }
   </script>
 </body>
