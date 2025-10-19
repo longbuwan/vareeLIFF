@@ -1062,7 +1062,10 @@
       
       document.getElementById('programInfo3').innerHTML = programInfoHtml;
       
-      const actualTotal = Object.values(userScores).reduce((sum, score) => sum + score, 0);
+      // Calculate weighted total for user scores
+      const actualTotal = selectedProgram.tests.reduce((sum, test) => {
+        return sum + (userScores[test.name] * test.weight);
+      }, 0);
       const targetTotalCalc = Object.values(targetScores).reduce((sum, score) => sum + score, 0);
       
       let tableHtml = `
