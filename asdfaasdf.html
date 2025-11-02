@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice to Text</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        #startBtn {
+            background: #667eea;
+            color: white;
+        }
+
+        #startBtn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #startBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #stopBtn {
+            background: #f093fb;
+            color: white;
+        }
+
+        #stopBtn:hover {
+            background: #e078e8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+        }
+
+        #stopBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #clearBtn {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        #clearBtn:hover {
+            background: #ee5555;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .status {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .status.listening {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.stopped {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.ready {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .recording-indicator {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .recording-indicator.active {
+            display: flex;
+        }
+
+        .pulse {
+            width: 12px;
+            height: 12px;
+            background: #ff4757;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+        }
+
+        .info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #004085;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Voice to Text</h1>
+        <p class="subtitle">Click "Start" and speak into your microphone</p>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="recording-indicator" id="recordingIndicator">
+            <div class="pulse"></div>
+            <span style="color: #ff4757; font-weight: 600;">Recording...</span>
+        </div>
+
+        <div class="status ready" id="status">Ready to listen</div>
+        
+        <div class="controls">
+            <button id="startBtn">Start Listening</button>
+            <button id="stopBtn" disabled>Stop</button>
+            <button id="clearBtn">Clear Text</button>
+        </div>
+
+        <textarea id="output" placeholder="Your transcribed text will appear here..."></textarea>
+
+        <div class="info">
+            <strong>Tips:</strong>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Works best in Chrome, Edge, or Safari</li>
+                <li>Allow microphone access when prompted</li>
+                <li>Speak clearly for best results</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Check for browser support
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            document.getElementById('error').textContent = 'Sorry, your browser does not support speech recognition. Please use Chrome, Edge, or Safari.';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('startBtn').disabled = true;
+        } else {
+            const recognition = new SpeechRecognition();
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const output = document.getElementById('output');
+            const status = document.getElementById('status');
+            const recordingIndicator = document.getElementById('recordingIndicator');
+            const errorDiv = document.getElementById('error');
+
+            // Configure recognition
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            let finalTranscript = '';
+
+            // Start recognition
+            startBtn.addEventListener('click', () => {
+                recognition.start();
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                status.textContent = 'Listening...';
+                status.className = 'status listening';
+                recordingIndicator.classList.add('active');
+                errorDiv.style.display = 'none';
+            });
+
+            // Stop recognition
+            stopBtn.addEventListener('click', () => {
+                recognition.stop();
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                status.textContent = 'Stopped';
+                status.className = 'status stopped';
+                recordingIndicator.classList.remove('active');
+            });
+
+            // Clear text
+            clearBtn.addEventListener('click', () => {
+                output.value = '';
+                finalTranscript = '';
+            });
+
+            // Handle results
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+
+                output.value = finalTranscript + interimTranscript;
+                // Auto-scroll to bottom
+                output.scrollTop = output.scrollHeight;
+            };
+
+            // Handle errors
+            recognition.onerror = (event) => {
+                let errorMessage = 'An error occurred: ';
+                
+                switch(event.error) {
+                    case 'no-speech':
+                        errorMessage += 'No speech detected. Please try again.';
+                        break;
+                    case 'audio-capture':
+                        errorMessage += 'No microphone found or microphone access denied.';
+                        break;
+                    case 'not-allowed':
+                        errorMessage += 'Microphone access denied. Please allow access in your browser settings.';
+                        break;
+                    default:
+                        errorMessage += event.error;
+                }
+                
+                errorDiv.textContent = errorMessage;
+                errorDiv.style.display = 'block';
+                status.textContent = 'Error occurred';
+                status.className = 'status stopped';
+                recordingIndicator.classList.remove('active');
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            };
+
+            // Handle end
+            recognition.onend = () => {
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                if (status.textContent === 'Listening...') {
+                    status.textContent = 'Ready to listen';
+                    status.className = 'status ready';
+                }
+                recordingIndicator.classList.remove('active');
+            };
+        }
+    </script>
+</body>
+</html>
