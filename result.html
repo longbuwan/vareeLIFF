@@ -1352,7 +1352,7 @@
                 console.log('New selections for API:', selectionsForAPI);
                 
                 // Submit new selections
-                const submitResponse = await fetch("https://18ddd917fa60.ngrok-free.app/api/submit_multiple_selections", {
+                const submitResponse = await fetch("/api/submit_multiple_selections", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -1865,7 +1865,7 @@
             try {
                 console.log("Finding alternatives for university:", selectedUniversity);
                 
-                const response = await fetch("https://18ddd917fa60.ngrok-free.app/api/new_program", {
+                const response = await fetch("/api/new_program", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -2012,7 +2012,7 @@
                     }
                 });
 
-                const submitResponse = await fetch("https://18ddd917fa60.ngrok-free.app/api/submit_multiple_selections", {
+                const submitResponse = await fetch("/api/submit_multiple_selections", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
