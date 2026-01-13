@@ -687,7 +687,7 @@
       dropdown.innerHTML = '<div class="dropdown-option loading-option">กำลังโหลดข้อมูลคณะ...</div>';
 
       const data = { name: university, userId: "some-id" };
-      const response = await fetch("https://18ddd917fa60.ngrok-free.app/api/find_faculty", {
+      const response = await fetch("/api/find_faculty", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -716,7 +716,7 @@
       dropdown.innerHTML = '<div class="dropdown-option loading-option">กำลังโหลดข้อมูลหลักสูตร...</div>';
 
       const data = { name: university, faculty: faculty };
-      const response = await fetch("https://18ddd917fa60.ngrok-free.app/api/find_field", {
+      const response = await fetch("/api/find_field", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -922,7 +922,7 @@
         selections: completedSelections
       };
 
-      const response = await fetch("https://18ddd917fa60.ngrok-free.app/api/submit_multiple_selections", {
+      const response = await fetch("/api/submit_multiple_selections", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
