@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>วางแผนคะแนน (Interactive)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* --- CSS STYLES --- */
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
+    body { background: linear-gradient(135deg, #0288d1 0%, #01579b 100%); min-height: 100vh; padding: 10px; padding-bottom: 40px; }
+    .container { max-width: 900px; margin: 0 auto; padding: 0 5px; }
+    
+    .header { text-align: center; color: white; margin-bottom: 20px; padding: 20px 0; }
+    #profile img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .header h1 { margin: 10px 0; font-size: 1.8rem; font-weight: 600; }
+    
+    /* CARDS */
+    .selection-card { 
+        background: white; 
+        border-radius: 16px; 
+        margin-bottom: 20px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
+        overflow: hidden; 
+        animation: fadeInUp 0.5s ease-out; 
+    }
+    .card-header { background: linear-gradient(135deg, #0288d1, #0277bd); color: white; padding: 15px 20px; font-weight: 600; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; }
+    .card-header.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
+    .card-body { padding: 20px; }
+    
+    /* INPUTS & DROPDOWNS */
+    .form-group { margin-bottom: 20px; }
+    
+    .search-input { 
+        width: 100%; 
+        padding: 14px; 
+        border: 2px solid #e3f2fd; 
+        border-radius: 12px; 
+        font-size: 1rem; 
+        background: #f8faff; 
+        transition: all 0.3s ease; 
+    }
+    .search-input:focus { outline: none; border-color: #0288d1; background: white; }
+    .search-input.open { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: 1px solid #eee; }
+
+    /* LIST BOX (Solid Position) */
+    .custom-dropdown { 
+        width: 100%; 
+        max-height: 280px; 
+        border: 2px solid #e3f2fd; 
+        border-top: none; 
+        border-radius: 0 0 12px 12px; 
+        background: white; 
+        overflow-y: auto; 
+        position: static; 
+        display: none; 
+        margin-top: -2px; 
+    }
+    .custom-dropdown.show { display: block; }
+    
+    .dropdown-option { padding: 14px 16px; cursor: pointer; border-bottom: 1px solid #f0f0f0; transition: background 0.2s; }
+    .dropdown-option:hover { background-color: #e1f5fe; }
+    .dropdown-option.selected { background-color: #e3f2fd; font-weight: bold; color: #01579b; border-left: 4px solid #0288d1; }
+    
+    /* BUTTONS */
+    .navigation-buttons { display: flex; gap: 10px; margin-top: 25px; padding-top: 10px; border-top: 1px solid #f0f0f0; }
+    .btn { flex: 1; padding: 14px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; color: white; text-align: center; }
+    .btn-primary { background: linear-gradient(135deg, #0288d1, #01579b); }
+    .btn-secondary { background: #78909c; color: white; }
+    .btn-success { background: linear-gradient(135deg, #4caf50, #388e3c); box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); }
+    .btn-restart { background: linear-gradient(135deg, #ff9800, #f57c00); color: white; }
+    .btn:disabled { background: #cfd8dc; cursor: not-allowed; opacity: 0.7; }
+    
+    /* TEST LINKS & SCORE UI */
+    .test-list { display: grid; gap: 15px; }
+    .test-item { background: white; border: 2px solid #e3f2fd; border-radius: 12px; padding: 20px; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; }
+    .test-item.clickable { border-color: #2196f3; cursor: pointer; }
+    .test-item.clickable:hover { background: #e1f5fe; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2); }
+    
+    /* BUBBLE LINK STYLE */
+    .btn-test-link { 
+        display: inline-flex; 
+        align-items: center; 
+        margin-left: 8px; 
+        font-size: 0.75rem; 
+        text-decoration: none; 
+        background: linear-gradient(135deg, #0288d1, #01579b);
+        color: white !important; 
+        padding: 4px 12px; 
+        border-radius: 15px; 
+        font-weight: 600; 
+        box-shadow: 0 2px 5px rgba(2, 136, 209, 0.3);
+        transition: 0.2s;
+    }
+    .btn-test-link:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+
+    .test-item.clickable::after { content: "🔗 คลิกเพื่อทำข้อสอบ"; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; color: #0288d1; font-weight: bold; background: white; padding: 5px 10px; border-radius: 15px; border: 1px solid #0288d1; }
+    
+    .score-input-item { background: #f8fbff; border: 1px solid #e3f2fd; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
+    .score-input-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .score-label { font-weight: 700; color: #0277bd; font-size: 1rem; }
+    .score-weight { font-size: 0.85rem; background: #e1f5fe; color: #01579b; padding: 2px 8px; border-radius: 10px; }
+    .score-input-field { width: 100%; padding: 12px; border: 2px solid #b3e5fc; border-radius: 8px; font-size: 1.1rem; text-align: center; font-weight: bold; color: #0277bd; outline: none; }
+    .score-input-field:focus { border-color: #0288d1; background: white; box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.1); }
+
+    /* RESULTS TABLE */
+    .results-table { width: 100%; margin-top: 15px; border-collapse: separate; border-spacing: 0; }
+    .results-table th { background: #e3f2fd; color: #01579b; font-weight: 600; padding: 10px 4px; font-size: 0.8rem; text-align: center; border-bottom: 2px solid #0288d1; }
+    .results-table th:first-child { text-align: left; padding-left: 10px; border-radius: 8px 0 0 0; }
+    .results-table th:last-child { border-radius: 0 8px 0 0; }
+    .results-table td { padding: 12px 4px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.9rem; vertical-align: middle; }
+    .results-table td:first-child { text-align: left; padding-left: 10px; font-weight: 600; color: #333; }
+    
+    .custom-goal-input { width: 70px; padding: 6px; border: 2px solid #ffb74d; border-radius: 8px; text-align: center; font-weight: bold; color: #e65100; background: #fff8e1; font-size: 1rem; outline: none; transition: 0.2s; }
+    .custom-goal-input:focus { border-color: #ef6c00; background: white; box-shadow: 0 0 0 3px rgba(255, 167, 38, 0.2); }
+    .custom-goal-input.locked { background: #e0f7fa; border-color: #00bcd4; color: #006064; cursor: not-allowed; }
+
+    /* SVG LOCK BUTTONS (Replaces Emojis) */
+    .input-wrapper { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-lock { 
+        border: none; 
+        background: transparent; 
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        padding: 5px;
+        opacity: 0.4; 
+        transition: 0.2s; 
+    }
+    .btn-lock svg { width: 18px; height: 18px; fill: #78909c; }
+    .btn-lock:hover { opacity: 0.7; transform: scale(1.1); }
+    .btn-lock.is-locked { opacity: 1; }
+    .btn-lock.is-locked svg { fill: #0097a7; }
+
+    /* Z-SCORE BADGE */
+    .z-realtime { display: block; font-size: 0.7em; color: #888; margin-top: 2px; font-weight: normal; }
+    .z-badge-mini { display: inline-block; padding: 1px 5px; border-radius: 4px; font-size: 0.7em; color: white; font-weight: bold; margin-left: 3px; }
+    .z-bg-red { background: #e53935; }
+    .z-bg-orange { background: #fb8c00; }
+    .z-bg-green { background: #43a047; }
+    .z-bg-blue { background: #1e88e5; }
+    .z-bg-gray { background: #9e9e9e; }
+
+    .program-info { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px solid #90caf9; }
+    
+    .summary-box { padding: 20px; background: #f1f8e9; border-radius: 12px; margin-bottom: 20px; border: 1px solid #c5e1a5; display: flex; flex-direction: column; align-items: center; }
+    .summary-fail { background: #ffebee; border-color: #ef9a9a; }
+    .summary-info { background: #fff3e0; border-color: #ffcc80; } /* Missing data style */
+    .summary-row { display: flex; justify-content: space-around; width: 100%; margin: 10px 0; align-items: center; }
+    .summary-item { text-align: center; flex: 1; }
+    .summary-label { font-size: 0.8rem; color: #666; margin-bottom: 2px; }
+    .summary-val { font-size: 1.4rem; font-weight: bold; color: #333; }
+    .summary-val.main { font-size: 2.2rem; color: #2e7d32; }
+    .summary-fail .summary-val.main { color: #c62828; }
+    .summary-info .summary-val.main { color: #f57c00; }
+    .summary-arrow { font-size: 1.5rem; color: #aaa; }
+
+    .score-explanation { background: #e3f2fd; padding: 15px; border-radius: 12px; font-size: 0.85rem; color: #01579b; margin-top: 15px; border: 1px solid #90caf9; line-height: 1.5; }
+
+    .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 999; display: none; }
+    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #0288d1; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <div id="loading" class="loading-overlay"><div class="spinner"></div></div>
+
+  <div class="container">
+    <div class="header">
+      <div id="profile"><img id="picture" src="" style="display:none;"><h2 id="name">Loading...</h2></div>
+      <h1>🎓 คำนวณคะแนน</h1>
+    </div>
+
+    <div class="selection-card" id="card1">
+      <div class="card-header"><h3>เลือกมหาวิทยาลัย</h3></div>
+      <div class="card-body">
+        <div class="form-group">
+          <input type="text" class="search-input" id="searchUniversity" placeholder="พิมพ์ชื่อมหาวิทยาลัย..." 
+                 oninput="filterDropdown('universityDropdown', this.value)"
+                 onfocus="showFullList('universityDropdown', 'searchUniversity')">
+          <div class="custom-dropdown" id="universityDropdown"></div>
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn btn-primary" id="nextBtn1" disabled>ถัดไป →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="selection-card" id="card2" style="display: none;">
+      <div class="card-header"><h3>เลือกคณะ</h3></div>
+      <div class="card-body">
+        <div class="form-group">
+          <input type="text" class="search-input" id="searchFaculty" placeholder="พิมพ์ชื่อคณะ..." 
+                 oninput="filterDropdown('facultyDropdown', this.value)"
+                 onfocus="showFullList('facultyDropdown', 'searchFaculty')">
+          <div class="custom-dropdown" id="facultyDropdown"></div>
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" onclick="goToStep(1)">กลับ</button>
+          <button class="btn btn-primary" id="nextBtn2" disabled>ถัดไป →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="selection-card" id="card3" style="display: none;">
+      <div class="card-header"><h3>เลือกหลักสูตร</h3></div>
+      <div class="card-body">
+        <div class="form-group">
+          <input type="text" class="search-input" id="searchProgram" placeholder="พิมพ์ชื่อหลักสูตร..." 
+                 oninput="filterDropdown('programDropdown', this.value)"
+                 onfocus="showFullList('programDropdown', 'searchProgram')">
+          <div class="custom-dropdown" id="programDropdown"></div>
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" onclick="goToStep(2)">กลับ</button>
+          <button class="btn btn-primary" id="showTestsBtn" disabled>ดูเกณฑ์คะแนน</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-container" id="testLinkContainer" style="display: none;">
+      <div class="program-info" id="programInfo" style="margin-bottom:15px; color:#01579b; text-align:center;"></div>
+      <div class="selection-card">
+        <div class="card-header"><h3>📝 รายการข้อสอบ</h3></div>
+        <div class="card-body">
+          <div style="text-align:center; color:#666; margin-bottom:15px; font-size:0.9rem;">
+            คลิกลิงก์เพื่อทำข้อสอบ และกด "กรอกคะแนน" หลังทำข้อสอบเสร็จ
+          </div>
+          <div class="test-list" id="testList"></div>
+          <div class="navigation-buttons">
+            <button class="btn btn-secondary" onclick="goToStep(3)">กลับ</button>
+            <button class="btn btn-primary" onclick="goToScoreInput()">ไปกรอกคะแนน →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-container" id="scoreInputContainer" style="display: none;">
+      <div class="program-info" id="programInfo2"></div>
+      <div class="selection-card">
+        <div class="card-header green"><h3>กรอกคะแนนที่ได้</h3></div>
+        <div class="card-body">
+          <div id="scoreInputList"></div>
+          <div class="navigation-buttons">
+            <button class="btn btn-secondary" onclick="backToLinks()">กลับ</button>
+            <button class="btn btn-success" onclick="startAnalysis()">วิเคราะห์ผล</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-container" id="calculationContainer" style="display: none;">
+      <div class="program-info" id="programInfo3"></div>
+      <div class="selection-card">
+        <div class="card-header green"><h3>การวางแผนเพื่อปรับเพิ่มคะแนน</h3></div>
+        <div class="card-body">
+          <div id="calculationResults"></div>
+          
+          <div class="score-explanation">
+             <strong>หมายเหตุ:</strong> คะแนนเป้าหมาย (Safe Score) หมายถึง ค่ากึ่งกลางพิสัย (Min + Max) / 2 เพื่อกำหนดคะแนนเป้าหมายให้มีโอกาสได้รับการคัดเลือกสูง
+          </div>
+
+          <div class="navigation-buttons">
+            <button class="btn btn-secondary" onclick="backToScoreInput()">แก้ไขคะแนนเดิม</button>
+            <button class="btn btn-restart" onclick="restart()">เลือกหลักสูตรอื่น</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE_URL = ""; 
+    const EXAM_LINKS = {
+        "a_lv_61": "https://www.classtime.com/code/FKEE9K", 
+        "a_lv_62": "https://www.classtime.com/code/A7IUNK",
+        "a_lv_63": "https://www.classtime.com/code/VCS8CR",
+        "a_lv_65": "https://www.classtime.com/code/XXYSTT",
+        "a_lv_64": "https://www.classtime.com/code/2FSUFF",
+        "a_lv_66": "https://www.classtime.com/code/TTPF2Q",
+        "a_lv_81": "https://www.classtime.com/code/4AH9N9",
+        "a_lv_82": "https://www.classtime.com/code/JKJSA3",
+        "a_lv_70": "https://www.classtime.com/code/SVFC65"
+    };
+
+    const SUBJECT_MAPPING = {
+      "gpax": "GPAX (เกรดเฉลี่ย)",
+      "tgat": "TGAT รวม",
+      "tgat1": "อังกฤษ (TGAT1)",
+      "tgat2": "การคิดอย่างมีเหตุผล (TGAT2)",
+      "tgat3": "สมรรถนะการทำงาน (TGAT3)",
+      "tpat1": "กสพท (TPAT1)",
+      "tpat11": "เชาวน์ปัญญา (TPAT11)",
+      "tpat12": "จริยธรรม (TPAT12)",
+      "tpat13": "เชื่อมโยง (TPAT13)",
+      "tpat2": "ศิลปกรรม (TPAT2)",
+      "tpat21": "ทัศนศิลป์ (TPAT21)",
+      "tpat22": "ดนตรี (TPAT22)",
+      "tpat23": "นาฏศิลป์ (TPAT23)",
+      "tpat3": "วิทย์-เทคโน (TPAT3)",
+      "tpat4": "สถาปัตย์ (TPAT4)",
+      "tpat5": "ครุศาสตร์ (TPAT5)",
+      "a_lv_61": "คณิต 1 (A-Level 61)",
+      "a_lv_62": "คณิต 2 (A-Level 62)",
+      "a_lv_63": "วิทย์ประยุกต์ (A-Level 63)",
+      "a_lv_64": "ฟิสิกส์ (A-Level 64)",
+      "a_lv_65": "เคมี (A-Level 65)",
+      "a_lv_66": "ชีวะ (A-Level 66)",
+      "a_lv_70": "สังคม (A-Level 70)",
+      "a_lv_81": "ไทย (A-Level 81)",
+      "a_lv_82": "อังกฤษ (A-Level 82)"
+    };
+
+    // SVG ICONS FOR LOCK/UNLOCK
+    const SVG_LOCK = `<svg width="24" height="24" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z"/></svg>`;
+    const SVG_UNLOCK = `<svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5-2.28 0-4.27 1.54-4.84 3.59.14-.04.28-.06.43-.06.41 0 .79.22.99.57.19.34.17.76-.06 1.07l-1.3 1.74c-.2.27-.51.43-.84.43-.1 0-.21-.02-.31-.05C6.46 3.4 8.99 2 12 2c2.21 0 4 1.79 4 4v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/></svg>`;
+
+    let userId = "guest_" + Math.floor(Math.random() * 100000);
+    let selectedUniversity = null, selectedFaculty = null, selectedProgram = null;
+    let allUniversities = []; 
+    let currentFaculties = [], currentPrograms = [];
+    let requiredSubjectsCache = [], programMinScore = 0, isTScoreEnabled = false;
+    let manualOverrides = {}; 
+    let lockedSubjects = {}; 
+    let isUniversitiesLoaded = false;
+
+    window.onload = async function () {
+      allUniversities = [];
+      try {
+          const res = await callApi('/api/get_all_universities', {}); 
+          if (res && res.universities && res.universities.length > 0) {
+              allUniversities = res.universities;
+              isUniversitiesLoaded = true;
+              populateDropdown('universityDropdown', allUniversities, selectUniversity, null);
+          } else {
+              isUniversitiesLoaded = true; 
+          }
+      } catch(e) { isUniversitiesLoaded = true; }
+      
+      setupEventListeners();
+      try { await liff.init({ liffId: "2007611527-z7ZNLXOk" }); } catch(e){}
+    };
+
+    function showLoading() { document.getElementById('loading').style.display = 'flex'; }
+    function hideLoading() { document.getElementById('loading').style.display = 'none'; }
+
+    async function callApi(endpoint, body) {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...body, userId: userId })
+      });
+      return await response.json();
+    }
+
+    function setupEventListeners() {
+      document.getElementById('nextBtn1').addEventListener('click', () => goToStep(2));
+      document.getElementById('nextBtn2').addEventListener('click', () => goToStep(3));
+      document.getElementById('showTestsBtn').addEventListener('click', showTests);
+    }
+
+    // LIST LOGIC: Clicking does NOT hide the list
+    function showFullList(id, inputId) {
+        let sourceList = [];
+        let currentSelection = null;
+        
+        if(id === 'universityDropdown') {
+            sourceList = allUniversities;
+            currentSelection = selectedUniversity;
+        } else if(id === 'facultyDropdown') {
+            sourceList = currentFaculties;
+            currentSelection = selectedFaculty;
+        } else if(id === 'programDropdown') {
+            sourceList = currentPrograms;
+            currentSelection = selectedProgram;
+        }
+        
+        let callback;
+        if(id === 'universityDropdown') callback = selectUniversity;
+        else if(id === 'facultyDropdown') callback = selectFaculty;
+        else if(id === 'programDropdown') callback = selectProgram;
+
+        populateDropdown(id, sourceList, callback, currentSelection);
+    }
+
+    function populateDropdown(id, list, callback, selection) {
+        const dd = document.getElementById(id);
+        const inputEl = document.getElementById(id === 'universityDropdown' ? 'searchUniversity' : id === 'facultyDropdown' ? 'searchFaculty' : 'searchProgram');
+        
+        dd.innerHTML = '';
+        if(!list || !list.length) {
+            dd.classList.remove('show');
+            inputEl.classList.remove('open');
+            return;
+        }
+        
+        list.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'dropdown-option' + (item === selection ? ' selected' : '');
+            div.textContent = item;
+            div.onclick = () => {
+                callback(item);
+                // RE-POPULATE TO SHOW SELECTION BUT KEEP LIST OPEN
+                populateDropdown(id, list, callback, item);
+            };
+            dd.appendChild(div);
+        });
+        dd.classList.add('show');
+        inputEl.classList.add('open');
+    }
+    
+    function filterDropdown(id, val) {
+        let sourceList = [];
+        if(id === 'universityDropdown') sourceList = allUniversities;
+        else if(id === 'facultyDropdown') sourceList = currentFaculties;
+        else if(id === 'programDropdown') sourceList = currentPrograms;
+
+        const filtered = val ? sourceList.filter(i => i.toLowerCase().includes(val.toLowerCase())) : sourceList;
+        
+        let callback;
+        if(id === 'universityDropdown') callback = selectUniversity;
+        else if(id === 'facultyDropdown') callback = selectFaculty;
+        else if(id === 'programDropdown') callback = selectProgram;
+
+        populateDropdown(id, filtered, callback, null);
+    }
+
+    async function selectUniversity(uni) {
+        selectedUniversity = uni;
+        document.getElementById('searchUniversity').value = uni;
+        // NOTE: We do NOT close the dropdown here intentionally
+        
+        goToStep(1); 
+        document.getElementById('nextBtn1').disabled = false;
+        try {
+            const data = await callApi('/api/find_faculty', { name: uni });
+            currentFaculties = data.faculties || [];
+        } catch(e) {}
+    }
+
+    async function selectFaculty(fac) {
+        selectedFaculty = fac;
+        document.getElementById('searchFaculty').value = fac;
+        
+        goToStep(2);
+        document.getElementById('nextBtn2').disabled = false;
+        try {
+            const data = await callApi('/api/find_field', { name: selectedUniversity, faculty: fac });
+            currentPrograms = data.faculties || []; 
+        } catch(e) {}
+    }
+
+    function selectProgram(prog) {
+        selectedProgram = prog;
+        document.getElementById('searchProgram').value = prog;
+        document.getElementById('showTestsBtn').disabled = false;
+    }
+
+    function goToStep(step) {
+        [1,2,3].forEach(i => document.getElementById(`card${i}`).style.display = 'none');
+        if (step <= 3) {
+            document.getElementById(`card${step}`).style.display = 'block';
+            
+            // AUTO-SHOW LISTS when entering new steps
+            if(step === 2 && currentFaculties.length > 0) {
+                 populateDropdown('facultyDropdown', currentFaculties, selectFaculty, selectedFaculty);
+            }
+            if(step === 3 && currentPrograms.length > 0) {
+                 populateDropdown('programDropdown', currentPrograms, selectProgram, selectedProgram);
+            }
+        }
+        
+        document.getElementById('testLinkContainer').style.display = 'none';
+        document.getElementById('scoreInputContainer').style.display = 'none';
+        document.getElementById('calculationContainer').style.display = 'none';
+    }
+
+    async function showTests() {
+      showLoading();
+      document.getElementById('card3').style.display = 'none';
+
+      try {
+        const data = await callApi('/api/get_program_weights', {
+          university: selectedUniversity, faculty: selectedFaculty, field: selectedProgram
+        });
+
+        if (!data.found || !data.subjects) { alert("ไม่พบข้อมูล"); restart(); return; }
+
+        requiredSubjectsCache = data.subjects;
+        programMinScore = data.min_score || 0;
+        isTScoreEnabled = data.t_score_enabled || false;
+        manualOverrides = {}; 
+        lockedSubjects = {}; 
+        
+        let safeScoreText = programMinScore === 0 ? "ไม่มีข้อมูล" : `${programMinScore.toFixed(2)} คะแนน`;
+
+        const infoHtml = `<h3>${selectedProgram}</h3><p><strong>${selectedUniversity}</strong> | ${selectedFaculty}</p><p>เป้าหมาย (Safe Score): <strong>${safeScoreText}</strong></p>`;
+        ['programInfo', 'programInfo2', 'programInfo3'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.innerHTML = infoHtml;
+        });
+
+        const list = document.getElementById('testList');
+        list.innerHTML = '';
+        
+        requiredSubjectsCache.forEach(item => {
+            const name = SUBJECT_MAPPING[item.subject] || item.subject;
+            const link = EXAM_LINKS[item.subject];
+            let className = 'test-item';
+            let clickAttr = '';
+            
+            if(link) {
+                className += ' clickable';
+                clickAttr = `onclick="openTestLink('${link}')"`;
+            }
+            list.innerHTML += `
+            <div class="${className}" ${clickAttr}>
+                <div class="test-name">${name}</div>
+                <div class="test-weight">น้ำหนัก: ${item.weight}%</div>
+            </div>`;
+        });
+
+        document.getElementById('testLinkContainer').style.display = 'block';
+      } catch (error) { console.error(error); alert("เกิดข้อผิดพลาด"); restart(); } 
+      finally { hideLoading(); }
+    }
+    
+    function openTestLink(url) {
+        if (liff.isInClient()) {
+            liff.openWindow({
+                url: url,
+                external: true
+            });
+        } else {
+            window.open(url, '_blank');
+        }
+    }
+
+    function goToScoreInput() {
+        document.getElementById('testLinkContainer').style.display = 'none';
+        showScoreInput();
+    }
+
+    function showScoreInput() {
+      const list = document.getElementById('scoreInputList');
+      list.innerHTML = '';
+      requiredSubjectsCache.sort((a,b) => (a.subject==='gpax'?-1:1));
+
+      requiredSubjectsCache.forEach(item => {
+        const name = SUBJECT_MAPPING[item.subject] || item.subject;
+        const isGpax = item.subject === 'gpax';
+        
+        let labelName = name;
+        let placeholderText = isGpax ? "0-4.00" : "0-100";
+        
+        // T-SCORE LOGIC RESTORED
+        if (isTScoreEnabled && item.subject !== 'gpax') {
+             labelName += " (T-Score)";
+             placeholderText = "กรอกคะแนนดิบที่ได้ (0-100)";
+        }
+
+        list.innerHTML += `
+          <div class="score-input-item">
+            <div class="score-input-top">
+                <span class="score-label">${labelName}</span>
+                <span class="score-weight">น้ำหนัก ${item.weight}%</span>
+            </div>
+            <input type="number" class="score-input-field" id="input_${item.subject}" 
+                   placeholder="${placeholderText}" 
+                   max="${isGpax ? 4 : 100}" step="${isGpax ? 0.01 : 1}">
+          </div>`;
+      });
+      document.getElementById('scoreInputContainer').style.display = 'block';
+    }
+
+    function backToLinks() {
+        document.getElementById('scoreInputContainer').style.display = 'none';
+        document.getElementById('testLinkContainer').style.display = 'block';
+    }
+    
+    function backToScoreInput() {
+        document.getElementById('calculationContainer').style.display = 'none';
+        document.getElementById('scoreInputContainer').style.display = 'block';
+    }
+
+    function startAnalysis() {
+        manualOverrides = {}; 
+        lockedSubjects = {};
+
+        // ALERT IF SCORE IS 0
+        if (programMinScore === 0) {
+            alert("เนื่องจากข้อมูลคะแนนต่ำสุดของปี 68, 67, และ 66 ยังไม่ครบถ้วน ระบบจึงยังไม่สามารถคำนวณเป้าหมาย Safe Score ได้อย่างแม่นยำ (แสดงค่าเป็น 0)\n\nระบบจะคำนวณเฉพาะคะแนนรวมของคุณให้ดูเป็นเบื้องต้นเท่านั้น");
+        }
+
+        calculateInteractive();
+    }
+
+    function toggleLock(subjectId) {
+        const isLocked = !lockedSubjects[subjectId];
+        lockedSubjects[subjectId] = isLocked;
+        
+        if (isLocked) {
+             const inputEl = document.getElementById(`input_${subjectId}`);
+             const originalRaw = parseFloat(inputEl.value) || 0;
+             manualOverrides[subjectId] = originalRaw;
+        } else {
+             delete manualOverrides[subjectId];
+        }
+        calculateInteractive();
+    }
+
+    function calculateInteractive() {
+        showLoading();
+        
+        let subjects = [];
+        let totalCurrentWeighted = 0;
+        let totalOriginalWeighted = 0;
+        
+        requiredSubjectsCache.forEach(item => {
+            const id = item.subject;
+            const inputEl = document.getElementById(`input_${id}`);
+            const raw = parseFloat(inputEl.value) || 0;
+            const weight = item.weight || 0;
+            const multiplier = (weight <= 1 && weight > 0) ? weight : weight / 100;
+            const maxRaw = (id === 'gpax') ? 4.00 : 100.00;
+
+            let scaledRawForCalc = raw;
+            if (id === 'gpax') scaledRawForCalc = raw * 25;
+
+            // RESTORED T-SCORE CALCULATION LOGIC
+            let contribution = 0;
+            let calculatedTScore = raw; 
+
+            if(isTScoreEnabled && item.subject !== 'gpax' && item.stats) {
+                let mean = item.stats.mean || 50;
+                let sd = item.stats.sd || 20; 
+                let k = item.stats.multiplier || 10; 
+                let z = (raw - mean) / sd;
+                calculatedTScore = 50 + (k * z);
+                
+                contribution = calculatedTScore * multiplier;
+            } else {
+                contribution = scaledRawForCalc * multiplier; 
+            }
+            totalOriginalWeighted += contribution;
+
+            // Z-Score for display
+            let z = 0;
+            if(item.stats) z = (raw - item.stats.mean)/item.stats.sd;
+            else z = (raw - 50)/15;
+
+            // Check override
+            let isFixed = (id === 'gpax'); 
+            let targetRaw = raw;
+            if(manualOverrides[id] !== undefined) {
+                targetRaw = manualOverrides[id];
+                isFixed = true;
+            }
+
+            subjects.push({
+                id: id, name: SUBJECT_MAPPING[id] || id,
+                raw: raw, z: z, weight: weight, multiplier: multiplier,
+                stats: item.stats, contribution: contribution, maxRaw: maxRaw,
+                targetRaw: targetRaw, isFixed: isFixed
+            });
+        });
+
+        // Fixed Score Sum
+        let fixedScore = 0;
+        subjects.forEach(s => {
+            let effectiveTarget = s.targetRaw;
+            
+            if(s.isFixed) {
+                let t_contrib = 0;
+                if(isTScoreEnabled && s.id !== 'gpax' && s.stats) {
+                    let mean = s.stats.mean || 50;
+                    let sd = s.stats.sd || 20;
+                    let k = s.stats.multiplier || 10;
+                    let z = (s.targetRaw - mean) / sd;
+                    let t = 50 + (k * z);
+                    t_contrib = t * s.multiplier;
+                } else {
+                    if(s.id === 'gpax') effectiveTarget = s.targetRaw * 25;
+                    t_contrib = effectiveTarget * s.multiplier;
+                }
+                fixedScore += t_contrib;
+            } else {
+                fixedScore += s.contribution;
+            }
+        });
+
+        let gap = programMinScore - fixedScore;
+        let isPassing = (gap <= 0.01);
+
+        // Water Filling (ONLY IF minScore is > 0)
+        if(programMinScore > 0 && !isPassing && gap > 0) {
+            let active = subjects.filter(s => !s.isFixed && s.targetRaw < s.maxRaw);
+            let iterations = 0;
+            while(gap > 0.01 && active.length > 0 && iterations < 2000) {
+                let best = null;
+                let minZ = 999;
+                active.forEach(s => {
+                    let currZ = 0;
+                    if(s.stats) currZ = (s.targetRaw - s.stats.mean)/s.stats.sd;
+                    else currZ = (s.targetRaw - 50)/15;
+                    
+                    if(currZ < minZ && s.targetRaw < s.maxRaw) {
+                        minZ = currZ;
+                        best = s;
+                    }
+                });
+
+                if(!best) break;
+
+                let step = 1.0;
+                best.targetRaw += step;
+                if(best.targetRaw > best.maxRaw) best.targetRaw = best.maxRaw;
+
+                let gain = 0;
+                if(isTScoreEnabled && best.id !== 'gpax' && best.stats) {
+                    let k = best.stats.multiplier || 10;
+                    let sd = best.stats.sd || 20;
+                    let deltaT = k * (step / sd);
+                    gain = deltaT * best.multiplier;
+                } else {
+                    gain = step * best.multiplier; 
+                }
+                gap -= gain;
+                iterations++;
+            }
+        }
+
+        renderResultTable(subjects, totalOriginalWeighted, programMinScore);
+        hideLoading();
+    }
+
+    function renderResultTable(subjects, totalOriginal, minScore) {
+        let tableRows = "";
+        let finalProjected = 0;
+
+        subjects.forEach(s => {
+            let finalC = 0;
+            if(isTScoreEnabled && s.id !== 'gpax' && s.stats) {
+                let mean = s.stats.mean || 50;
+                let sd = s.stats.sd || 20;
+                let k = s.stats.multiplier || 10;
+                let z = (s.targetRaw - mean) / sd;
+                let t = 50 + (k * z);
+                finalC = t * s.multiplier;
+            } else {
+                let effectiveTarget = s.targetRaw;
+                if(s.id === 'gpax') effectiveTarget = s.targetRaw * 25;
+                finalC = effectiveTarget * s.multiplier;
+            }
+            finalProjected += finalC;
+
+            let diff = s.targetRaw - s.raw;
+            let diffHtml = "-";
+            if(minScore > 0) {
+                if(diff > 0.01) diffHtml = `<span style="color:#e65100; font-weight:bold;">+${diff.toFixed(2)}</span>`;
+                else if(diff < -0.01) diffHtml = `<span style="color:#2e7d32; font-weight:bold;">${diff.toFixed(2)}</span>`;
+            }
+
+            let link = EXAM_LINKS[s.id];
+            // ADDED: Bubble link style
+            let linkHtml = link ? `<a href="javascript:void(0)" onclick="openTestLink('${link}')" class="btn-test-link">📝 ข้อสอบ</a>` : ``;
+            
+            let isLocked = lockedSubjects[s.id] || false;
+            let lockClass = isLocked ? "btn-lock is-locked" : "btn-lock";
+            let inputClass = (isLocked || manualOverrides[s.id] !== undefined) ? "custom-goal-input locked" : "custom-goal-input";
+            
+            // If minScore is 0, don't pretend we calculated a target, just show current raw
+            let displayTarget = minScore > 0 ? (s.id === 'gpax' ? s.targetRaw.toFixed(2) : s.targetRaw.toFixed(0)) : "-";
+            
+            let displayName = s.name;
+            if(isTScoreEnabled && s.id !== 'gpax') displayName += " (T-Score)";
+
+            let zTargetVal = 0;
+            if(s.stats) zTargetVal = (s.targetRaw - s.stats.mean)/s.stats.sd;
+            else zTargetVal = (s.targetRaw - 50)/15;
+            let zTarget = zTargetVal.toFixed(2);
+
+            let zBadgeColor = "z-bg-gray";
+            if (zTargetVal < -1) zBadgeColor = "z-bg-red";
+            else if (zTargetVal < 0) zBadgeColor = "z-bg-orange";
+            else if (zTargetVal < 1) zBadgeColor = "z-bg-green";
+            else zBadgeColor = "z-bg-blue";
+
+            tableRows += `
+                <tr>
+                    <td>${displayName} ${linkHtml}</td>
+                    <td>${(s.weight).toFixed(0)}%</td>
+                    <td style="color:#666;">${s.raw.toFixed(2)} คะแนน</td>
+                    <td style="text-align:center;">
+                        <div class="input-wrapper">
+                            <button class="${lockClass}" onclick="toggleLock('${s.id}')" ${minScore === 0 ? 'disabled style="opacity:0.2;"' : ''}>
+                                ${isLocked ? SVG_LOCK : SVG_UNLOCK}
+                            </button>
+                            <input type="number" class="${inputClass}" 
+                                   value="${minScore > 0 ? displayTarget : s.raw}" 
+                                   step="${s.id === 'gpax' ? '0.01' : '1'}"
+                                   ${isLocked || minScore === 0 ? 'readonly' : ''}
+                                   onchange="updateOverride('${s.id}', this.value)">
+                        </div>
+                        <div class="z-realtime" style="margin-top:4px;">
+                           Z: <span class="z-badge-mini ${zBadgeColor}">${zTarget}</span>
+                        </div>
+                    </td>
+                    <td>${diffHtml}</td>
+                </tr>
+            `;
+        });
+
+        const gap = minScore - finalProjected;
+        const isPass = gap <= 0.1;
+        
+        let summaryClass = "";
+        let msg = "";
+        let displayGoal = minScore.toFixed(2);
+        
+        if (minScore === 0) {
+            summaryClass = "summary-info";
+            msg = "รออัปเดตข้อมูลคะแนน";
+            displayGoal = "ไม่มีข้อมูล";
+        } else {
+            summaryClass = isPass ? "" : "summary-fail";
+            msg = isPass ? "บรรลุตามเป้าหมาย" : "ยังไม่ถึงเป้าหมาย";
+        }
+
+        document.getElementById('calculationResults').innerHTML = `
+            <div class="summary-box ${summaryClass}">
+                <div style="font-weight:bold; font-size:1.1rem; margin-bottom:10px;">${msg}</div>
+                <div class="summary-row">
+                    <div class="summary-item">
+                        <div class="summary-label">คะแนนที่ได้</div>
+                        <div class="summary-val" style="color:#757575;">${totalOriginal.toFixed(2)} คะแนน</div>
+                    </div>
+                    <div class="summary-arrow">➜</div>
+                    <div class="summary-item">
+                        <div class="summary-label">คะแนนที่ควรทำได้</div>
+                        <div class="summary-val main">${minScore > 0 ? finalProjected.toFixed(2) : "-"}</div>
+                    </div>
+                </div>
+                <div style="font-size:0.9rem; margin-top:5px;">เป้าหมาย (Safe Score): <strong>${displayGoal}</strong></div>
+            </div>
+            
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th width="30%">รายวิชา</th>
+                        <th>น้ำหนักคะแนน</th>
+                        <th>คะแนนที่ได้</th>
+                        <th width="25%" style="background:#fff3e0;">คะแนนใหม่ (แก้ไขได้)</th>
+                        <th>ต้องเพิ่มอีก</th>
+                    </tr>
+                </thead>
+                <tbody>${tableRows}</tbody>
+            </table>
+        `;
+        document.getElementById('scoreInputContainer').style.display = 'none';
+        document.getElementById('calculationContainer').style.display = 'block';
+    }
+
+    function updateOverride(id, val) {
+        if(val === "" || val === null) delete manualOverrides[id];
+        else manualOverrides[id] = parseFloat(val);
+        calculateInteractive();
+    }
+
+    function restart() {
+      document.getElementById('searchUniversity').value = '';
+      goToStep(1);
+      document.getElementById('testLinkContainer').style.display = 'none'; 
+      document.getElementById('scoreInputContainer').style.display = 'none';
+      document.getElementById('calculationContainer').style.display = 'none';
+      document.getElementById('card1').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
