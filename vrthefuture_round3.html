@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test Score Submission</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0288d1 0%, #01579b 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      margin: 0; padding: 10px; min-height: 100vh;
+    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 10px; }
+    
+    .header { text-align: center; color: white; margin-bottom: 20px; padding: 20px 0; }
+    .header h1 { margin: 0; font-size: 1.8rem; font-weight: 600; }
+    
+    #profile { text-align: center; margin-bottom: 20px; color: white; }
+    #profile img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 8px; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+    .selection-card { background: white; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
+    .card-header { background: linear-gradient(135deg, #0288d1, #0277bd); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .card-header h3 { margin: 0; font-size: 1.1rem; font-weight: 600; }
+    .card-number { background: rgba(255,255,255,0.2); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; }
+    
+    .card-body { padding: 20px; }
+    .form-group { margin-bottom: 20px; position: relative; }
+    .form-group:last-child { margin-bottom: 0; }
+    
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: #01579b; font-size: 0.95rem; }
+    
+    input[type="number"] { width: 100%; padding: 12px 16px; border: 2px solid #e3f2fd; border-radius: 12px; font-size: 1rem; margin-bottom: 8px; background: #f8faff; transition: border-color 0.3s ease; }
+    input[type="number"]:focus { outline: none; border-color: #0288d1; background: white; }
+    
+    input[type="number"].error { border-color: #f44336; background: #ffebee; }
+    .error-message { color: #f44336; font-size: 0.85rem; margin-top: -5px; margin-bottom: 8px; display: none; }
+
+    .submit-section { text-align: center; margin-top: 30px; margin-bottom: 50px; }
+    
+    .submit-btn { width: 100%; max-width: 300px; padding: 16px; background: linear-gradient(135deg, #4caf50, #388e3c); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3); }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4); }
+    .submit-btn:disabled { background: #ccc; color: #666; cursor: not-allowed; transform: none; box-shadow: none; }
+    
+    .clear-data-btn { width: 100%; max-width: 200px; padding: 12px; background: linear-gradient(135deg, #ff9800, #f57c00); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3); }
+    .clear-data-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div id="profile">
+        <img id="picture" src="" alt="Profile Picture">
+        <h2 id="name">Loading...</h2>
+      </div>
+      <h1>กรอกคะแนน</h1>
+    </div>
+
+    <form id="scoreForm">
+      <div class="selection-card">
+        <div class="card-header">
+          <h3>GPAX</h3>
+          <div class="card-number">1</div>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label for="GPAX_score">สูงสุด 4.00</label>
+            <input type="number" id="GPAX_score" min="0" max="4" step="0.01">
+            <div class="error-message" id="GPAX_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="selection-card">
+        <div class="card-header">
+          <h3>TGAT ความถนัดทั่วไป</h3>
+          <div class="card-number">2</div>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label for="TGAT1_score">TGAT1 อังกฤษ</label>
+            <input type="number" id="TGAT1_score" min="0" max="100">
+            <div class="error-message" id="TGAT1_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="TGAT2_score">TGAT2 คิดเหตุผล</label>
+            <input type="number" id="TGAT2_score" min="0" max="100">
+            <div class="error-message" id="TGAT2_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="TGAT3_score">TGAT3 สมรรถนะ</label>
+            <input type="number" id="TGAT3_score" min="0" max="100">
+            <div class="error-message" id="TGAT3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="selection-card">
+        <div class="card-header">
+          <h3>TPAT 1-5 ความถนัดเฉพาะทาง</h3>
+          <div class="card-number">3</div>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label for="TPAT1.1_score">TPAT1.1 เชาว์</label>
+            <input type="number" id="TPAT1.1_score" min="0" max="100">
+            <div class="error-message" id="TPAT1.1_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="TPAT1.2_score">TPAT1.2 จริยธรรม</label>
+            <input type="number" id="TPAT1.2_score" min="0" max="100">
+            <div class="error-message" id="TPAT1.2_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="TPAT1.3_score">TPAT1.3 เชื่อมโยง</label>
+            <input type="number" id="TPAT1.3_score" min="0" max="100">
+            <div class="error-message" id="TPAT1.3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="TPAT2.1_score">TPAT2.1 ทัศนศิลป์</label>
+            <input type="number" id="TPAT2.1_score" min="0" max="100">
+            <div class="error-message" id="TPAT2.1_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="TPAT2.2_score">TPAT2.2 ดนตรี</label>
+            <input type="number" id="TPAT2.2_score" min="0" max="100">
+            <div class="error-message" id="TPAT2.2_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="TPAT2.3_score">TPAT2.3 นาฏศิลป์</label>
+            <input type="number" id="TPAT2.3_score" min="0" max="100">
+            <div class="error-message" id="TPAT2.3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="TPAT3_score">TPAT3 วิทย์-วิศวฯ</label>
+            <input type="number" id="TPAT3_score" min="0" max="100">
+            <div class="error-message" id="TPAT3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="TPAT4_score">TPAT4 สถาปัตย์</label>
+            <input type="number" id="TPAT4_score" min="0" max="100">
+            <div class="error-message" id="TPAT4_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="TPAT5_score">TPAT5 ครู</label>
+            <input type="number" id="TPAT5_score" min="0" max="100">
+            <div class="error-message" id="TPAT5_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="selection-card">
+        <div class="card-header">
+          <h3>A-Level</h3>
+          <div class="card-number">4</div>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label for="A-Level1.1_score">A-Level คณิต1</label>
+            <input type="number" id="A-Level1.1_score" min="0" max="100">
+            <div class="error-message" id="A-Level1.1_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level1.2_score">A-Level คณิต2</label>
+            <input type="number" id="A-Level1.2_score" min="0" max="100">
+            <div class="error-message" id="A-Level1.2_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level2.1_score">A-Level วิทย์ทั่วไป</label>
+            <input type="number" id="A-Level2.1_score" min="0" max="100">
+            <div class="error-message" id="A-Level2.1_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level2.2_score">A-Level ฟิสิกส์</label>
+            <input type="number" id="A-Level2.2_score" min="0" max="100">
+            <div class="error-message" id="A-Level2.2_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level2.3_score">A-Level เคมี</label>
+            <input type="number" id="A-Level2.3_score" min="0" max="100">
+            <div class="error-message" id="A-Level2.3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level2.4_score">A-Level ชีววิทยา</label>
+            <input type="number" id="A-Level2.4_score" min="0" max="100">
+            <div class="error-message" id="A-Level2.4_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level3_score">A-Level สังคมศึกษา</label>
+            <input type="number" id="A-Level3_score" min="0" max="100">
+            <div class="error-message" id="A-Level3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level4.1_score">A-Level ไทย</label>
+            <input type="number" id="A-Level4.1_score" min="0" max="100">
+            <div class="error-message" id="A-Level4.1_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level4.2_score">A-Level อังกฤษ</label>
+            <input type="number" id="A-Level4.2_score" min="0" max="100">
+            <div class="error-message" id="A-Level4.2_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level4.3_score">A-Level ฝรั่งเศส</label>
+            <input type="number" id="A-Level4.3_score" min="0" max="100">
+            <div class="error-message" id="A-Level4.3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level4.4_score">A-Level เยอรมัน</label>
+            <input type="number" id="A-Level4.4_score" min="0" max="100">
+            <div class="error-message" id="A-Level4.4_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level4.5_score">A-Level ญี่ปุ่น</label>
+            <input type="number" id="A-Level4.5_score" min="0" max="100">
+            <div class="error-message" id="A-Level4.5_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level4.6_score">A-Level เกาหลี</label>
+            <input type="number" id="A-Level4.6_score" min="0" max="100">
+            <div class="error-message" id="A-Level4.6_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level4.7_score">A-Level จีน</label>
+            <input type="number" id="A-Level4.7_score" min="0" max="100">
+            <div class="error-message" id="A-Level4.7_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level4.8_score">A-Level บาลี</label>
+            <input type="number" id="A-Level4.8_score" min="0" max="100">
+            <div class="error-message" id="A-Level4.8_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+          <div class="form-group">
+            <label for="A-Level4.9_score">A-Level สเปน</label>
+            <input type="number" id="A-Level4.9_score" min="0" max="100">
+            <div class="error-message" id="A-Level4.9_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="selection-card">
+        <div class="card-header">
+          <h3>วิชาเฉพาะมหาวิทยาลัย และ GPA</h3>
+          <div class="card-number">5</div>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label for="gpa21_score">เกรดเฉลี่ยกลุ่มสาระฯภาษาไทย</label>
+            <input type="number" id="gpa21_score" min="0" max="4" step="0.01">
+            <div class="error-message" id="gpa21_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
+          </div>
+          <div class="form-group">
+            <label for="gpa22_score">เกรดเฉลี่ยกลุ่มสาระฯคณิตศาสตร์</label>
+            <input type="number" id="gpa22_score" min="0" max="4" step="0.01">
+            <div class="error-message" id="gpa22_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
+          </div>
+          <div class="form-group">
+            <label for="gpa23_score">เกรดเฉลี่ยกลุ่มสาระฯวิทยาศาสตร์และเทคโนโลยี</label>
+            <input type="number" id="gpa23_score" min="0" max="4" step="0.01">
+            <div class="error-message" id="gpa23_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
+          </div>
+          <div class="form-group">
+            <label for="gpa24_score">เกรดเฉลี่ยกลุ่มสาระฯสังคม</label>
+            <input type="number" id="gpa24_score" min="0" max="4" step="0.01">
+            <div class="error-message" id="gpa24_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
+          </div>
+          <div class="form-group">
+            <label for="gpa26_score">เกรดเฉลี่ยกลุ่มสาระฯศิลปะ</label>
+            <input type="number" id="gpa26_score" min="0" max="4" step="0.01">
+            <div class="error-message" id="gpa26_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
+          </div>
+          <div class="form-group">
+            <label for="gpa27_score">เกรดเฉลี่ยกลุ่มสาระฯการงานอาชีพและเทคโนโลยี</label>
+            <input type="number" id="gpa27_score" min="0" max="4" step="0.01">
+            <div class="error-message" id="gpa27_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
+          </div>
+          <div class="form-group">
+            <label for="gpa28_score">เกรดเฉลี่ยกลุ่มสาระฯภาษาต่างประเทศ</label>
+            <input type="number" id="gpa28_score" min="0" max="4" step="0.01">
+            <div class="error-message" id="gpa28_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="submit-section">
+        <button type="button" class="clear-data-btn" onclick="clearFormData()">ล้างข้อมูล</button>
+        <button type="button" class="submit-btn" onclick="sendMessage()">ส่งคะแนน</button>
+      </div>
+    </form>
+  </div>
+
+<script>
+  let currentUserId = null;
+
+  window.onload = async function () {
+    try {
+      await liff.init({ liffId: "2007611527-z7ZNLXOk" });
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        currentUserId = profile.userId; 
+        document.getElementById("name").innerText = profile.displayName;
+        document.getElementById("picture").src = profile.pictureUrl;
+        
+        // Load previous data for this specific user
+        loadFormData();
+      } else {
+        liff.login();
+      }
+    } catch (e) {
+      console.error("LIFF Init failed", e);
+      // Fallback for testing
+      currentUserId = "test-user-debug";
+      loadFormData();
+    }
+    
+    // Auto-save listeners
+    addValidationListeners();
+    addAutoSaveListeners();
+  };
+
+  function addValidationListeners() {
+    const inputs = document.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => {
+      // Validate immediately on input for better UX
+      input.addEventListener('input', function() { validateInput(this); });
+      input.addEventListener('blur', function() { validateInput(this); });
+    });
+  }
+
+  function validateInput(input) {
+    const value = parseFloat(input.value);
+    const min = parseFloat(input.getAttribute('min'));
+    const max = parseFloat(input.getAttribute('max'));
+    const errorElement = document.getElementById(input.id + '_error');
+    
+    if (input.value === '' || input.value.trim() === '') {
+      input.classList.remove('error');
+      if (errorElement) errorElement.style.display = 'none';
+      return true;
+    }
+    
+    if (isNaN(value) || value < min || value > max) {
+      input.classList.add('error');
+      if (errorElement) errorElement.style.display = 'block';
+      return false;
+    } else {
+      input.classList.remove('error');
+      if (errorElement) errorElement.style.display = 'none';
+      return true;
+    }
+  }
+
+  function validateAllInputs() {
+    const inputs = document.querySelectorAll('input[type="number"]');
+    let allValid = true;
+    inputs.forEach(input => {
+      if (!validateInput(input)) allValid = false;
+    });
+    return allValid;
+  }
+
+  function addAutoSaveListeners() {
+    const inputs = document.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => {
+      // 'input' event fires on every keystroke. 
+      // Because we save to LocalStorage (phone memory), this is INSTANT and does NOT cause lag.
+      input.addEventListener('input', function() {
+        saveFormData();
+      });
+    });
+  }
+
+  function saveFormData() {
+    if (!currentUserId) return; 
+    
+    const formData = {};
+    const inputs = document.querySelectorAll('input[type="number"]');
+    
+    // Only save fields that have values to keep the storage size tiny
+    inputs.forEach(input => {
+      if (input.value.trim() !== '') {
+        formData[input.id] = input.value;
+      }
+    });
+    
+    try {
+      // This operation takes < 1ms
+      localStorage.setItem('score_draft_' + currentUserId, JSON.stringify(formData));
+    } catch (e) {
+      console.log('LocalStorage not available');
+    }
+  }
+
+  function loadFormData() {
+    if (!currentUserId) return;
+    
+    try {
+      const savedData = localStorage.getItem('score_draft_' + currentUserId);
+      if (savedData) {
+        const formData = JSON.parse(savedData);
+        
+        Object.keys(formData).forEach(fieldId => {
+          const input = document.getElementById(fieldId);
+          if (input) {
+            input.value = formData[fieldId];
+          }
+        });
+      }
+    } catch (e) {
+      console.log('Error loading form data:', e);
+    }
+  }
+
+  function clearFormData() {
+    if (!confirm('คุณต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?')) return;
+    
+    const inputs = document.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => {
+      input.value = '';
+      input.classList.remove('error');
+      const errorElement = document.getElementById(input.id + '_error');
+      if (errorElement) errorElement.style.display = 'none';
+    });
+    
+    try {
+      if (currentUserId) {
+        localStorage.removeItem('score_draft_' + currentUserId);
+      }
+    } catch (e) {
+      console.log('LocalStorage not available');
+    }
+  }
+
+  async function sendMessage() {
+    if (!validateAllInputs()) {
+      alert("กรุณาตรวจสอบข้อมูลที่กรอกให้ถูกต้อง");
+      return;
+    }
+
+    const btn = document.querySelector(".submit-btn");
+    btn.disabled = true;
+    btn.innerText = "กำลังส่ง...";
+
+    try {
+      const profile = await liff.getProfile();
+
+      // Helper to get float or null
+      const getVal = (id) => {
+        const el = document.getElementById(id);
+        return (el && el.value.trim()) ? parseFloat(el.value.trim()) : null;
+      };
+
+      // GPAX special case (multiply by 25)
+      const gpaxRaw = getVal("GPAX_score");
+      const gpaxVal = gpaxRaw !== null ? gpaxRaw * 25 : null;
+
+      // GPA Subject Groups special case (multiply by 25)
+      const getGpaVal = (id) => {
+        const raw = getVal(id);
+        return raw !== null ? raw * 25 : null;
+      };
+
+      const data = {
+        userId: profile.userId,
+        name: profile.displayName,
+        gpax: gpaxVal,
+        tgat1: getVal("TGAT1_score"),
+        tgat2: getVal("TGAT2_score"),
+        tgat3: getVal("TGAT3_score"),
+
+        tpat11: getVal("TPAT1.1_score"),
+        tpat12: getVal("TPAT1.2_score"),
+        tpat13: getVal("TPAT1.3_score"),
+        tpat21: getVal("TPAT2.1_score"),
+        tpat22: getVal("TPAT2.2_score"),
+        tpat23: getVal("TPAT2.3_score"),
+        tpat3: getVal("TPAT3_score"),
+        tpat4: getVal("TPAT4_score"),
+        tpat5: getVal("TPAT5_score"),
+
+        a_lv_61: getVal("A-Level1.1_score"),
+        a_lv_62: getVal("A-Level1.2_score"),
+        a_lv_63: getVal("A-Level2.1_score"),
+        a_lv_64: getVal("A-Level2.2_score"),
+        a_lv_65: getVal("A-Level2.3_score"),
+        a_lv_66: getVal("A-Level2.4_score"),
+        a_lv_70: getVal("A-Level3_score"),
+        a_lv_81: getVal("A-Level4.1_score"),
+        a_lv_82: getVal("A-Level4.2_score"),
+        a_lv_83: getVal("A-Level4.3_score"),
+        a_lv_84: getVal("A-Level4.4_score"),
+        a_lv_85: getVal("A-Level4.5_score"),
+        a_lv_86: getVal("A-Level4.6_score"),
+        a_lv_87: getVal("A-Level4.7_score"),
+        a_lv_88: getVal("A-Level4.8_score"),
+        a_lv_89: getVal("A-Level4.9_score"),
+
+        gpa21: getGpaVal("gpa21_score"),
+        gpa22: getGpaVal("gpa22_score"),
+        gpa23: getGpaVal("gpa23_score"),
+        gpa24: getGpaVal("gpa24_score"),
+        gpa26: getGpaVal("gpa26_score"),
+        gpa27: getGpaVal("gpa27_score"),
+        gpa28: getGpaVal("gpa28_score")
+      };
+
+      const response = await fetch("/api/save-score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) throw new Error("Failed to send data");
+
+      alert("ข้อมูลถูกส่งไปยังเซิร์ฟเวอร์แล้ว");
+      window.location.href = "https://vrthefuture.varee.ac.th/vrthefuture_choose.html";
+      
+    } catch (error) {
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูล");
+      console.error(error);
+      btn.disabled = false;
+      btn.innerText = "ส่งคะแนน";
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <title>ผลการคำนวณคะแนน</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0288d1 0%, #01579b 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header p {
+            margin: 8px 0 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        #profile {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        #profile img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        #profile h2 {
+            margin: 8px 0 4px 0;
+            font-size: 1.2rem;
+        }
+
+        #profile .user-id {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            padding: 40px;
+            font-size: 1.1rem;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .debug-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        .debug-info pre {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 8px 0;
+            font-size: 0.8rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .user-summary {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .summary-item {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        /* NEW: GPAX Analysis Section */
+        .gpax-analysis {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            border: 3px solid #ffcc02;
+        }
+
+        .gpax-analysis h3 {
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gpax-issues-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .gpax-issue-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .gpax-issue-card h4 {
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .gpax-requirement {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .general-alternatives {
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .general-alternatives h3 {
+            margin: 0 0 16px 0;
+            color: #0288d1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alternatives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .alternative-card {
+            background: #f8faff;
+            border: 2px solid #e3f2fd;
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .alternative-card:hover {
+            border-color: #0288d1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .alternative-card.selected {
+            border-color: #4caf50;
+            background: #e8f5e8;
+        }
+
+        .alternative-info {
+            margin-bottom: 12px;
+        }
+
+        .alternative-university {
+            font-weight: bold;
+            color: #01579b;
+            margin-bottom: 4px;
+        }
+
+        .alternative-program {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .alternative-scores {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .alternative-score {
+            font-weight: bold;
+            color: #0288d1;
+        }
+
+        .alternative-competitiveness {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .alternative-competitiveness.high {
+            background: #e8f5e8;
+            color: #388e3c;
+        }
+
+        .alternative-competitiveness.medium {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .alternative-competitiveness.low {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .sorting-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .university-card {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .card-header.calculated {
+            background: linear-gradient(135deg, #4caf50, #388e3c);
+        }
+
+        .card-header.gpax-insufficient {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+        }
+
+        .card-header.not-found {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+
+        .card-header.incomplete {
+            background: linear-gradient(135deg, #9e9e9e, #616161);
+        }
+
+        .card-header.error {
+            background: linear-gradient(135deg, #e91e63, #c2185b);
+        }
+
+        .card-header.alternative {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+        }
+
+        .card-header.high-risk {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .university-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .card-number {
+            background: rgba(255,255,255,0.2);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .score-display {
+            text-align: center;
+            padding: 20px;
+            background: #f8faff;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #01579b;
+            margin-bottom: 8px;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* T-Score indicator styling */
+        .tscore-indicator {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 8px;
+            display: inline-block;
+            letter-spacing: 0.5px;
+        }
+
+        .score-breakdown {
+            background: #f8faff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .score-breakdown h4 {
+            margin: 0 0 12px 0;
+            color: #01579b;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breakdown-item {
+            display: flex;
+            flex-direction: column;
+            padding: 12px 0;
+            border-bottom: 1px solid #e3f2fd;
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-subject {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .breakdown-scores {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .breakdown-original-score {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .breakdown-final-score {
+            color: #7b1fa2;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .breakdown-calculation {
+            color: #0288d1;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .tscore-note {
+            background: #f3e5f5;
+            border: 1px solid #ce93d8;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #7b1fa2;
+        }
+
+        .status-message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .status-message.success {
+            background: #e8f5e8;
+            color: #388e3c;
+            border: 1px solid #c8e6c9;
+        }
+
+        .status-message.warning {
+            background: #fff8e1;
+            color: #f57c00;
+            border: 1px solid #ffecb3;
+        }
+
+        .status-message.error {
+            background: #ffebee;
+            color: #d32f2f;
+            border: 1px solid #ffcdd2;
+        }
+
+        .status-message.info {
+            background: #e3f2fd;
+            color: #0288d1;
+            border: 1px solid #bbdefb;
+        }
+
+        .status-message.alternative {
+            background: #f3e5f5;
+            color: #7b1fa2;
+            border: 1px solid #ce93d8;
+        }
+
+        .gpax-check-display {
+            background: #fff8e1;
+            border: 2px solid #ffb74d;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .gpax-check-display h4 {
+            margin: 0 0 12px 0;
+            color: #f57c00;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+
+        .gpax-requirement-details {
+            background: rgba(255,255,255,0.8);
+            padding: 14px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .gpax-eligible {
+            background: #e8f5e8;
+            border: 2px solid #66bb6a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .gpax-eligible h4 {
+            color: #388e3c;
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+
+        .gpax-eligible .gpax-requirement-details {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #c8e6c9;
+        }
+
+        .missing-scores {
+            background: #fff3e0;
+            border: 1px solid #ffcc02;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+        }
+
+        .missing-scores h4 {
+            margin: 0 0 8px 0;
+            color: #f57c00;
+            font-size: 0.9rem;
+        }
+
+        .missing-scores ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .alternative-programs {
+            background: #0288d1;
+            border: 1px solid #0288d1;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .alternative-programs h4 {
+            margin: 0 0 12px 0;
+            color: #FFFFFF !important;
+            font-size: 1rem;
+        }
+
+        .alternative-program-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 4px solid #0288d1;
+        }
+
+        .alternative-program-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .alternative-program-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .alternative-program-score {
+            color: #0288d1;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .university-selector {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .university-selector h4 {
+            margin: 0 0 12px 0;
+            color: #f57c00;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .clickable-alternative {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .clickable-alternative:hover {
+            border-color: #0288d1 !important;
+            background-color: #f8faff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .clickable-alternative:active {
+            transform: translateY(0);
+            border-color: #4caf50 !important;
+            background-color: #e8f5e8 !important;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e3f2fd;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            background: #f8faff;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0288d1;
+            background: white;
+        }
+
+        .dropdown-container {
+            position: relative;
+        }
+
+        .custom-dropdown {
+            width: 100%;
+            max-height: 150px;
+            border: 2px solid #e3f2fd;
+            border-radius: 12px;
+            background: white;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .dropdown-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-option:hover {
+            background-color: #f8faff;
+        }
+
+        .dropdown-option.selected {
+            background-color: #e3f2fd;
+            color: #01579b;
+            font-weight: 600;
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .loading-option {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .find-alternatives-btn {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        .find-alternatives-btn:hover {
+            background: #f57c00;
+        }
+
+        .find-alternatives-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            font-style: italic;
+            background: #f8faff;
+            border-radius: 12px;
+            border: 2px dashed #e3f2fd;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+            background: rgba(244, 67, 54, 0.1);
+            border-radius: 12px;
+            border: 2px dashed rgba(244, 67, 54, 0.3);
+        }
+
+        .retry-btn, .debug-btn {
+            background: #0288d1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin: 8px;
+        }
+
+        .retry-btn:hover, .debug-btn:hover {
+            background: #0277bd;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 30px;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            max-width: 300px;
+            padding: 16px;
+            background: linear-gradient(135deg, #4caf50, #388e3c);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .replace-selection-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 12px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .replace-selection-btn:hover {
+            background: #388e3c;
+            transform: translateY(-1px);
+        }
+
+        .replace-selection-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 5px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .card-body {
+                padding: 16px;
+            }
+            
+            .score-value {
+                font-size: 2rem;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .custom-dropdown {
+                max-height: 120px;
+            }
+
+            .gpax-issues-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .alternatives-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .breakdown-scores {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div id="profile">
+                <img id="picture" src="" alt="Profile Picture" style="display: none;">
+                <h2 id="name">Loading...</h2>
+                <p id="userId" class="user-id"></p>
+            </div>
+            <h1>ผลการคำนวณคะแนน</h1>
+            <p>ผลการประเมินโอกาสเข้าศึกษาต่อมหาวิทยาลัย</p>
+        </div>
+
+        <div id="loadingSection" class="loading">
+            <div class="loading-spinner"></div>
+            <p>กำลังคำนวณคะแนนและตรวจสอบการผ่านเกณฑ์ขั้นต่ำ...</p>
+        </div>
+
+        <div id="errorSection" class="error-state" style="display: none;">
+            <h3>เกิดข้อผิดพลาด</h3>
+            <p id="errorMessage">ไม่สามารถโหลดข้อมูลได้</p>
+            <button class="retry-btn" onclick="loadScoreData()">ลองอีกครั้ง</button>
+            <button class="debug-btn" onclick="loadDebugData()">ดูข้อมูลดีบัก</button>
+        </div>
+
+        <div id="debugSection" class="debug-info" style="display: none;">
+            <h3>ข้อมูลสำหรับดีบัก</h3>
+            <div id="debugContent"></div>
+            <button class="retry-btn" onclick="hideDebug()">ซ่อน</button>
+        </div>
+
+        <div id="resultsSection" style="display: none;">
+            <div id="userSummary"></div>
+            
+            <div id="gpaxAnalysis" style="display: none;"></div>
+            
+            <div id="generalAlternatives" style="display: none;"></div>
+            
+            <div id="sortingInfo" class="sorting-info" style="display: none;">
+                📊 คณะที่ต้องการศึกษาต่อ โดยเรียงจากผลต่างระหว่างคะแนนของผู้สอบ กับ คะแนนต่ำสุด (คาดการณ์)
+            </div>
+            
+            <div id="universityResults"></div>
+        </div>
+
+        <div class="submit-section">
+            <button type="button" class="submit-btn" onclick="sendMessage()">แบบสอบถาม</button>
+        </div>
+
+        <div id="lastUpdated" class="footer" style="display: none;">
+            อัปเดตล่าสุด: <span id="lastUpdatedTime"></span>
+        </div>
+    </div>
+
+    <script>
+        let currentUserId = null;
+        let debugMode = false;
+        let currentScoreData = null;
+        let currentGpaxAnalysis = null;
+        let selectedAlternatives = [];
+        let allUniversities = [];
+
+        // Helper function to safely get element
+        function safeGetElement(id) {
+            const element = document.getElementById(id);
+            if (!element) {
+                console.warn(`Element with ID '${id}' not found`);
+            }
+            return element;
+        }
+
+        // Helper function to safely set text content
+        function safeSetText(id, text) {
+            const element = safeGetElement(id);
+            if (element) {
+                element.innerText = text;
+                return true;
+            }
+            return false;
+        }
+
+        // Helper function to safely set HTML content
+        function safeSetHTML(id, html) {
+            const element = safeGetElement(id);
+            if (element) {
+                element.innerHTML = html;
+                return true;
+            }
+            return false;
+        }
+
+        // Helper function to safely set display style
+        function safeSetDisplay(id, display) {
+            const element = safeGetElement(id);
+            if (element) {
+                element.style.display = display;
+                return true;
+            }
+            return false;
+        }
+
+        // Helper function to format GPAX for display (divide by 25)
+        function formatGpaxForDisplay(gpax) {
+            if (gpax === null || gpax === undefined || gpax === 'ไม่ระบุ') {
+                return 'ไม่ระบุ';
+            }
+            const numericGpax = parseFloat(gpax);
+            if (isNaN(numericGpax)) {
+                return 'ไม่ระบุ';
+            }
+            return (numericGpax / 25).toFixed(2);
+        }
+
+        // Helper function to translate status messages to Thai
+        function translateStatusMessage(message) {
+            if (!message) return 'ไม่มีข้อความ';
+            
+            // Replace common English phrases with Thai
+            let translatedMessage = message
+                .replace(/Score calculated successfully/gi, 'คำนวณคะแนนเรียบร้อยแล้ว')
+                .replace(/Calculation completed/gi, 'การคำนวณเสร็จสิ้น')
+                .replace(/Successfully calculated/gi, 'คำนวณเรียบร้อยแล้ว')
+                .replace(/Score calculation complete/gi, 'การคำนวณคะแนนเสร็จสิ้น')
+                .replace(/\(with T-score conversion\)/gi, '(ใช้การแปลงคะแนน T-Score)');
+            
+            return translatedMessage;
+        }
+
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
+        });
+
+        window.onload = async function () {
+            try {
+                await liff.init({ liffId: "2007611527-z7ZNLXOk" });
+                
+                if (liff.isLoggedIn()) {
+                    const profile = await liff.getProfile();
+                    currentUserId = profile.userId;
+                    
+                    safeSetText("name", profile.displayName);
+                    safeSetText("userId", `ID: ${profile.userId}`);
+                    
+                    const pictureElement = safeGetElement("picture");
+                    if (pictureElement) {
+                        pictureElement.src = profile.pictureUrl;
+                        pictureElement.style.display = "block";
+                    }
+                    
+                    console.log("User ID:", currentUserId);
+                    
+                    // Load university list first
+                    loadUniversityList();
+                    
+                    // Load score data and GPAX analysis
+                    await loadScoreData();
+                } else {
+                    liff.login();
+                }
+            } catch (error) {
+                console.error('LIFF initialization failed:', error);
+                showError("ไม่สามารถเชื่อมต่อกับ LINE ได้: " + error.message);
+            }
+        };
+
+        function loadUniversityList() {
+            allUniversities = ['มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย', 'มหาวิทยาลัยเกษมบัณฑิต', 'กลุ่มสถาบันแพทยศาสตร์แห่งประเทศไทย', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง', 'มหาวิทยาลัยราชภัฏพิบูลสงคราม', 'มหาวิทยาลัยปทุมธานี', 'มหาวิทยาลัยนครพนม', 'มหาวิทยาลัยเวสเทิร์น', 'มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ', 'ราชวิทยาลัยจุฬาภรณ์', 'มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์', 'สถาบันเทคโนโลยีแห่งสุวรรณภูมิ', 'สถาบันการพยาบาลศรีสวรินทิรา', 'มหาวิทยาลัยกาฬสินธุ์', 'มหาวิทยาลัยธุรกิจบัณฑิตย์', 'มหาวิทยาลัยรามคำแหง', 'มหาวิทยาลัยราชภัฏบ้านสมเด็จเจ้าพระยา', 'มหาาวิทยาลัยมหาสารคาม', 'มหาวิทยาลัยเกษตรศาสตร์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลศรีวิชัย', 'มหาวิทยาลัยเนชั่น', 'มหาวิทยาลัยราชภัฏอุบลราชธานี', 'มหาวิทยาลัยราชภัฏชัยภูมิ', 'มหาวิทยาลัยราชภัฏธนบุรี', 'วิทยาลัยดุสิตธานี', 'มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน', 'มหาวิทยาลัยนวมินทราธิราช', 'มหาวิทยาลัยราชภัฏสวนสุนันทา', 'มหาวิทยาลัยเซาธ์อีสท์บางกอก', 'จุฬาลงกรณ์มหาวิทยาลัย', 'มหาวิทยาลัยราชภัฏพระนคร', 'มหาวิทยาลัยหาดใหญ่', 'มหาวิทยาลัยอีสเทิร์นเอเชีย', 'มหาวิทยาลัยเทคโนโลยีสุรนารี', 'มหาวิทยาลัยสงขลานครินทร์', 'มหาวิทยาลัยอุบลราชธานี', 'มหาวิทยาลัยมหิดล', 'มหาวิทยาลัยเทคโนโลยีราชมงคลตะวันออก', 'มหาวิทยาลัยนานาชาติเอเชีย-แปซิฟิก', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี', 'มหาวิทยาลัยบูรพา', 'มหาวิทยาลัยทักษิณ', 'มหาวิทยาลัยขอนแก่น', 'มหาวิทยาลัยแม่โจ้', 'มหาวิทยาลัยราชภัฏเชียงใหม่', 'มหาวิทยาลัยศรีนครินทรวิโรฒ', 'สถาบันพระบรมราชชนก', 'มหาวิทยาลัยราชธานี', 'มหาวิทยาลัยศิลปากร', 'มหาวิทยาลัยศรีปทุม', 'มหาวิทยาลัยธรรมศาสตร์', 'วิทยาลัยเซนต์หลุยส์', 'มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี', 'มหาวิทยาลัยรังสิต', 'มหาวิทยาลัยวลัยลักษณ์', 'มหาวิทยาลัยแม่ฟ้าหลวง', 'มหาวิทยาลัยสวนดุสิต', 'มหาวิทยาลัยพะเยา', 'มหาวิทยาลัยราชภัฏเพชรบุรี', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ', 'มหาวิทยาลัยเทคโนโลยีราชมงคลรัตนโกสินทร์', 'มหาวิทยาลัยนราธิวาสราชนครินทร์', 'มหาวิทยาลัยราชภัฏจันทรเกษม', 'มหาวิทยาลัยเชียงใหม่', 'วิทยาลัยนครราชสีมา', 'มหาวิทยาลัยเทคโนโลยีมหานคร', 'มหาวิทยาลัยหอการค้าไทย', 'มหาวิทยาลัยนเรศวร', 'สถาบันเทคโนโลยีจิตรลดา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลกรุงเทพ', 'สถาบันการจัดการปัญญาภิวัฒน์', 'มหาวิทยาลัยสยาม', 'มหาวิทยาลัยราชภัฏสงขลา', 'มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร', 'วิทยาลัยนอร์ทเทิร์น', 'มหาวิทยาลัยมหามกุฏราชวิทยาลัย', 'มหาวิทยาลัยราชภัฏนครราชสีมา'];
+        }
+
+        async function loadScoreData() {
+            if (!currentUserId) {
+                showError("ไม่พบข้อมูลผู้ใช้");
+                return;
+            }
+
+            try {
+                showLoading();
+                console.log("Loading score data for user:", currentUserId);
+                
+                const response = await fetch("/api/calculate_scores", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ userId: currentUserId })
+                });
+
+                console.log("Response status:", response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Response error:", errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log("Received data:", data);
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                currentScoreData = data;
+                
+                // Also load GPAX analysis
+                await loadGpaxAnalysis();
+                
+                displayResults(data);
+                
+            } catch (error) {
+                console.error('Error loading score data:', error);
+                showError(error.message || "ไม่สามารถโหลดข้อมูลคะแนนได้");
+            }
+        }
+
+        async function loadGpaxAnalysis() {
+            if (!currentUserId) return;
+
+            try {
+                console.log("Loading GPAX analysis for user:", currentUserId);
+                
+                const response = await fetch("/api/gpax_analysis", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ userId: currentUserId })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Received GPAX analysis:", data);
+                    currentGpaxAnalysis = data;
+                } else {
+                    console.warn("Failed to load GPAX analysis");
+                }
+            } catch (error) {
+                console.error('Error loading GPAX analysis:', error);
+            }
+        }
+
+        function loadDebugData() {
+            if (currentScoreData) {
+                displayDebugInfo(currentScoreData);
+            }
+        }
+
+        function displayDebugInfo(data) {
+            const debugContent = `
+                <h4>ข้อมูลผู้ใช้:</h4>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+                ${currentGpaxAnalysis ? `
+                    <h4>การวิเคราะห์ GPAX:</h4>
+                    <pre>${JSON.stringify(currentGpaxAnalysis, null, 2)}</pre>
+                ` : ''}
+            `;
+            
+            safeSetHTML("debugContent", debugContent);
+            safeSetDisplay("debugSection", "block");
+        }
+
+        function hideDebug() {
+            safeSetDisplay("debugSection", "none");
+        }
+
+        function showLoading() {
+            safeSetDisplay("loadingSection", "block");
+            safeSetDisplay("errorSection", "none");
+            safeSetDisplay("resultsSection", "none");
+            safeSetDisplay("debugSection", "none");
+        }
+
+        function showError(message) {
+            safeSetDisplay("loadingSection", "none");
+            safeSetDisplay("errorSection", "block");
+            safeSetDisplay("resultsSection", "none");
+            safeSetText("errorMessage", message);
+            console.error("Error:", message);
+        }
+
+        function displayResults(data) {
+            try {
+                safeSetDisplay("loadingSection", "none");
+                safeSetDisplay("errorSection", "none");
+                safeSetDisplay("resultsSection", "block");
+                
+                // Update last updated timestamp
+                const now = new Date();
+                safeSetText("lastUpdatedTime", now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH'));
+                safeSetDisplay("lastUpdated", "block");
+
+                console.log("Displaying results:", data);
+
+                // Display user summary
+                displayUserSummary(data);
+                
+                // Display GPAX analysis
+                displayGpaxAnalysis(data);
+                
+                // Display university results
+                displayUniversityResults(data.results || []);
+                
+            } catch (error) {
+                console.error("Error in displayResults:", error);
+                showError("เกิดข้อผิดพลาดในการแสดงผล: " + error.message);
+            }
+        }
+
+        function displayUserSummary(data) {
+            try {
+                const summary = data.summary || {};
+                
+                // Format user GPAX for display (divide by 25)
+                const displayGpax = formatGpaxForDisplay(data.user_gpax);
+                
+                // Count T-score programs
+                const tScoreCount = summary.t_score_programs || 0;
+                
+                let tScoreInfo = '';
+                if (tScoreCount > 0) {
+                    tScoreInfo = `
+                        <div class="summary-item">
+                            <div class="summary-label">ใช้ T-Score</div>
+                            <div class="summary-value" style="color: #9c27b0;">${tScoreCount}</div>
+                        </div>
+                    `;
+                }
+                
+                // UPDATED LABEL HERE
+                const summaryHtml = `
+                    <div class="user-summary">
+                        <h3>สรุปผลการประเมิน</h3>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div class="summary-label">ชื่อผู้ใช้</div>
+                                <div class="summary-value">${data.user_name || 'ไม่ระบุ'}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">GPAX ของคุณ</div>
+                                <div class="summary-value">${displayGpax}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">มหาวิทยาลัยที่เลือก</div>
+                                <div class="summary-value">${summary.total_selections || 0}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">คำนวณได้</div>
+                                <div class="summary-value">${summary.calculated_scores || 0}</div>
+                            </div>
+                            ${tScoreInfo}
+                            <div class="summary-item">
+                                <div class="summary-label">คะแนนสูงสุด</div>
+                                <div class="summary-value">${summary.highest_score ? summary.highest_score.toFixed(2) : '0'}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">คะแนนเฉลี่ย</div>
+                                <div class="summary-value">${summary.average_score ? summary.average_score.toFixed(2) : '0'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                safeSetHTML("userSummary", summaryHtml);
+                
+            } catch (error) {
+                console.error("Error in displayUserSummary:", error);
+                safeSetHTML("userSummary", `
+                    <div class="user-summary">
+                        <h3>เกิดข้อผิดพลาดในการแสดงสรุปผล</h3>
+                        <p>ไม่สามารถแสดงข้อมูลสรุปได้</p>
+                    </div>
+                `);
+            }
+        }
+
+        function displayGpaxAnalysis(data) {
+            // Simplified - no separate GPAX analysis section
+            // GPAX issues will be shown as normal university cards with yellow headers
+            safeSetDisplay("gpaxAnalysis", "none");
+        }
+
+        function selectGeneralAlternative(index, element) {
+            const alternatives = currentScoreData.general_alternatives || [];
+            const alternative = alternatives[index];
+            
+            if (!alternative) return;
+            
+            // Toggle selection
+            const isSelected = selectedAlternatives.some(alt => 
+                alt.university === alternative.university && 
+                alt.faculty === alternative.faculty && 
+                alt.field === alternative.field
+            );
+            
+            if (isSelected) {
+                // Remove from selection
+                selectedAlternatives = selectedAlternatives.filter(alt => 
+                    !(alt.university === alternative.university && 
+                      alt.faculty === alternative.faculty && 
+                      alt.field === alternative.field)
+                );
+                element.classList.remove('selected');
+            } else {
+                // Add to selection
+                selectedAlternatives.push(alternative);
+                element.classList.add('selected');
+            }
+            
+            // Update counter
+            const countElement = safeGetElement('selectedCount');
+            if (countElement) {
+                countElement.textContent = selectedAlternatives.length;
+            }
+            
+            // Enable/disable replace button
+            const replaceBtn = safeGetElement('replaceSelectionsBtn');
+            if (replaceBtn) {
+                replaceBtn.disabled = selectedAlternatives.length === 0;
+            }
+        }
+
+        async function replaceProblematicSelections() {
+            if (selectedAlternatives.length === 0) {
+                alert('กรุณาเลือกโปรแกรมทางเลือกก่อน');
+                return;
+            }
+            
+            const confirmMessage = `คุณต้องการแทนที่ตัวเลือกที่มีปัญหาด้วย ${selectedAlternatives.length} โปรแกรมที่เลือกหรือไม่?\n\nระบบจะแทนที่ตัวเลือกที่มีปัญหา GPAX และคะแนนต่ำ`;
+            
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+            
+            try {
+                // Show loading
+                showLoadingOverlay('กำลังแทนที่ตัวเลือกที่มีปัญหา...');
+                
+                const profile = await liff.getProfile();
+                
+                // Get current selections and identify problematic ones
+                const currentResults = currentScoreData.results || [];
+                const gpaxIssues = currentScoreData.gpax_issues || [];
+                
+                // Find problematic selections (GPAX issues or very low scores)
+                const problematicIndices = [];
+                for (let i = 0; i < currentResults.length; i++) {
+                    const result = currentResults[i];
+                    // Mark as problematic if GPAX insufficient or score difference < -2.26
+                    if (result.status === 'gpax_insufficient' || 
+                        (result.status === 'calculated' && result.score_d !== null && result.score_d < -1.64)) {
+                        problematicIndices.push(i);
+                    }
+                }
+                
+                console.log('Problematic selections indices:', problematicIndices);
+                console.log('Selected alternatives:', selectedAlternatives);
+                
+                // Create new selections array
+                const newSelections = [...currentResults];
+                
+                // Replace problematic selections with selected alternatives
+                for (let i = 0; i < Math.min(problematicIndices.length, selectedAlternatives.length); i++) {
+                    const index = problematicIndices[i];
+                    const alternative = selectedAlternatives[i];
+                    
+                    newSelections[index] = {
+                        university: alternative.university,
+                        faculty: alternative.faculty,
+                        field: alternative.field
+                    };
+                }
+                
+                // Convert to the format expected by the API
+                const selectionsForAPI = newSelections.map(result => ({
+                    university: result.university || '',
+                    faculty: result.faculty || '',
+                    field: result.field || ''
+                })).filter(sel => sel.university && sel.faculty && sel.field);
+                
+                console.log('New selections for API:', selectionsForAPI);
+                
+                // Submit new selections
+                const submitResponse = await fetch("/api/submit_multiple_selections", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        name: profile.displayName,
+                        selections: selectionsForAPI
+                    })
+                });
+                
+                if (!submitResponse.ok) {
+                    throw new Error("ไม่สามารถอัปเดตการเลือกได้");
+                }
+                
+                // Wait a moment for server processing
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Reload the page data
+                await loadScoreData();
+                
+                // Clear selected alternatives
+                selectedAlternatives = [];
+                
+                // Remove loading overlay
+                hideLoadingOverlay();
+                
+                // Show success message
+                showSuccessMessage(`✅ แทนที่ตัวเลือกเรียบร้อยแล้ว!`);
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+            } catch (error) {
+                console.error('Error replacing selections:', error);
+                hideLoadingOverlay();
+                showErrorMessage(`❌ เกิดข้อผิดพลาด: ${error.message}`);
+            }
+        }
+
+        function showLoadingOverlay(message) {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loadingOverlay';
+            loadingDiv.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 300px;">
+                        <div class="loading-spinner"></div>
+                        <h3 style="margin: 16px 0 8px 0; color: #01579b;">${message}</h3>
+                        <p style="margin: 0; color: #666;">กรุณารอสักครู่...</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loadingDiv);
+        }
+
+        function hideLoadingOverlay() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                document.body.removeChild(loadingOverlay);
+            }
+        }
+
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.innerHTML = `
+                <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #4caf50; color: white; padding: 16px 24px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                    ${message}
+                </div>
+            `;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                if (document.body.contains(successDiv)) {
+                    document.body.removeChild(successDiv);
+                }
+            }, 3000);
+        }
+
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.innerHTML = `
+                <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #f44336; color: white; padding: 16px 24px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                    ${message}
+                </div>
+            `;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                if (document.body.contains(errorDiv)) {
+                    document.body.removeChild(errorDiv);
+                }
+            }, 5000);
+        }
+
+        function displayUniversityResults(results) {
+            try {
+                const container = safeGetElement("universityResults");
+                if (!container) {
+                    console.error("universityResults container not found");
+                    return;
+                }
+                
+                container.innerHTML = "";
+
+                console.log("Displaying university results:", results);
+
+                if (results.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>ยังไม่มีข้อมูลการเลือกมหาวิทยาลัย</h3>
+                            <p>กรุณาเลือกมหาวิทยาลัยที่ต้องการสมัครก่อน</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Sort results by score_d (score difference) from least to greatest
+                const sortedResults = [...results].sort((a, b) => {
+                    const scoreA = a.score_d;
+                    const scoreB = b.score_d;
+                    
+                    if (scoreA !== null && scoreA !== undefined && scoreB !== null && scoreB !== undefined) {
+                        return scoreA - scoreB;
+                    }
+                    
+                    if (scoreA !== null && scoreA !== undefined) {
+                        return -1;
+                    }
+                    
+                    if (scoreB !== null && scoreB !== undefined) {
+                        return 1;
+                    }
+                    
+                    return 0;
+                });
+
+                console.log("Sorted results:", sortedResults);
+
+                // Check if we have any calculated scores to show sorting info
+                const hasCalculatedScores = sortedResults.some(result => 
+                    result.status === 'calculated' && result.score_d !== null && result.score_d !== undefined
+                );
+                
+                if (hasCalculatedScores) {
+                    safeSetDisplay("sortingInfo", "block");
+                }
+
+                sortedResults.forEach((result, index) => {
+                    const card = createUniversityCard(result, index + 1);
+                    if (card) {
+                        container.appendChild(card);
+                    }
+                });
+                
+            } catch (error) {
+                console.error("Error in displayUniversityResults:", error);
+                const container = safeGetElement("universityResults");
+                if (container) {
+                    container.innerHTML = `
+                        <div class="error-state">
+                            <h3>เกิดข้อผิดพลาดในการแสดงผล</h3>
+                            <p>ไม่สามารถแสดงผลลัพธ์มหาวิทยาลัยได้</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function createUniversityCard(result, cardNumber) {
+            try {
+                const div = document.createElement('div');
+                div.className = 'university-card';
+                
+                console.log("Creating card for result:", result);
+                
+                const university = result.university || 'ไม่ระบุมหาวิทยาลัย';
+                const faculty = result.faculty || 'ไม่ระบุคณะ';
+                const field = result.field || 'ไม่ระบุสาขา';
+                const status = result.status || 'unknown';
+                const score = result.score;
+                const scoreD = result.score_d;
+                const message = translateStatusMessage(result.message) || 'ไม่มีข้อความ';
+                const scoreBreakdown = result.score_breakdown || [];
+                const missingScores = result.missing_scores || [];
+                const gpaxCheck = result.gpax_check;
+                const tScoreEnabled = result.t_score_enabled || false;
+                
+                let headerClass = 'calculated';
+                let statusClass = 'success';
+                
+                switch (status) {
+                    case 'calculated':
+                        // Check if this is a high-risk university
+                        if (scoreD !== null && scoreD !== undefined && scoreD < -1.64) {
+                            headerClass = 'high-risk';
+                            statusClass = 'error';
+                        } else {
+                            headerClass = 'calculated';
+                            statusClass = 'success';
+                        }
+                        break;
+                    case 'gpax_insufficient':
+                        headerClass = 'gpax-insufficient';
+                        statusClass = 'warning';
+                        break;
+                    case 'not_found':
+                        headerClass = 'not-found';
+                        statusClass = 'error';
+                        break;
+                    case 'incomplete':
+                        headerClass = 'incomplete';
+                        statusClass = 'info';
+                        break;
+                    case 'error':
+                        headerClass = 'error';
+                        statusClass = 'error';
+                        break;
+                }
+
+                let bodyContent = `
+                    <div class="status-message ${statusClass}">
+                        ${message}
+                    </div>
+                `;
+
+                // Add GPAX check display if available
+                if (gpaxCheck) {
+                    const gpaxClass = gpaxCheck.eligible ? 'gpax-eligible' : 'gpax-check-display';
+                    const gpaxIcon = gpaxCheck.eligible ? '✅' : '⚠️';
+                    
+                    // Format GPAX values for display (divide by 25)
+                    const displayUserGpax = formatGpaxForDisplay(gpaxCheck.user_gpax);
+                    const displayRequiredGpax = formatGpaxForDisplay(gpaxCheck.required_gpax);
+                    
+                    // Format buffer/deficit for display (divide by 25)
+                    let bufferDeficitInfo = '';
+                    if (gpaxCheck.gpax_buffer !== undefined) {
+                        const displayBuffer = (gpaxCheck.gpax_buffer / 25).toFixed(2);
+                        bufferDeficitInfo = `<strong>สูงกว่าข้อกำหนด:</strong> +${displayBuffer}<br>`;
+                    }
+                    if (gpaxCheck.gpax_deficit !== undefined) {
+                        const displayDeficit = (gpaxCheck.gpax_deficit / 25).toFixed(2);
+                        bufferDeficitInfo = `<strong>ต่ำกว่าข้อกำหนด:</strong> ${displayDeficit}<br>`;
+                    }
+                    
+                    bodyContent += `
+                        <div class="${gpaxClass}">
+                            <h4>${gpaxIcon} การตรวจสอบเกรดเฉลี่ยสะสม (GPAX)</h4>
+                            <p style="margin: 8px 0; color: ${gpaxCheck.eligible ? '#388e3c' : '#f57c00'}; font-weight: 500;">
+                                ${gpaxCheck.eligible ? 'ผ่านการตรวจสอบเกรดเฉลี่ยสะสม' : 'ไม่ผ่านการตรวจสอบเกรดเฉลี่ยสะสม'}
+                            </p>
+                            <div class="gpax-requirement-details">
+                                <strong>เกรดเฉลี่ยสะสมของคุณ:</strong> ${displayUserGpax}<br>
+                                <strong>เกรดเฉลี่ยสะสมที่ต้องการ:</strong> ${displayRequiredGpax || 'ไม่มีข้อกำหนด'}<br>
+                                ${bufferDeficitInfo}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Add score display for calculated scores
+                if (status === 'calculated' && score !== null) {
+                    let difficultyIndicator = '';
+                    let showAlternatives = false;
+                    
+                    if (scoreD !== null && scoreD !== undefined) {
+                        if (scoreD < -1.64) {
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #d32f2f; font-weight: bold;">😥 มีโอกาสได้รับการคัดเลือกต่ำมาก</div>';
+                            showAlternatives = true;
+                        } else if (scoreD < 0) {
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #f57c00; font-weight: bold;">😧 มีโอกาสได้รับการคัดเลือกต่ำ</div>';
+                        } else if (scoreD < 1.64) {
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #1976d2; font-weight: bold;">😀 มีโอกาสได้รับการคัดเลือกสูง</div>';
+                        } else {
+                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #388e3c; font-weight: bold;">🥳 มีโอกาสได้รับการคัดเลือกสูงมาก</div>';
+                        }
+                    }
+
+                    // T-Score indicator
+                    const tScoreIndicator = tScoreEnabled ? '<div class="tscore-indicator">📊 T-Score</div>' : '';
+
+                    bodyContent += `
+                        <div class="score-display">
+                            <div class="score-value">${score.toFixed(2)}</div>
+                            <div class="score-label">คะแนนรวม</div>
+                            ${tScoreIndicator}
+                            ${scoreD !== null && scoreD !== undefined ? `
+                                <div style="margin-top: 8px; font-size: 0.9rem; color: ${scoreD >= 0 ? '#4caf50' : '#f44336'};">
+                                    ${scoreD >= 0 ? '+' : ''}${scoreD.toFixed(2)} จากคะแนนต่ำสุดปีที่แล้ว
+                                </div>
+                            ` : ''}
+                            ${difficultyIndicator}
+                        </div>
+                    `;
+
+                    // Add enhanced score breakdown
+                    if (scoreBreakdown.length > 0) {
+                        const hasAnyTScore = scoreBreakdown.some(item => item.t_score_applied);
+                        const breakdownTitle = hasAnyTScore ? '📊 รายละเอียดการคำนวณ (มี T-Score)' : '📊 รายละเอียดการคำนวณ';
+                        
+                        bodyContent += `
+                            <div class="score-breakdown">
+                                <h4>${breakdownTitle}</h4>
+                                ${scoreBreakdown.map(item => {
+                                    const showTScoreConversion = item.t_score_applied && item.user_score !== item.final_score;
+                                    
+                                    return `
+                                        <div class="breakdown-item">
+                                            <div class="breakdown-subject">${item.subject}</div>
+                                            ${showTScoreConversion ? `
+                                                <div class="breakdown-scores">
+                                                    <div class="breakdown-original-score">คะแนนเดิม: ${item.user_score.toFixed(2)}</div>
+                                                    <div class="breakdown-final-score">T-Score: ${item.final_score.toFixed(2)}</div>
+                                                </div>
+                                            ` : `
+                                                <div class="breakdown-scores">
+                                                    <div class="breakdown-original-score">คะแนน: ${item.user_score.toFixed(2)}</div>
+                                                </div>
+                                            `}
+                                            <div class="breakdown-calculation">
+                                                ${item.final_score.toFixed(2)} × ${(item.weight * 100).toFixed(1)}% = ${item.contribution.toFixed(2)} คะแนน
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                                ${hasAnyTScore ? `
+                                    <div class="tscore-note">
+                                        💡 T-Score คือการปรับคะแนนตามสถิติของผู้สอบทั้งหมด เพื่อความยุติธรรมในการเปรียบเทียบ
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }
+
+                    // Add university selector for low scores
+                    if (showAlternatives) {
+                        bodyContent += createUniversitySelector(cardNumber, university);
+                    }
+                }
+
+                // Add university selector for GPAX insufficient programs (same as high-risk programs)
+                if (status === 'gpax_insufficient') {
+                    bodyContent += createUniversitySelector(cardNumber, university);
+                }
+
+                // Add missing scores info
+                if (status === 'error' && missingScores.length > 0) {
+                    bodyContent += `
+                        <div class="missing-scores">
+                            <h4>คะแนนที่ขาดหาย (${result.missing_count}/${result.total_required}):</h4>
+                            <ul>
+                                ${missingScores.slice(0, 10).map(score => `<li>${score}</li>`).join('')}
+                                ${missingScores.length > 10 ? `<li>และอีก ${missingScores.length - 10} รายการ</li>` : ''}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                // Add empty state for incomplete selections
+                if (status === 'incomplete') {
+                    bodyContent += `
+                        <div class="empty-state">
+                            <p>ข้อมูลการเลือกไม่สมบูรณ์</p>
+                            <small>กรุณากรอกข้อมูลมหาวิทยาลัย คณะ และสาขาให้ครบถ้วน</small>
+                        </div>
+                    `;
+                }
+
+                div.innerHTML = `
+                    <div class="card-header ${headerClass}">
+                        <div>
+                            <h3>${university}</h3>
+                            <div class="university-info">
+                                ${faculty} - ${field}
+                            </div>
+                        </div>
+                        <div class="card-number">${cardNumber}</div>
+                    </div>
+                    <div class="card-body">
+                        ${bodyContent}
+                    </div>
+                `;
+                
+                return div;
+                
+            } catch (error) {
+                console.error("Error creating university card:", error);
+                const div = document.createElement('div');
+                div.className = 'university-card';
+                div.innerHTML = `
+                    <div class="card-header error">
+                        <div>
+                            <h3>เกิดข้อผิดพลาด</h3>
+                            <div class="university-info">ไม่สามารถแสดงข้อมูลได้</div>
+                        </div>
+                        <div class="card-number">${cardNumber}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="status-message error">
+                            เกิดข้อผิดพลาดในการสร้างการ์ด
+                        </div>
+                    </div>
+                `;
+                return div;
+            }
+        }
+
+        function createUniversitySelector(cardNumber, currentUniversity) {
+            const selectorId = `university-selector-${cardNumber}`;
+            const searchInputId = `search-input-${cardNumber}`;
+            const dropdownId = `dropdown-${cardNumber}`;
+
+            return `
+                <div class="university-selector" id="${selectorId}">
+                    <h4>🎯 ให้ VR THE FUTURE ช่วยค้นหาคณะและสาขาวิชาที่เหมาะสมกับคุณ</h4>
+                    <div style="margin-bottom: 12px; padding: 8px; background: #fff3e0; border-radius: 6px; font-size: 0.85rem; color: #f57c00;">
+                        <strong>💡 เคล็ดลับ:</strong> เลือกมหาวิทยาลัยที่มีคณะและสาขาใกล้เคียงกับที่คุณต้องการ แต่มีโอกาสเข้าได้ดีกว่า
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="search-input" id="${searchInputId}" 
+                               placeholder="พิมพ์ชื่อมหาวิทยาลัยที่ต้องการดู..." 
+                               oninput="filterUniversitiesInSelector('${cardNumber}')" />
+                        <div class="dropdown-container">
+                            <div class="custom-dropdown" id="${dropdownId}">
+                                ${createUniversityOptions(cardNumber, currentUniversity)}
+                            </div>
+                        </div>
+                    </div>
+                    <button class="find-alternatives-btn" id="find-btn-${cardNumber}" 
+                            onclick="findAlternativesInSelectedUniversity('${cardNumber}')" disabled>
+                        🔍 ค้นหาโปรแกรมที่เหมาะสม
+                    </button>
+                    <div id="alternatives-result-${cardNumber}"></div>
+                </div>
+            `;
+        }
+
+        function createUniversityOptions(cardNumber, excludeUniversity) {
+            const filteredUniversities = allUniversities.filter(uni => uni !== excludeUniversity);
+            
+            if (filteredUniversities.length === 0) {
+                return '<div class="dropdown-option loading-option">ไม่พบมหาวิทยาลัยอื่น</div>';
+            }
+            
+            return filteredUniversities.map(uni => 
+                `<div class="dropdown-option" onclick="selectUniversityForAlternatives('${cardNumber}', '${uni.replace(/'/g, "\\'")}')">
+                    ${uni}
+                </div>`
+            ).join('');
+        }
+
+        function filterUniversitiesInSelector(cardNumber) {
+            const searchInput = document.getElementById(`search-input-${cardNumber}`);
+            const dropdown = document.getElementById(`dropdown-${cardNumber}`);
+            
+            if (!searchInput || !dropdown) return;
+            
+            const filter = searchInput.value.toLowerCase();
+            const options = dropdown.querySelectorAll('.dropdown-option');
+            
+            options.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                option.style.display = text.includes(filter) ? 'block' : 'none';
+            });
+        }
+
+        function selectUniversityForAlternatives(cardNumber, university) {
+            const searchInput = document.getElementById(`search-input-${cardNumber}`);
+            const dropdown = document.getElementById(`dropdown-${cardNumber}`);
+            const findBtn = document.getElementById(`find-btn-${cardNumber}`);
+            
+            if (searchInput) {
+                searchInput.value = university;
+                searchInput.setAttribute('data-selected', university);
+            }
+            
+            if (dropdown) {
+                const options = dropdown.querySelectorAll('.dropdown-option');
+                options.forEach(option => {
+                    option.classList.remove('selected');
+                    if (option.textContent === university) {
+                        option.classList.add('selected');
+                    }
+                });
+            }
+            
+            if (findBtn) {
+                findBtn.disabled = false;
+            }
+        }
+
+        async function findAlternativesInSelectedUniversity(cardNumber) {
+            const searchInput = document.getElementById(`search-input-${cardNumber}`);
+            const findBtn = document.getElementById(`find-btn-${cardNumber}`);
+            const resultDiv = document.getElementById(`alternatives-result-${cardNumber}`);
+            
+            if (!searchInput || !findBtn || !resultDiv) return;
+            
+            const selectedUniversity = searchInput.getAttribute('data-selected') || searchInput.value;
+            
+            if (!selectedUniversity) {
+                alert('กรุณาเลือกมหาวิทยาลัยก่อน');
+                return;
+            }
+
+            findBtn.disabled = true;
+            findBtn.textContent = "🔄 กำลังค้นหาคณะและสาขาที่เหมาะสม...";
+            resultDiv.innerHTML = "";
+
+            try {
+                console.log("Finding alternatives for university:", selectedUniversity);
+                
+                const response = await fetch("/api/new_program", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        university: selectedUniversity
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error("ไม่สามารถค้นหาทางเลือกได้");
+                }
+
+                const data = await response.json();
+                console.log("Alternative programs data:", data);
+
+                const goodAlternatives = data.recommended_programs || [];
+
+                if (goodAlternatives.length > 0) {
+                    resultDiv.innerHTML = createDetailedAlternativesDisplay(goodAlternatives, selectedUniversity);
+                    findBtn.textContent = `✅ พบ ${goodAlternatives.length} คณะและสาขาที่เหมาะสม`;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="status-message info" style="margin-top: 12px;">
+                            💡 ไม่พบคณะและสาขาที่เหมาะสมใน ${selectedUniversity}<br>
+                            <small>แนะนำให้ลองมหาวิทยาลัยอื่น</small>
+                        </div>
+                    `;
+                    findBtn.textContent = "❌ ไม่พบคณะและสาขาที่เหมาะสม";
+                }
+                
+            } catch (error) {
+                console.error('Error finding alternatives:', error);
+                resultDiv.innerHTML = `
+                    <div class="status-message error" style="margin-top: 12px;">
+                        เกิดข้อผิดพลาด: ${error.message}
+                    </div>
+                `;
+                findBtn.disabled = false;
+                findBtn.textContent = "🔍 ค้นหาโปรแกรมที่เหมาะสม";
+            }
+        }
+
+        function createDetailedAlternativesDisplay(alternatives, university) {
+            const title = `💡 VR THE FUTURE ได้ค้นหาคณะและสาขาวิชาที่เหมาะสมกับคุณให้แล้ว: ${university}`;
+
+            return `
+                <div class="alternative-programs" style="margin-top: 12px;">
+                    <h4 style="color: #FFFFFF !important;">${title}</h4>
+                    <div style="margin-bottom: 12px; padding: 8px; background: #e8f5e8; border-radius: 6px; font-size: 0.85rem; color: #2e7d32;">
+                        <strong>💡 แนะนำ:</strong> คลิกเลือกโปรแกรมที่เหมาะสมเพื่อแทนที่ตัวเลือกเดิมของคุณ
+                    </div>
+                    ${alternatives.slice(0, 8).map((alt, index) => {
+                        let statusColor = '#388e3c';
+                        let statusIcon = '😀';
+                        let statusText = 'มีโอกาสติดสูง';
+                        
+                        if (alt.score_d < 0) {
+                            statusColor = '#f57c00';
+                            statusIcon = '😧';
+                            statusText = 'มีโอกาสได้รับการคัดเลือกต่ำ (แต่ดีกว่าเดิม)';
+                        } else if (alt.score_d < 1.64) {
+                            statusColor = '#1976d2';
+                            statusIcon = '😀';
+                            statusText = 'มีโอกาสได้รับการคัดเลือกสูง';
+                        } else {
+                            statusColor = '#388e3c';
+                            statusIcon = '🥳';
+                            statusText = 'มีโอกาสได้รับการคัดเลือกสูงมาก';
+                        }
+
+                        return `
+                            <div class="alternative-program-item clickable-alternative" 
+                                 style="margin-bottom: 12px; padding: 16px; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent;"
+                                 onclick="selectAlternativeProgram('${alt.university.replace(/'/g, "\\'")}', '${alt.faculty.replace(/'/g, "\\'")}', '${alt.field.replace(/'/g, "\\'")}', this)">
+                                <div class="alternative-program-name" style="margin-bottom: 8px;">
+                                    <strong>${alt.faculty} - ${alt.field}</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <div class="alternative-program-score">
+                                        <strong>คะแนน: ${alt.score.toFixed(2)}</strong>
+                                    </div>
+                                    <div style="color: ${statusColor}; font-weight: bold; font-size: 0.9rem;">
+                                        ${statusIcon} ${statusText}
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.85rem; color: #0ad700; margin-bottom: 8px;">
+                                    ${alt.score_d >= 0 ? '+' : ''}${alt.score_d.toFixed(2)} จากคะแนนต่ำสุดปีที่แล้ว
+                                </div>
+                                <div style="margin-top: 8px; text-align: center; padding: 4px; background: #e3f2fd; border-radius: 4px; font-size: 0.75rem; color: #01579b;">
+                                    👆 คลิกเพื่อแทนที่ตัวเลือกเดิม
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        async function selectAlternativeProgram(university, faculty, field, element) {
+            element.style.borderColor = '#4caf50';
+            element.style.backgroundColor = '#e8f5e8';
+            
+            const confirmMessage = `คุณต้องการแทนที่ตัวเลือกเดิมด้วย:\n\n${university}\n${faculty} - ${field}\n\nระบบจะคำนวณคะแนนใหม่ทั้งหมด`;
+            
+            if (!confirm(confirmMessage)) {
+                element.style.borderColor = 'transparent';
+                element.style.backgroundColor = 'white';
+                return;
+            }
+
+            try {
+                showLoadingOverlay('กำลังปรับปรุงการเลือก...');
+
+                const profile = await liff.getProfile();
+                
+                // Find problematic selection to replace
+                let replaceIndex = -1;
+                if (currentScoreData && currentScoreData.results) {
+                    for (let i = 0; i < currentScoreData.results.length; i++) {
+                        const result = currentScoreData.results[i];
+                        if (result.status === 'gpax_insufficient' || 
+                            (result.status === 'calculated' && result.score_d !== null && result.score_d < -2.26)) {
+                            replaceIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (replaceIndex === -1) {
+                    replaceIndex = 0;
+                }
+
+                const newSelections = currentScoreData.results.map((result, index) => {
+                    if (index === replaceIndex) {
+                        return { university, faculty, field };
+                    } else {
+                        return {
+                            university: result.university,
+                            faculty: result.faculty,
+                            field: result.field
+                        };
+                    }
+                });
+
+                const submitResponse = await fetch("/api/submit_multiple_selections", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        name: profile.displayName,
+                        selections: newSelections
+                    })
+                });
+
+                if (!submitResponse.ok) {
+                    throw new Error("ไม่สามารถอัปเดตการเลือกได้");
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                hideLoadingOverlay();
+                await loadScoreData();
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                showSuccessMessage('✅ อัปเดตการเลือกเรียบร้อยแล้ว!');
+
+            } catch (error) {
+                console.error('Error replacing selection:', error);
+                hideLoadingOverlay();
+                element.style.borderColor = 'transparent';
+                element.style.backgroundColor = 'white';
+                showErrorMessage(`❌ เกิดข้อผิดพลาด: ${error.message}`);
+            }
+        }
+
+        async function sendMessage() {
+            window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSeZDDCm5Cu0JdV_56mQZsxX7Ch6A5LWfrWv1uOYI3Ody69amQ/viewform?usp=dialog";
+        }
+        
+    </script>
+</body>
+</html>
