@@ -981,13 +981,47 @@
         function translateStatusMessage(message) {
             if (!message) return 'ไม่มีข้อความ';
             
-            // Replace common English phrases with Thai
             let translatedMessage = message
                 .replace(/Score calculated successfully/gi, 'คำนวณคะแนนเรียบร้อยแล้ว')
                 .replace(/Calculation completed/gi, 'การคำนวณเสร็จสิ้น')
                 .replace(/Successfully calculated/gi, 'คำนวณเรียบร้อยแล้ว')
                 .replace(/Score calculation complete/gi, 'การคำนวณคะแนนเสร็จสิ้น')
-                .replace(/\(with T-score conversion\)/gi, '(ใช้การแปลงคะแนน T-Score)');
+                .replace(/\(with T-score conversion\)/gi, '(ใช้การแปลงคะแนน T-Score)')
+                .replace(/Failed minimum requirements:/gi, '❌ ไม่ผ่านเกณฑ์คะแนนขั้นต่ำรายวิชา:')
+                .replace(/\(Need ([\d.]+) (Raw|T-Score), got ([\d.]+)\)/gi, '(ต้องการ $2 ขั้นต่ำ $1, แต่คุณได้ $3)')
+                
+                // แปลงรหัสวิชาเป็นชื่อภาษาไทย
+                .replace(/a_lv_61/gi, 'A-Level คณิต 1')
+                .replace(/a_lv_62/gi, 'A-Level คณิต 2')
+                .replace(/a_lv_63/gi, 'A-Level วิทย์ทั่วไป')
+                .replace(/a_lv_64/gi, 'A-Level ฟิสิกส์')
+                .replace(/a_lv_65/gi, 'A-Level เคมี')
+                .replace(/a_lv_66/gi, 'A-Level ชีววิทยา')
+                .replace(/a_lv_70/gi, 'A-Level สังคม')
+                .replace(/a_lv_81/gi, 'A-Level ภาษาไทย')
+                .replace(/a_lv_82/gi, 'A-Level ภาษาอังกฤษ')
+                .replace(/a_lv_83/gi, 'A-Level ฝรั่งเศส')
+                .replace(/a_lv_84/gi, 'A-Level เยอรมัน')
+                .replace(/a_lv_85/gi, 'A-Level ญี่ปุ่น')
+                .replace(/a_lv_86/gi, 'A-Level เกาหลี')
+                .replace(/a_lv_87/gi, 'A-Level จีน')
+                .replace(/a_lv_88/gi, 'A-Level บาลี')
+                .replace(/a_lv_89/gi, 'A-Level สเปน')
+                .replace(/tgat1/gi, 'TGAT1')
+                .replace(/tgat2/gi, 'TGAT2')
+                .replace(/tgat3/gi, 'TGAT3')
+                .replace(/tgat/gi, 'TGAT รวม')
+                .replace(/tpat11/gi, 'TPAT1.1')
+                .replace(/tpat12/gi, 'TPAT1.2')
+                .replace(/tpat13/gi, 'TPAT1.3')
+                .replace(/tpat1/gi, 'TPAT1 กสพท')
+                .replace(/tpat21/gi, 'TPAT2.1 ทัศนศิลป์')
+                .replace(/tpat22/gi, 'TPAT2.2 ดนตรี')
+                .replace(/tpat23/gi, 'TPAT2.3 นาฏศิลป์')
+                .replace(/tpat2/gi, 'TPAT2 ศิลปกรรม')
+                .replace(/tpat3/gi, 'TPAT3 วิทย์-วิศวะ')
+                .replace(/tpat4/gi, 'TPAT4 สถาปัตย์')
+                .replace(/tpat5/gi, 'TPAT5 ครุศาสตร์');
             
             return translatedMessage;
         }
@@ -1521,8 +1555,6 @@
                 const div = document.createElement('div');
                 div.className = 'university-card';
                 
-                console.log("Creating card for result:", result);
-                
                 const university = result.university || 'ไม่ระบุมหาวิทยาลัย';
                 const faculty = result.faculty || 'ไม่ระบุคณะ';
                 const field = result.field || 'ไม่ระบุสาขา';
@@ -1540,7 +1572,6 @@
                 
                 switch (status) {
                     case 'calculated':
-                        // Check if this is a high-risk university
                         if (scoreD !== null && scoreD !== undefined && scoreD < -1.64) {
                             headerClass = 'high-risk';
                             statusClass = 'error';
@@ -1553,6 +1584,10 @@
                         headerClass = 'gpax-insufficient';
                         statusClass = 'warning';
                         break;
+                    case 'subject_min_insufficient':
+                        headerClass = 'not-found';
+                        statusClass = 'error';
+                        break;
                     case 'not_found':
                         headerClass = 'not-found';
                         statusClass = 'error';
@@ -1562,6 +1597,7 @@
                         statusClass = 'info';
                         break;
                     case 'error':
+                    default:
                         headerClass = 'error';
                         statusClass = 'error';
                         break;
@@ -1569,28 +1605,26 @@
 
                 let bodyContent = `
                     <div class="status-message ${statusClass}">
+                        ${status === 'subject_min_insufficient' ? '<strong style="color: #d32f2f; font-size: 1.05rem;">⚠️ แจ้งเตือนสำคัญ:</strong><br><div style="margin-top: 5px;">' : '<div>'}
                         ${message}
+                        </div>
                     </div>
                 `;
 
-                // Add GPAX check display if available
-                if (gpaxCheck) {
-                    const gpaxClass = gpaxCheck.eligible ? 'gpax-eligible' : 'gpax-check-display';
-                    const gpaxIcon = gpaxCheck.eligible ? '✅' : '⚠️';
+                // --- BULLETPROOF GPAX BLOCK ---
+                if (gpaxCheck && typeof gpaxCheck === 'object') {
+                    let gpaxClass = gpaxCheck.eligible ? 'gpax-eligible' : 'gpax-check-display';
+                    let gpaxIcon = gpaxCheck.eligible ? '✅' : '⚠️';
                     
-                    // Format GPAX values for display (divide by 25)
-                    const displayUserGpax = formatGpaxForDisplay(gpaxCheck.user_gpax);
-                    const displayRequiredGpax = formatGpaxForDisplay(gpaxCheck.required_gpax);
+                    let displayUserGpax = (gpaxCheck.user_gpax !== null && gpaxCheck.user_gpax !== undefined) ? parseFloat(gpaxCheck.user_gpax).toFixed(2) : 'ไม่ระบุ';
+                    let displayRequiredGpax = (gpaxCheck.required_gpax !== null && gpaxCheck.required_gpax !== undefined) ? parseFloat(gpaxCheck.required_gpax).toFixed(2) : 'ไม่มีข้อกำหนด';
                     
-                    // Format buffer/deficit for display (divide by 25)
                     let bufferDeficitInfo = '';
-                    if (gpaxCheck.gpax_buffer !== undefined) {
-                        const displayBuffer = (gpaxCheck.gpax_buffer / 25).toFixed(2);
-                        bufferDeficitInfo = `<strong>สูงกว่าข้อกำหนด:</strong> +${displayBuffer}<br>`;
+                    if (gpaxCheck.gpax_buffer !== undefined && gpaxCheck.gpax_buffer !== null) {
+                        bufferDeficitInfo = `<strong>สูงกว่าข้อกำหนด:</strong> +${parseFloat(gpaxCheck.gpax_buffer).toFixed(2)}<br>`;
                     }
-                    if (gpaxCheck.gpax_deficit !== undefined) {
-                        const displayDeficit = (gpaxCheck.gpax_deficit / 25).toFixed(2);
-                        bufferDeficitInfo = `<strong>ต่ำกว่าข้อกำหนด:</strong> ${displayDeficit}<br>`;
+                    if (gpaxCheck.gpax_deficit !== undefined && gpaxCheck.gpax_deficit !== null) {
+                        bufferDeficitInfo = `<strong>ต่ำกว่าข้อกำหนด:</strong> ${parseFloat(gpaxCheck.gpax_deficit).toFixed(2)}<br>`;
                     }
                     
                     bodyContent += `
@@ -1601,14 +1635,14 @@
                             </p>
                             <div class="gpax-requirement-details">
                                 <strong>เกรดเฉลี่ยสะสมของคุณ:</strong> ${displayUserGpax}<br>
-                                <strong>เกรดเฉลี่ยสะสมที่ต้องการ:</strong> ${displayRequiredGpax || 'ไม่มีข้อกำหนด'}<br>
+                                <strong>เกรดเฉลี่ยสะสมที่ต้องการ:</strong> ${displayRequiredGpax}<br>
                                 ${bufferDeficitInfo}
                             </div>
                         </div>
                     `;
                 }
+                // ------------------------------
 
-                // Add score display for calculated scores
                 if (status === 'calculated' && score !== null) {
                     let difficultyIndicator = '';
                     let showAlternatives = false;
@@ -1626,7 +1660,6 @@
                         }
                     }
 
-                    // T-Score indicator
                     const tScoreIndicator = tScoreEnabled ? '<div class="tscore-indicator">📊 T-Score</div>' : '';
 
                     bodyContent += `
@@ -1643,7 +1676,6 @@
                         </div>
                     `;
 
-                    // Add enhanced score breakdown
                     if (scoreBreakdown.length > 0) {
                         const hasAnyTScore = scoreBreakdown.some(item => item.t_score_applied);
                         const breakdownTitle = hasAnyTScore ? '📊 รายละเอียดการคำนวณ (มี T-Score)' : '📊 รายละเอียดการคำนวณ';
@@ -1653,7 +1685,6 @@
                                 <h4>${breakdownTitle}</h4>
                                 ${scoreBreakdown.map(item => {
                                     const showTScoreConversion = item.t_score_applied && item.user_score !== item.final_score;
-                                    
                                     return `
                                         <div class="breakdown-item">
                                             <div class="breakdown-subject">${item.subject}</div>
@@ -1682,18 +1713,15 @@
                         `;
                     }
 
-                    // Add university selector for low scores
                     if (showAlternatives) {
                         bodyContent += createUniversitySelector(cardNumber, university);
                     }
                 }
 
-                // Add university selector for GPAX insufficient programs (same as high-risk programs)
-                if (status === 'gpax_insufficient') {
+                if (status === 'gpax_insufficient' || status === 'subject_min_insufficient') {
                     bodyContent += createUniversitySelector(cardNumber, university);
                 }
 
-                // Add missing scores info
                 if (status === 'error' && missingScores.length > 0) {
                     bodyContent += `
                         <div class="missing-scores">
@@ -1706,7 +1734,6 @@
                     `;
                 }
 
-                // Add empty state for incomplete selections
                 if (status === 'incomplete') {
                     bodyContent += `
                         <div class="empty-state">
@@ -1735,9 +1762,9 @@
                 
             } catch (error) {
                 console.error("Error creating university card:", error);
-                const div = document.createElement('div');
-                div.className = 'university-card';
-                div.innerHTML = `
+                const errDiv = document.createElement('div');
+                errDiv.className = 'university-card';
+                errDiv.innerHTML = `
                     <div class="card-header error">
                         <div>
                             <h3>เกิดข้อผิดพลาด</h3>
@@ -1751,7 +1778,7 @@
                         </div>
                     </div>
                 `;
-                return div;
+                return errDiv;
             }
         }
 
@@ -1854,7 +1881,7 @@
             }
 
             findBtn.disabled = true;
-            findBtn.textContent = "🔄 กำลังค้นหาคณะและสาขาที่เหมาะสม...";
+            findBtn.textContent = "🔄 กำลังค้นหาคณะและสาขาทั้งหมด...";
             resultDiv.innerHTML = "";
 
             try {
@@ -1878,15 +1905,16 @@
                 const data = await response.json();
                 console.log("Alternative programs data:", data);
 
-                const goodAlternatives = data.recommended_programs || [];
+                // USE ALL RESULTS INSTEAD OF FILTERED ONES
+                const allAlternatives = data.results || [];
 
-                if (goodAlternatives.length > 0) {
-                    resultDiv.innerHTML = createDetailedAlternativesDisplay(goodAlternatives, selectedUniversity);
-                    findBtn.textContent = `✅ พบ ${goodAlternatives.length} คณะและสาขาที่เหมาะสม`;
+                if (allAlternatives.length > 0) {
+                    resultDiv.innerHTML = createDetailedAlternativesDisplay(allAlternatives, selectedUniversity);
+                    findBtn.textContent = `✅ พบ ${allAlternatives.length} คณะและสาขา`;
                 } else {
                     resultDiv.innerHTML = `
                         <div class="status-message info" style="margin-top: 12px;">
-                            💡 ไม่พบคณะและสาขาที่เหมาะสมใน ${selectedUniversity}<br>
+                            💡 ไม่พบข้อมูลใน ${selectedUniversity}<br>
                             <small>แนะนำให้ลองมหาวิทยาลัยอื่น</small>
                         </div>
                     `;
@@ -1901,8 +1929,78 @@
                     </div>
                 `;
                 findBtn.disabled = false;
-                findBtn.textContent = "🔍 ค้นหาโปรแกรมที่เหมาะสม";
+                findBtn.textContent = "🔍 ค้นหาโปรแกรม";
             }
+        }
+
+        function createDetailedAlternativesDisplay(alternatives, university) {
+            const title = `💡 VR THE FUTURE ได้ค้นหาคณะและสาขาวิชาที่เหมาะสมกับคุณให้แล้ว: ${university}`;
+
+            return `
+                <div class="alternative-programs" style="margin-top: 12px;">
+                    <h4 style="color: #FFFFFF !important;">${title}</h4>
+                    <div style="margin-bottom: 12px; padding: 8px; background: #e8f5e8; border-radius: 6px; font-size: 0.85rem; color: #2e7d32;">
+                        <strong>💡 แนะนำ:</strong> คลิกเลือกโปรแกรมที่เหมาะสมเพื่อแทนที่ตัวเลือกเดิมของคุณ
+                    </div>
+                    ${alternatives.map((alt, index) => {
+                        let statusColor = '#388e3c';
+                        let statusIcon = '😀';
+                        let statusText = 'มีโอกาสติดสูง';
+                        
+                        // Safely handle scores so it doesn't crash on failed requirements
+                        let safeScore = alt.score !== null && alt.score !== undefined ? alt.score.toFixed(2) : '-';
+                        let safeScoreD = alt.score_d !== null && alt.score_d !== undefined ? alt.score_d.toFixed(2) : '-';
+                        
+                        if (alt.status === 'gpax_insufficient') {
+                            statusColor = '#f57c00';
+                            statusIcon = '⚠️';
+                            statusText = 'เกรดเฉลี่ย (GPAX) ไม่ถึงเกณฑ์';
+                        } else if (alt.status === 'subject_min_insufficient') {
+                            statusColor = '#d32f2f';
+                            statusIcon = '❌';
+                            statusText = 'คะแนนขั้นต่ำไม่ถึงเกณฑ์';
+                        } else if (alt.score_d !== null && alt.score_d !== undefined) {
+                            if (alt.score_d < 0) {
+                                statusColor = '#f57c00';
+                                statusIcon = '😧';
+                                statusText = 'มีโอกาสได้รับการคัดเลือกต่ำ (แต่ดีกว่าเดิม)';
+                            } else if (alt.score_d < 1.64) {
+                                statusColor = '#1976d2';
+                                statusIcon = '😀';
+                                statusText = 'มีโอกาสได้รับการคัดเลือกสูง';
+                            } else {
+                                statusColor = '#388e3c';
+                                statusIcon = '🥳';
+                                statusText = 'มีโอกาสได้รับการคัดเลือกสูงมาก';
+                            }
+                        }
+
+                        return `
+                            <div class="alternative-program-item clickable-alternative" 
+                                 style="margin-bottom: 12px; padding: 16px; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent;"
+                                 onclick="selectAlternativeProgram('${alt.university.replace(/'/g, "\\'")}', '${alt.faculty.replace(/'/g, "\\'")}', '${alt.field.replace(/'/g, "\\'")}', this)">
+                                <div class="alternative-program-name" style="margin-bottom: 8px;">
+                                    <strong>${alt.faculty} - ${alt.field}</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <div class="alternative-program-score">
+                                        <strong>คะแนน: ${safeScore}</strong>
+                                    </div>
+                                    <div style="color: ${statusColor}; font-weight: bold; font-size: 0.9rem;">
+                                        ${statusIcon} ${statusText}
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.85rem; color: ${alt.score_d >= 0 ? '#0ad700' : '#f44336'}; margin-bottom: 8px;">
+                                    ${alt.score_d >= 0 && alt.score_d !== null ? '+' : ''}${safeScoreD} จากคะแนนต่ำสุดปีที่แล้ว
+                                </div>
+                                <div style="margin-top: 8px; text-align: center; padding: 4px; background: #e3f2fd; border-radius: 4px; font-size: 0.75rem; color: #01579b;">
+                                    👆 คลิกเพื่อแทนที่ตัวเลือกเดิม
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
         }
 
         function createDetailedAlternativesDisplay(alternatives, university) {
