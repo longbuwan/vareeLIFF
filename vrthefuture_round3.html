@@ -29,6 +29,10 @@
     .form-group { margin-bottom: 20px; position: relative; }
     .form-group:last-child { margin-bottom: 0; }
     
+    /* New layout for side-by-side Raw and T-Score inputs */
+    .form-row { display: flex; gap: 15px; margin-bottom: 20px; }
+    .form-row .form-group { flex: 1; margin-bottom: 0; }
+    
     label { display: block; margin-bottom: 8px; font-weight: 600; color: #01579b; font-size: 0.95rem; }
     
     input[type="number"] { width: 100%; padding: 12px 16px; border: 2px solid #e3f2fd; border-radius: 12px; font-size: 1rem; margin-bottom: 8px; background: #f8faff; transition: border-color 0.3s ease; }
@@ -65,7 +69,7 @@
         </div>
         <div class="card-body">
           <div class="form-group">
-            <label for="GPAX_score">สูงสุด 4.00</label>
+            <label for="GPAX_score">สูงสุด 4.00 (คะแนนที่ได้)</label>
             <input type="number" id="GPAX_score" min="0" max="4" step="0.01">
             <div class="error-message" id="GPAX_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
           </div>
@@ -78,20 +82,43 @@
           <div class="card-number">2</div>
         </div>
         <div class="card-body">
-          <div class="form-group">
-            <label for="TGAT1_score">TGAT1 อังกฤษ</label>
-            <input type="number" id="TGAT1_score" min="0" max="100">
-            <div class="error-message" id="TGAT1_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="TGAT1_score">TGAT1 (คะแนนที่ได้)</label>
+              <input type="number" id="TGAT1_score" min="0" max="100">
+              <div class="error-message" id="TGAT1_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="TGAT1_tscore">TGAT1 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="TGAT1_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="TGAT1_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="TGAT2_score">TGAT2 คิดเหตุผล</label>
-            <input type="number" id="TGAT2_score" min="0" max="100">
-            <div class="error-message" id="TGAT2_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="TGAT2_score">TGAT2 (คะแนนที่ได้)</label>
+              <input type="number" id="TGAT2_score" min="0" max="100">
+              <div class="error-message" id="TGAT2_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="TGAT2_tscore">TGAT2 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="TGAT2_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="TGAT2_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="TGAT3_score">TGAT3 สมรรถนะ</label>
-            <input type="number" id="TGAT3_score" min="0" max="100">
-            <div class="error-message" id="TGAT3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="TGAT3_score">TGAT3 (คะแนนที่ได้)</label>
+              <input type="number" id="TGAT3_score" min="0" max="100">
+              <div class="error-message" id="TGAT3_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="TGAT3_tscore">TGAT3 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="TGAT3_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="TGAT3_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
         </div>
       </div>
@@ -102,51 +129,124 @@
           <div class="card-number">3</div>
         </div>
         <div class="card-body">
-          <div class="form-group">
-            <label for="TPAT1.1_score">TPAT1.1 เชาว์</label>
-            <input type="number" id="TPAT1.1_score" min="0" max="100">
-            <div class="error-message" id="TPAT1.1_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="TPAT1.1_score">TPAT1.1 เชาว์ (คะแนนที่ได้)</label>
+              <input type="number" id="TPAT1.1_score" min="0" max="100">
+              <div class="error-message" id="TPAT1.1_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="TPAT1.1_tscore">TPAT1.1 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="TPAT1.1_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="TPAT1.1_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="TPAT1.2_score">TPAT1.2 จริยธรรม</label>
-            <input type="number" id="TPAT1.2_score" min="0" max="100">
-            <div class="error-message" id="TPAT1.2_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="TPAT1.2_score">TPAT1.2 จริยธรรม (คะแนนที่ได้)</label>
+              <input type="number" id="TPAT1.2_score" min="0" max="100">
+              <div class="error-message" id="TPAT1.2_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="TPAT1.2_tscore">TPAT1.2 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="TPAT1.2_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="TPAT1.2_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="TPAT1.3_score">TPAT1.3 เชื่อมโยง</label>
-            <input type="number" id="TPAT1.3_score" min="0" max="100">
-            <div class="error-message" id="TPAT1.3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="TPAT1.3_score">TPAT1.3 เชื่อมโยง (คะแนนที่ได้)</label>
+              <input type="number" id="TPAT1.3_score" min="0" max="100">
+              <div class="error-message" id="TPAT1.3_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="TPAT1.3_tscore">TPAT1.3 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="TPAT1.3_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="TPAT1.3_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="TPAT2.1_score">TPAT2.1 ทัศนศิลป์</label>
-            <input type="number" id="TPAT2.1_score" min="0" max="100">
-            <div class="error-message" id="TPAT2.1_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="TPAT2.1_score">TPAT2.1 ทัศนศิลป์ (คะแนนที่ได้)</label>
+              <input type="number" id="TPAT2.1_score" min="0" max="100">
+              <div class="error-message" id="TPAT2.1_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="TPAT2.1_tscore">TPAT2.1 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="TPAT2.1_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="TPAT2.1_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="TPAT2.2_score">TPAT2.2 ดนตรี</label>
-            <input type="number" id="TPAT2.2_score" min="0" max="100">
-            <div class="error-message" id="TPAT2.2_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="TPAT2.2_score">TPAT2.2 ดนตรี (คะแนนที่ได้)</label>
+              <input type="number" id="TPAT2.2_score" min="0" max="100">
+              <div class="error-message" id="TPAT2.2_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="TPAT2.2_tscore">TPAT2.2 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="TPAT2.2_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="TPAT2.2_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="TPAT2.3_score">TPAT2.3 นาฏศิลป์</label>
-            <input type="number" id="TPAT2.3_score" min="0" max="100">
-            <div class="error-message" id="TPAT2.3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="TPAT2.3_score">TPAT2.3 นาฏศิลป์ (คะแนนที่ได้)</label>
+              <input type="number" id="TPAT2.3_score" min="0" max="100">
+              <div class="error-message" id="TPAT2.3_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="TPAT2.3_tscore">TPAT2.3 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="TPAT2.3_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="TPAT2.3_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="TPAT3_score">TPAT3 วิทย์-วิศวฯ</label>
-            <input type="number" id="TPAT3_score" min="0" max="100">
-            <div class="error-message" id="TPAT3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="TPAT3_score">TPAT3 วิทย์-วิศวฯ (คะแนนที่ได้)</label>
+              <input type="number" id="TPAT3_score" min="0" max="100">
+              <div class="error-message" id="TPAT3_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="TPAT3_tscore">TPAT3 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="TPAT3_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="TPAT3_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="TPAT4_score">TPAT4 สถาปัตย์</label>
-            <input type="number" id="TPAT4_score" min="0" max="100">
-            <div class="error-message" id="TPAT4_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="TPAT4_score">TPAT4 สถาปัตย์ (คะแนนที่ได้)</label>
+              <input type="number" id="TPAT4_score" min="0" max="100">
+              <div class="error-message" id="TPAT4_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="TPAT4_tscore">TPAT4 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="TPAT4_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="TPAT4_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="TPAT5_score">TPAT5 ครู</label>
-            <input type="number" id="TPAT5_score" min="0" max="100">
-            <div class="error-message" id="TPAT5_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="TPAT5_score">TPAT5 ครู (คะแนนที่ได้)</label>
+              <input type="number" id="TPAT5_score" min="0" max="100">
+              <div class="error-message" id="TPAT5_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="TPAT5_tscore">TPAT5 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="TPAT5_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="TPAT5_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
+
         </div>
       </div>
 
@@ -156,86 +256,215 @@
           <div class="card-number">4</div>
         </div>
         <div class="card-body">
-          <div class="form-group">
-            <label for="A-Level1.1_score">A-Level คณิต1</label>
-            <input type="number" id="A-Level1.1_score" min="0" max="100">
-            <div class="error-message" id="A-Level1.1_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level1.1_score">A-Level คณิต1 (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level1.1_score" min="0" max="100">
+              <div class="error-message" id="A-Level1.1_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level1.1_tscore">คณิต1 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level1.1_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level1.1_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level1.2_score">A-Level คณิต2</label>
-            <input type="number" id="A-Level1.2_score" min="0" max="100">
-            <div class="error-message" id="A-Level1.2_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level1.2_score">A-Level คณิต2 (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level1.2_score" min="0" max="100">
+              <div class="error-message" id="A-Level1.2_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level1.2_tscore">คณิต2 (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level1.2_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level1.2_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level2.1_score">A-Level วิทย์ทั่วไป</label>
-            <input type="number" id="A-Level2.1_score" min="0" max="100">
-            <div class="error-message" id="A-Level2.1_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level2.1_score">A-Level วิทย์ทั่วไป (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level2.1_score" min="0" max="100">
+              <div class="error-message" id="A-Level2.1_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level2.1_tscore">วิทย์ทั่วไป (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level2.1_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level2.1_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level2.2_score">A-Level ฟิสิกส์</label>
-            <input type="number" id="A-Level2.2_score" min="0" max="100">
-            <div class="error-message" id="A-Level2.2_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level2.2_score">A-Level ฟิสิกส์ (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level2.2_score" min="0" max="100">
+              <div class="error-message" id="A-Level2.2_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level2.2_tscore">ฟิสิกส์ (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level2.2_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level2.2_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level2.3_score">A-Level เคมี</label>
-            <input type="number" id="A-Level2.3_score" min="0" max="100">
-            <div class="error-message" id="A-Level2.3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level2.3_score">A-Level เคมี (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level2.3_score" min="0" max="100">
+              <div class="error-message" id="A-Level2.3_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level2.3_tscore">เคมี (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level2.3_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level2.3_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level2.4_score">A-Level ชีววิทยา</label>
-            <input type="number" id="A-Level2.4_score" min="0" max="100">
-            <div class="error-message" id="A-Level2.4_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level2.4_score">A-Level ชีววิทยา (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level2.4_score" min="0" max="100">
+              <div class="error-message" id="A-Level2.4_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level2.4_tscore">ชีววิทยา (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level2.4_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level2.4_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level3_score">A-Level สังคมศึกษา</label>
-            <input type="number" id="A-Level3_score" min="0" max="100">
-            <div class="error-message" id="A-Level3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level3_score">A-Level สังคม (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level3_score" min="0" max="100">
+              <div class="error-message" id="A-Level3_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level3_tscore">สังคม (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level3_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level3_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level4.1_score">A-Level ไทย</label>
-            <input type="number" id="A-Level4.1_score" min="0" max="100">
-            <div class="error-message" id="A-Level4.1_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level4.1_score">A-Level ไทย (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level4.1_score" min="0" max="100">
+              <div class="error-message" id="A-Level4.1_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level4.1_tscore">ไทย (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level4.1_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level4.1_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level4.2_score">A-Level อังกฤษ</label>
-            <input type="number" id="A-Level4.2_score" min="0" max="100">
-            <div class="error-message" id="A-Level4.2_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level4.2_score">A-Level อังกฤษ (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level4.2_score" min="0" max="100">
+              <div class="error-message" id="A-Level4.2_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level4.2_tscore">อังกฤษ (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level4.2_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level4.2_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level4.3_score">A-Level ฝรั่งเศส</label>
-            <input type="number" id="A-Level4.3_score" min="0" max="100">
-            <div class="error-message" id="A-Level4.3_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level4.3_score">A-Level ฝรั่งเศส (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level4.3_score" min="0" max="100">
+              <div class="error-message" id="A-Level4.3_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level4.3_tscore">ฝรั่งเศส (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level4.3_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level4.3_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level4.4_score">A-Level เยอรมัน</label>
-            <input type="number" id="A-Level4.4_score" min="0" max="100">
-            <div class="error-message" id="A-Level4.4_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level4.4_score">A-Level เยอรมัน (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level4.4_score" min="0" max="100">
+              <div class="error-message" id="A-Level4.4_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level4.4_tscore">เยอรมัน (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level4.4_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level4.4_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level4.5_score">A-Level ญี่ปุ่น</label>
-            <input type="number" id="A-Level4.5_score" min="0" max="100">
-            <div class="error-message" id="A-Level4.5_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level4.5_score">A-Level ญี่ปุ่น (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level4.5_score" min="0" max="100">
+              <div class="error-message" id="A-Level4.5_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level4.5_tscore">ญี่ปุ่น (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level4.5_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level4.5_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level4.6_score">A-Level เกาหลี</label>
-            <input type="number" id="A-Level4.6_score" min="0" max="100">
-            <div class="error-message" id="A-Level4.6_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level4.6_score">A-Level เกาหลี (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level4.6_score" min="0" max="100">
+              <div class="error-message" id="A-Level4.6_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level4.6_tscore">เกาหลี (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level4.6_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level4.6_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level4.7_score">A-Level จีน</label>
-            <input type="number" id="A-Level4.7_score" min="0" max="100">
-            <div class="error-message" id="A-Level4.7_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level4.7_score">A-Level จีน (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level4.7_score" min="0" max="100">
+              <div class="error-message" id="A-Level4.7_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level4.7_tscore">จีน (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level4.7_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level4.7_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level4.8_score">A-Level บาลี</label>
-            <input type="number" id="A-Level4.8_score" min="0" max="100">
-            <div class="error-message" id="A-Level4.8_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level4.8_score">A-Level บาลี (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level4.8_score" min="0" max="100">
+              <div class="error-message" id="A-Level4.8_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level4.8_tscore">บาลี (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level4.8_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level4.8_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="A-Level4.9_score">A-Level สเปน</label>
-            <input type="number" id="A-Level4.9_score" min="0" max="100">
-            <div class="error-message" id="A-Level4.9_score_error">กรุณากรอกคะแนนระหว่าง 0-100</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="A-Level4.9_score">A-Level สเปน (คะแนนที่ได้)</label>
+              <input type="number" id="A-Level4.9_score" min="0" max="100">
+              <div class="error-message" id="A-Level4.9_score_error">กรุณากรอก 0-100</div>
+            </div>
+            <div class="form-group">
+              <label for="A-Level4.9_tscore">สเปน (คะแนนมาตรฐาน)</label>
+              <input type="number" id="A-Level4.9_tscore" min="0" max="100" placeholder="ระบุถ้ามี">
+              <div class="error-message" id="A-Level4.9_tscore_error">กรุณากรอก 0-100</div>
+            </div>
           </div>
+
         </div>
       </div>
 
@@ -246,37 +475,37 @@
         </div>
         <div class="card-body">
           <div class="form-group">
-            <label for="gpa21_score">เกรดเฉลี่ยกลุ่มสาระฯภาษาไทย</label>
+            <label for="gpa21_score">เกรดเฉลี่ยกลุ่มสาระฯภาษาไทย (คะแนนที่ได้)</label>
             <input type="number" id="gpa21_score" min="0" max="4" step="0.01">
             <div class="error-message" id="gpa21_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
           </div>
           <div class="form-group">
-            <label for="gpa22_score">เกรดเฉลี่ยกลุ่มสาระฯคณิตศาสตร์</label>
+            <label for="gpa22_score">เกรดเฉลี่ยกลุ่มสาระฯคณิตศาสตร์ (คะแนนที่ได้)</label>
             <input type="number" id="gpa22_score" min="0" max="4" step="0.01">
             <div class="error-message" id="gpa22_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
           </div>
           <div class="form-group">
-            <label for="gpa23_score">เกรดเฉลี่ยกลุ่มสาระฯวิทยาศาสตร์และเทคโนโลยี</label>
+            <label for="gpa23_score">เกรดเฉลี่ยกลุ่มสาระฯวิทยาศาสตร์และเทคโนโลยี (คะแนนที่ได้)</label>
             <input type="number" id="gpa23_score" min="0" max="4" step="0.01">
             <div class="error-message" id="gpa23_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
           </div>
           <div class="form-group">
-            <label for="gpa24_score">เกรดเฉลี่ยกลุ่มสาระฯสังคม</label>
+            <label for="gpa24_score">เกรดเฉลี่ยกลุ่มสาระฯสังคม (คะแนนที่ได้)</label>
             <input type="number" id="gpa24_score" min="0" max="4" step="0.01">
             <div class="error-message" id="gpa24_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
           </div>
           <div class="form-group">
-            <label for="gpa26_score">เกรดเฉลี่ยกลุ่มสาระฯศิลปะ</label>
+            <label for="gpa26_score">เกรดเฉลี่ยกลุ่มสาระฯศิลปะ (คะแนนที่ได้)</label>
             <input type="number" id="gpa26_score" min="0" max="4" step="0.01">
             <div class="error-message" id="gpa26_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
           </div>
           <div class="form-group">
-            <label for="gpa27_score">เกรดเฉลี่ยกลุ่มสาระฯการงานอาชีพและเทคโนโลยี</label>
+            <label for="gpa27_score">เกรดเฉลี่ยกลุ่มสาระฯการงานอาชีพและเทคโนโลยี (คะแนนที่ได้)</label>
             <input type="number" id="gpa27_score" min="0" max="4" step="0.01">
             <div class="error-message" id="gpa27_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
           </div>
           <div class="form-group">
-            <label for="gpa28_score">เกรดเฉลี่ยกลุ่มสาระฯภาษาต่างประเทศ</label>
+            <label for="gpa28_score">เกรดเฉลี่ยกลุ่มสาระฯภาษาต่างประเทศ (คะแนนที่ได้)</label>
             <input type="number" id="gpa28_score" min="0" max="4" step="0.01">
             <div class="error-message" id="gpa28_score_error">กรุณากรอกคะแนนระหว่าง 0-4.00</div>
           </div>
@@ -302,19 +531,16 @@
         document.getElementById("name").innerText = profile.displayName;
         document.getElementById("picture").src = profile.pictureUrl;
         
-        // Load previous data for this specific user
         loadFormData();
       } else {
         liff.login();
       }
     } catch (e) {
       console.error("LIFF Init failed", e);
-      // Fallback for testing
       currentUserId = "test-user-debug";
       loadFormData();
     }
     
-    // Auto-save listeners
     addValidationListeners();
     addAutoSaveListeners();
   };
@@ -322,7 +548,6 @@
   function addValidationListeners() {
     const inputs = document.querySelectorAll('input[type="number"]');
     inputs.forEach(input => {
-      // Validate immediately on input for better UX
       input.addEventListener('input', function() { validateInput(this); });
       input.addEventListener('blur', function() { validateInput(this); });
     });
@@ -363,8 +588,6 @@
   function addAutoSaveListeners() {
     const inputs = document.querySelectorAll('input[type="number"]');
     inputs.forEach(input => {
-      // 'input' event fires on every keystroke. 
-      // Because we save to LocalStorage (phone memory), this is INSTANT and does NOT cause lag.
       input.addEventListener('input', function() {
         saveFormData();
       });
@@ -377,7 +600,6 @@
     const formData = {};
     const inputs = document.querySelectorAll('input[type="number"]');
     
-    // Only save fields that have values to keep the storage size tiny
     inputs.forEach(input => {
       if (input.value.trim() !== '') {
         formData[input.id] = input.value;
@@ -385,7 +607,6 @@
     });
     
     try {
-      // This operation takes < 1ms
       localStorage.setItem('score_draft_' + currentUserId, JSON.stringify(formData));
     } catch (e) {
       console.log('LocalStorage not available');
@@ -445,17 +666,14 @@
     try {
       const profile = await liff.getProfile();
 
-      // Helper to get float or null
       const getVal = (id) => {
         const el = document.getElementById(id);
         return (el && el.value.trim()) ? parseFloat(el.value.trim()) : null;
       };
 
-      // GPAX special case (multiply by 25)
       const gpaxRaw = getVal("GPAX_score");
       const gpaxVal = gpaxRaw !== null ? gpaxRaw * 25 : null;
 
-      // GPA Subject Groups special case (multiply by 25)
       const getGpaVal = (id) => {
         const raw = getVal(id);
         return raw !== null ? raw * 25 : null;
@@ -465,6 +683,7 @@
         userId: profile.userId,
         name: profile.displayName,
         gpax: gpaxVal,
+        
         tgat1: getVal("TGAT1_score"),
         tgat2: getVal("TGAT2_score"),
         tgat3: getVal("TGAT3_score"),
@@ -495,6 +714,37 @@
         a_lv_87: getVal("A-Level4.7_score"),
         a_lv_88: getVal("A-Level4.8_score"),
         a_lv_89: getVal("A-Level4.9_score"),
+
+        tgat1_tscore: getVal("TGAT1_tscore"),
+        tgat2_tscore: getVal("TGAT2_tscore"),
+        tgat3_tscore: getVal("TGAT3_tscore"),
+
+        tpat11_tscore: getVal("TPAT1.1_tscore"),
+        tpat12_tscore: getVal("TPAT1.2_tscore"),
+        tpat13_tscore: getVal("TPAT1.3_tscore"),
+        tpat21_tscore: getVal("TPAT2.1_tscore"),
+        tpat22_tscore: getVal("TPAT2.2_tscore"),
+        tpat23_tscore: getVal("TPAT2.3_tscore"),
+        tpat3_tscore: getVal("TPAT3_tscore"),
+        tpat4_tscore: getVal("TPAT4_tscore"),
+        tpat5_tscore: getVal("TPAT5_tscore"),
+
+        a_lv_61_tscore: getVal("A-Level1.1_tscore"),
+        a_lv_62_tscore: getVal("A-Level1.2_tscore"),
+        a_lv_63_tscore: getVal("A-Level2.1_tscore"),
+        a_lv_64_tscore: getVal("A-Level2.2_tscore"),
+        a_lv_65_tscore: getVal("A-Level2.3_tscore"),
+        a_lv_66_tscore: getVal("A-Level2.4_tscore"),
+        a_lv_70_tscore: getVal("A-Level3_tscore"),
+        a_lv_81_tscore: getVal("A-Level4.1_tscore"),
+        a_lv_82_tscore: getVal("A-Level4.2_tscore"),
+        a_lv_83_tscore: getVal("A-Level4.3_tscore"),
+        a_lv_84_tscore: getVal("A-Level4.4_tscore"),
+        a_lv_85_tscore: getVal("A-Level4.5_tscore"),
+        a_lv_86_tscore: getVal("A-Level4.6_tscore"),
+        a_lv_87_tscore: getVal("A-Level4.7_tscore"),
+        a_lv_88_tscore: getVal("A-Level4.8_tscore"),
+        a_lv_89_tscore: getVal("A-Level4.9_tscore"),
 
         gpa21: getGpaVal("gpa21_score"),
         gpa22: getGpaVal("gpa22_score"),
