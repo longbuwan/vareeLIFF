@@ -863,6 +863,64 @@
                 gap: 4px;
             }
         }
+
+
+        
+        .score-breakdown-details {
+            background: #f8faff;
+            border-radius: 8px;
+            margin-top: 16px;
+            overflow: hidden;
+            border: 1px solid #e3f2fd;
+        }
+
+        .score-breakdown-details summary {
+            padding: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #01579b;
+            background: #e3f2fd;
+            transition: background 0.3s;
+            list-style: none; /* Remove default arrow */
+            user-select: none;
+        }
+
+        .score-breakdown-details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .score-breakdown-details summary::before {
+            content: '▶ ';
+            display: inline-block;
+            transition: transform 0.3s ease;
+            margin-right: 8px;
+            font-size: 0.8rem;
+        }
+
+        .score-breakdown-details[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            background: white;
+        }
+
+        .history-table th, .history-table td {
+            border: 1px solid #bbdefb;
+            padding: 10px 6px;
+            text-align: center;
+        }
+
+        .history-table th {
+            background: #e3f2fd;
+            color: #01579b;
+            font-weight: 600;
+        }
+        
     </style>
 </head>
 <body>
@@ -1649,69 +1707,164 @@
                     
                     if (scoreD !== null && scoreD !== undefined) {
                         if (scoreD < -1.64) {
-                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #d32f2f; font-weight: bold;">😥 มีโอกาสได้รับการคัดเลือกต่ำมาก</div>';
+                            difficultyIndicator = '<div style="margin-top: 12px; font-size: 1.4rem; color: #d32f2f; font-weight: bold;">😥 มีโอกาสได้รับการคัดเลือกต่ำมาก</div>';
                             showAlternatives = true;
                         } else if (scoreD < 0) {
-                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #f57c00; font-weight: bold;">😧 มีโอกาสได้รับการคัดเลือกต่ำ</div>';
+                            difficultyIndicator = '<div style="margin-top: 12px; font-size: 1.4rem; color: #f57c00; font-weight: bold;">😧 มีโอกาสได้รับการคัดเลือกต่ำ</div>';
                         } else if (scoreD < 1.64) {
-                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #1976d2; font-weight: bold;">😀 มีโอกาสได้รับการคัดเลือกสูง</div>';
+                            difficultyIndicator = '<div style="margin-top: 12px; font-size: 1.4rem; color: #1976d2; font-weight: bold;">😀 มีโอกาสได้รับการคัดเลือกสูง</div>';
                         } else {
-                            difficultyIndicator = '<div style="margin-top: 8px; font-size: 1.6rem; color: #388e3c; font-weight: bold;">🥳 มีโอกาสได้รับการคัดเลือกสูงมาก</div>';
+                            difficultyIndicator = '<div style="margin-top: 12px; font-size: 1.4rem; color: #388e3c; font-weight: bold;">🥳 มีโอกาสได้รับการคัดเลือกสูงมาก</div>';
                         }
                     }
 
-                    const tScoreIndicator = tScoreEnabled ? '<div class="tscore-indicator">📊 T-Score</div>' : '';
+                    const tScoreIndicator = tScoreEnabled ? '<div class="tscore-indicator" style="margin-top: 12px;">📊 T-Score</div>' : '';
+                    
+                    // --- Get Latest Receive Students & Applicants ---
+                    let latestReceive = '-';
+                    let latestApplicants = '-';
+                    if (result.historical_data) {
+                        latestReceive = result.historical_data.year_68_1?.receive || result.historical_data.year_67_1?.receive || '-';
+                        latestApplicants = result.historical_data.year_68_1?.applicants || result.historical_data.year_67_1?.applicants || '-';
+                    }
+
+                    // --- 1. Score Display (Clean Blue Side-by-Side Layout) ---
+                    let scoreComparisonHTML = `
+                        <div>
+                            <div class="score-value" style="margin-bottom: 0;">${score.toFixed(4)}</div>
+                            <div class="score-label" style="font-weight: bold;">คะแนนของคุณ</div>
+                        </div>
+                    `;
+
+                    if (scoreD !== null && scoreD !== undefined) {
+                        const predictedScore = score - scoreD; 
+                        scoreComparisonHTML = `
+                            <div style="display: flex; justify-content: space-evenly; align-items: center; flex-wrap: wrap; gap: 10px; background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                                ${scoreComparisonHTML}
+                                <div style="font-size: 2rem; color: #e3f2fd; font-weight: 300;">|</div>
+                                <div>
+                                    <div class="score-value" style="margin-bottom: 0;">${predictedScore.toFixed(4)}</div>
+                                    <div class="score-label" style="font-weight: bold;">คาดการณ์คะแนนต่ำสุดปี 69</div>
+                                </div>
+                            </div>
+                        `;
+                    }
 
                     bodyContent += `
-                        <div class="score-display">
-                            <div class="score-value">${score.toFixed(2)}</div>
-                            <div class="score-label">คะแนนรวม</div>
+                        <div class="score-display" style="background: transparent; padding: 0;">
+                            ${scoreComparisonHTML}
+                            
                             ${tScoreIndicator}
+                            
+                            <div style="margin-top: 16px; font-size: 1.1rem; color: #01579b; font-weight: 600; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                                <div>👥 จำนวนรับ: ${latestReceive} คน</div>
+                                <div>📝 จำนวนผู้สมัคร: ${latestApplicants} คน</div>
+                            </div>
+
                             ${scoreD !== null && scoreD !== undefined ? `
-                                <div style="margin-top: 8px; font-size: 0.9rem; color: ${scoreD >= 0 ? '#4caf50' : '#f44336'};">
-                                    ${scoreD >= 0 ? '+' : ''}${scoreD.toFixed(2)} จากคะแนนต่ำสุดปีที่แล้ว
+                                <div style="margin-top: 12px; font-size: 1rem; font-weight: 600; color: ${scoreD >= 0 ? '#388e3c' : '#d32f2f'}; background: ${scoreD >= 0 ? '#e8f5e8' : '#ffebee'}; display: inline-block; padding: 6px 16px; border-radius: 20px;">
+                                    ผลต่าง: ${scoreD >= 0 ? '+' : ''}${scoreD.toFixed(4)}
                                 </div>
                             ` : ''}
+                            
                             ${difficultyIndicator}
                         </div>
                     `;
 
+                    // --- 2. Generate Historical Table (OUTSIDE details) ---
+                    let historicalTable = '';
+                    if (result.historical_data) {
+                        const createRow = (yearLabel, data) => {
+                            if (!data || data.min === null || data.min === undefined) return ''; 
+                            const diff = score - data.min;
+                            const diffText = diff >= 0 ? `<span style="color:#388e3c; font-weight:bold;">+${diff.toFixed(4)}</span>` : `<span style="color:#d32f2f; font-weight:bold;">${diff.toFixed(4)}</span>`;
+                            return `
+                                <tr>
+                                    <td>${yearLabel}</td>
+                                    <td>${data.max ? data.max.toFixed(4) : '-'}</td>
+                                    <td>${data.min.toFixed(4)}</td>
+                                    <td>${diffText}</td>
+                                    <td>${data.receive || '-'}</td>
+                                    <td>${data.applicants || '-'}</td>
+                                </tr>
+                            `;
+                        };
+                        
+                        let tableRows = '';
+                        tableRows += createRow('ปี 68 (รอบ 1)', result.historical_data.year_68_1);
+                        tableRows += createRow('ปี 68 (รอบ 2)', result.historical_data.year_68_2);
+                        tableRows += createRow('ปี 67 (รอบ 1)', result.historical_data.year_67_1);
+                        tableRows += createRow('ปี 67 (รอบ 2)', result.historical_data.year_67_2);
+
+                        if (tableRows) {
+                            historicalTable = `
+                                <h4 style="margin-top: 24px; color: #01579b; display: flex; align-items: center; gap: 8px;">
+                                    📊 สถิติคะแนนย้อนหลัง
+                                </h4>
+                                <div style="overflow-x: auto;">
+                                    <table class="history-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ปี/รอบ</th>
+                                                <th>คะแนนสูงสุด</th>
+                                                <th>คะแนนต่ำสุด</th>
+                                                <th>ผลต่างจากคะแนนต่ำสุด</th>
+                                                <th>จำนวนรับ</th>
+                                                <th>จำนวนผู้สมัคร</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${tableRows}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    // --- 3. Collapsible Breakdown ---
                     if (scoreBreakdown.length > 0) {
                         const hasAnyTScore = scoreBreakdown.some(item => item.t_score_applied);
-                        const breakdownTitle = hasAnyTScore ? '📊 รายละเอียดการคำนวณ (มี T-Score)' : '📊 รายละเอียดการคำนวณ';
+                        const breakdownTitle = hasAnyTScore ? 'รายละเอียดการคำนวณ (มี T-Score)' : 'รายละเอียดการคำนวณ';
                         
                         bodyContent += `
-                            <div class="score-breakdown">
-                                <h4>${breakdownTitle}</h4>
-                                ${scoreBreakdown.map(item => {
-                                    const showTScoreConversion = item.t_score_applied && item.user_score !== item.final_score;
-                                    return `
-                                        <div class="breakdown-item">
-                                            <div class="breakdown-subject">${item.subject}</div>
-                                            ${showTScoreConversion ? `
-                                                <div class="breakdown-scores">
-                                                    <div class="breakdown-original-score">คะแนนเดิม: ${item.user_score.toFixed(2)}</div>
-                                                    <div class="breakdown-final-score">T-Score: ${item.final_score.toFixed(2)}</div>
+                            <details class="score-breakdown-details">
+                                <summary>คลิกเพื่อดูกระบวนการคำนวณ</summary>
+                                <div style="padding: 16px;">
+                                    <h4 style="margin: 0 0 12px 0; color: #01579b;">${breakdownTitle}</h4>
+                                    ${scoreBreakdown.map(item => {
+                                        const showTScoreConversion = item.t_score_applied && item.user_score !== item.final_score;
+                                        return `
+                                            <div class="breakdown-item">
+                                                <div class="breakdown-subject">${item.subject}</div>
+                                                ${showTScoreConversion ? `
+                                                    <div class="breakdown-scores">
+                                                        <div class="breakdown-original-score">คะแนนเดิม: ${item.user_score.toFixed(2)}</div>
+                                                        <div class="breakdown-final-score">T-Score: ${item.final_score.toFixed(4)}</div>
+                                                    </div>
+                                                ` : `
+                                                    <div class="breakdown-scores">
+                                                        <div class="breakdown-original-score">คะแนน: ${item.user_score.toFixed(4)}</div>
+                                                    </div>
+                                                `}
+                                                <div class="breakdown-calculation">
+                                                    ${item.final_score.toFixed(4)} × ${(item.weight * 100).toFixed(2)}% = ${item.contribution.toFixed(4)} คะแนน
                                                 </div>
-                                            ` : `
-                                                <div class="breakdown-scores">
-                                                    <div class="breakdown-original-score">คะแนน: ${item.user_score.toFixed(2)}</div>
-                                                </div>
-                                            `}
-                                            <div class="breakdown-calculation">
-                                                ${item.final_score.toFixed(2)} × ${(item.weight * 100).toFixed(1)}% = ${item.contribution.toFixed(2)} คะแนน
                                             </div>
+                                        `;
+                                    }).join('')}
+                                    ${hasAnyTScore ? `
+                                        <div class="tscore-note" style="margin-top: 16px;">
+                                            💡 T-Score คือการปรับคะแนนตามสถิติของผู้สอบทั้งหมด เพื่อความยุติธรรมในการเปรียบเทียบ
                                         </div>
-                                    `;
-                                }).join('')}
-                                ${hasAnyTScore ? `
-                                    <div class="tscore-note">
-                                        💡 T-Score คือการปรับคะแนนตามสถิติของผู้สอบทั้งหมด เพื่อความยุติธรรมในการเปรียบเทียบ
-                                    </div>
-                                ` : ''}
-                            </div>
+                                    ` : ''}
+                                </div>
+                            </details>
                         `;
                     }
+
+                    // --- 4. Append Historical Table OUTSIDE the details tag ---
+                    bodyContent += historicalTable;
 
                     if (showAlternatives) {
                         bodyContent += createUniversitySelector(cardNumber, university);
